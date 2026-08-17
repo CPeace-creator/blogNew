@@ -1,0 +1,52 @@
+---
+import { Bell, Github, Mail, Sparkles } from 'lucide-astro';
+import { SITE } from '../config';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  posts: Array<{ data: { category: string; tags: string[] } }>;
+}
+
+const { posts } = Astro.props;
+const categories = [...new Set(posts.map((post) => post.data.category))];
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))].slice(0, 8);
+---
+
+<aside class="profile-sidebar" aria-label="站点信息">
+  <section class="profile-card glass-card">
+    <div class="profile-cover"></div>
+    <img class="profile-avatar" src={withBase('/images/profile-avatar.jpg')} alt="陈嘉鸿的头像" width="112" height="112" />
+    <h2>{SITE.author}</h2>
+    <p>你好，我是陈嘉鸿。<br />关注 Web、AI 与工程实践。</p>
+    <div class="profile-socials">
+      <a href={SITE.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={18} /></a>
+      <a href={`mailto:${SITE.email}`} aria-label="邮件"><Mail size={18} /></a>
+      <a href={withBase('/about/')} aria-label="关于我"><Sparkles size={18} /></a>
+    </div>
+    <div class="profile-stats">
+      <a href={withBase('/archive/')}><strong>{posts.length}</strong><span>文章</span></a>
+      <a href={withBase('/archive/')}><strong>{categories.length}</strong><span>分类</span></a>
+      <a href={withBase('/archive/')}><strong>{new Set(posts.flatMap((post) => post.data.tags)).size}</strong><span>标签</span></a>
+    </div>
+  </section>
+
+  <section class="notice-card glass-card">
+    <h2><Bell size={17} /> 公告</h2>
+    <p>欢迎来到我的个人空间。这里正在持续更新文章、项目与生活记录。</p>
+    <a href={withBase('/about/')}>了解更多</a>
+  </section>
+
+  <section class="taxonomy-card glass-card">
+    <h2>分类</h2>
+    <div class="category-links">
+      {categories.map((category) => (
+        <a href={withBase('/archive/')}><span>{category}</span><strong>{posts.filter((post) => post.data.category === category).length}</strong></a>
+      ))}
+    </div>
+  </section>
+
+  <section class="taxonomy-card glass-card">
+    <h2>标签</h2>
+    <div class="sidebar-tags">{tags.map((tag) => <span>#{tag}</span>)}</div>
+  </section>
+</aside>

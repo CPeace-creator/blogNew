@@ -1,0 +1,31 @@
+---
+import { Search, X } from 'lucide-astro';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  posts: Array<{
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    tags: string[];
+  }>;
+}
+
+const { posts } = Astro.props;
+const index = posts.map((post) => ({ ...post, url: withBase(`/posts/${post.id}/`) }));
+---
+
+<dialog class="search-dialog" data-search-dialog>
+  <div class="search-panel">
+    <div class="search-field">
+      <Search size={20} aria-hidden="true" />
+      <input type="search" placeholder="搜索标题、主题或关键词" aria-label="搜索文章" data-search-input />
+      <button class="icon-button" type="button" data-search-close aria-label="关闭搜索"><X size={20} /></button>
+    </div>
+    <div class="search-results" data-search-results>
+      <p class="search-empty">输入关键词开始搜索</p>
+    </div>
+  </div>
+</dialog>
+<script is:inline type="application/json" id="search-index" set:html={JSON.stringify(index)}></script>

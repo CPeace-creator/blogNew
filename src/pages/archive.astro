@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import { ArrowUpRight } from 'lucide-astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProfileSidebar from '../components/ProfileSidebar.astro';
+import { withBase } from '../lib/paths';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()
+);
+const grouped = Map.groupBy(posts, (post) => post.data.publishedAt.getFullYear());
+---
+
+<BaseLayout title="文章" description="湘江中路的全部文章归档。" posts={posts}>
+  <section class="subpage-hero">
+    <img src={withBase('/images/hero-japan.webp')} alt="夜晚的樱花河岸" width="2400" height="1500" />
+    <div class="hero-shade"></div>
+    <div class="subpage-title"><p>ARCHIVE / {posts.length.toString().padStart(2, '0')}</p><h1>文章归档</h1><span>把一路上的想法，整理成可以再次抵达的坐标。</span></div>
+    <div class="hero-wave"></div>
+  </section>
+
+  <div class="page-surface">
+    <div class="dashboard shell" id="timeline">
+      <div class="archive">
+        {[...grouped.entries()].map(([year, yearPosts]) => (
+          <section class="archive-year" aria-labelledby={`year-${year}`}>
+            <h2 id={`year-${year}`}>{year}</h2>
+            <div class="archive-list">
+              {yearPosts.map((post) => (
+                <a class="archive-item glass-card" href={withBase(`/posts/${post.id}/`)}>
+                  <time datetime={post.data.publishedAt.toISOString()}>
+                    {new Intl.DateTimeFormat('zh-CN', { month: '2-digit', day: '2-digit' }).format(post.data.publishedAt)}
+                  </time>
+                  <div><span>{post.data.category}</span><h3>{post.data.title}</h3><p>{post.data.description}</p></div>
+                  <ArrowUpRight size={21} />
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+      <ProfileSidebar posts={posts} />
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,69 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { ArrowLeft, Link as LinkIcon } from 'lucide-astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { withBase } from '../../lib/paths';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post, posts } }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { post, posts } = Astro.props;
+const { Content, headings } = await render(post);
+const date = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(post.data.publishedAt);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description} image={withBase(post.data.cover)} posts={posts}>
+  <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
+  <article class="article-page">
+    <header class="article-hero">
+      <img src={withBase(post.data.cover)} alt={post.data.coverAlt} width="1500" height="900" />
+      <div class="hero-shade"></div>
+      <div class="article-hero-content shell">
+        <a class="back-link" href={withBase('/archive/')}><ArrowLeft size={17} /> 返回文章</a>
+        <div class="article-kicker"><span>{post.data.category}</span><time datetime={post.data.publishedAt.toISOString()}>{date}</time><span>{post.data.readingTime}</span></div>
+        <h1>{post.data.title}</h1>
+        <p>{post.data.description}</p>
+        <div class="tag-list">{post.data.tags.map((tag) => <span>#{tag}</span>)}</div>
+      </div>
+      <div class="hero-wave"></div>
+    </header>
+
+    <div class="page-surface">
+      <div class="article-layout shell">
+        <div class="prose glass-card"><Content /></div>
+        <aside class="article-aside glass-card">
+          <p>文章目录</p>
+          <nav aria-label="文章目录">{headings.filter((heading) => heading.depth === 2).map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}</nav>
+          <button class="copy-link" type="button" data-copy-link><LinkIcon size={16} /> <span>复制链接</span></button>
+        </aside>
+      </div>
+    </div>
+  </article>
+
+  <script>
+    const progress = document.querySelector('[data-reading-progress]');
+    const copyButton = document.querySelector('[data-copy-link]');
+    const copyLabel = copyButton?.querySelector('span');
+
+    const updateProgress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const value = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+      if (progress instanceof HTMLElement) progress.style.transform = `scaleX(${value})`;
+    };
+    addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    copyButton?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(location.href);
+      if (copyLabel) copyLabel.textContent = '已复制';
+      setTimeout(() => { if (copyLabel) copyLabel.textContent = '复制链接'; }, 1600);
+    });
+  </script>
+</BaseLayout>

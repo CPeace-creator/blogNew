@@ -1,0 +1,47 @@
+---
+import { ArrowUpRight } from 'lucide-astro';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  post: {
+    id: string;
+    data: {
+      title: string;
+      description: string;
+      publishedAt: Date;
+      category: string;
+      tags: string[];
+      cover: string;
+      coverAlt: string;
+      readingTime: string;
+    };
+  };
+  layout?: 'grid' | 'row';
+}
+
+const { post, layout = 'grid' } = Astro.props;
+const date = new Intl.DateTimeFormat('zh-CN', { month: 'short', day: 'numeric', year: 'numeric' }).format(post.data.publishedAt);
+---
+
+<article class:list={['post-card', `post-card--${layout}`, 'glass-card']} data-post-card data-category={post.data.category}>
+  <a class="post-card-image" href={withBase(`/posts/${post.id}/`)} tabindex="-1" aria-hidden="true">
+    <img src={withBase(post.data.cover)} alt="" loading="lazy" width="720" height="480" />
+  </a>
+  <div class="post-card-body">
+    <div class="post-meta">
+      <span>{post.data.category}</span>
+      <time datetime={post.data.publishedAt.toISOString()}>{date}</time>
+      <span>{post.data.readingTime}</span>
+    </div>
+    <h3><a href={withBase(`/posts/${post.id}/`)}>{post.data.title}</a></h3>
+    <p>{post.data.description}</p>
+    <div class="post-card-foot">
+      <div class="tag-list" aria-label="文章标签">
+        {post.data.tags.slice(0, 2).map((tag) => <span>#{tag}</span>)}
+      </div>
+      <a class="round-link" href={withBase(`/posts/${post.id}/`)} aria-label={`阅读《${post.data.title}》`}>
+        <ArrowUpRight size={19} />
+      </a>
+    </div>
+  </div>
+</article>

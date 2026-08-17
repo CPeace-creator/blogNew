@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import { ArrowUpRight, Github, Mail } from 'lucide-astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProfileSidebar from '../components/ProfileSidebar.astro';
+import { SITE } from '../config';
+import { withBase } from '../lib/paths';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+---
+
+<BaseLayout title="关于" description="关于湘江中路，以及它的作者陈嘉鸿。" posts={posts}>
+  <section class="subpage-hero">
+    <img src={withBase('/images/about-sky.jpg')} alt="城市高架与暮色天空" width="1920" height="1080" />
+    <div class="hero-shade"></div>
+    <div class="subpage-title"><p>ABOUT ME</p><h1>关于我</h1><span>在设计与技术之间，保持好奇。</span></div>
+    <div class="hero-wave"></div>
+  </section>
+
+  <div class="page-surface">
+    <div class="dashboard shell">
+      <div class="about-main">
+        <section class="about-card glass-card">
+          <p class="section-kicker">HELLO, NICE TO MEET YOU</p>
+          <h1>你好，我是陈嘉鸿。</h1>
+          <div class="about-intro">
+            <p>来自福建厦门的 Web Developer &amp; Designer，主要使用 Java、Vue、Python、Go 与 Flutter 完成产品开发。</p>
+            <p>「湘江中路」用来沉淀真实的项目经验、技术实践和阶段性思考，保留从问题到结论的完整过程。</p>
+          </div>
+          <div class="about-image"><img src={withBase('/images/profile-avatar.jpg')} alt="陈嘉鸿的个人头像" width="1024" height="1024" /></div>
+        </section>
+        <section class="principles glass-card">
+          <p class="section-kicker">WRITING PRINCIPLES</p>
+          <h2>我希望这里保持</h2>
+          <div class="principles-grid">
+            <article><span>01</span><h3>具体</h3><p>从真实问题和完整过程出发，减少脱离语境的结论。</p></article>
+            <article><span>02</span><h3>诚实</h3><p>记录有效的方法，也保留失败、限制与仍未解决的部分。</p></article>
+            <article><span>03</span><h3>长久</h3><p>优先写几年后仍值得返回的内容，而不是追逐短暂热点。</p></article>
+          </div>
+        </section>
+        <section class="contact-card glass-card">
+          <h2>从一次具体的交流开始。</h2>
+          <div><a href={`mailto:${SITE.email}`}><Mail size={18} /> {SITE.email} <ArrowUpRight size={15} /></a><a href={SITE.github} target="_blank" rel="noreferrer"><Github size={18} /> GitHub <ArrowUpRight size={15} /></a></div>
+        </section>
+      </div>
+      <ProfileSidebar posts={posts} />
+    </div>
+  </div>
+</BaseLayout>

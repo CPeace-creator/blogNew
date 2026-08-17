@@ -16,8 +16,8 @@ const scheduleScene = () => {
   window.setTimeout(start, useIdle ? 1250 : 350);
 };
 
-if (document.readyState === 'complete') {
-  scheduleScene();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', scheduleScene, { once: true });
 } else {
-  window.addEventListener('load', scheduleScene, { once: true });
+  scheduleScene();
 }

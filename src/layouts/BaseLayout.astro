@@ -65,6 +65,7 @@ const searchPosts = posts.map(({ id, data }) => ({ id, ...data }));
       const input = document.querySelector<HTMLInputElement>('[data-search-input]');
       const results = document.querySelector('[data-search-results]');
       const indexElement = document.querySelector('#search-index');
+      const motionToggle = document.querySelector<HTMLElement>('[data-petals-toggle]');
       type SearchPost = {
         title: string;
         description: string;
@@ -73,6 +74,13 @@ const searchPosts = posts.map(({ id, data }) => ({ id, ...data }));
         url: string;
       };
       const searchIndex: SearchPost[] = indexElement ? JSON.parse(indexElement.textContent || '[]') : [];
+
+      if (motionToggle) {
+        const motionOff = root.dataset.petals === 'off';
+        motionToggle.setAttribute('aria-pressed', String(!motionOff));
+        const label = motionToggle.querySelector('span');
+        if (label) label.textContent = motionOff ? '开启动态' : '关闭动态';
+      }
 
       themeToggle?.addEventListener('click', () => {
         const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
@@ -101,12 +109,14 @@ const searchPosts = posts.map(({ id, data }) => ({ id, ...data }));
         });
       });
 
-      document.querySelector('[data-petals-toggle]')?.addEventListener('click', (event) => {
+      motionToggle?.addEventListener('click', (event) => {
         const off = root.dataset.petals === 'off';
         root.dataset.petals = off ? 'on' : 'off';
         localStorage.setItem('petals', off ? 'on' : 'off');
-        const label = (event.currentTarget as HTMLElement).querySelector('span');
-        if (label) label.textContent = off ? '关闭花瓣' : '开启花瓣';
+        const button = event.currentTarget as HTMLElement;
+        button.setAttribute('aria-pressed', String(off));
+        const label = button.querySelector('span');
+        if (label) label.textContent = off ? '关闭动态' : '开启动态';
       });
 
       const renderResults = (query: string) => {

@@ -4,6 +4,7 @@ import { ArrowDown, ArrowRight, CalendarDays, Sparkles } from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import ProfileSidebar from '../components/ProfileSidebar.astro';
+import HeroScene from '../components/HeroScene.astro';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 
@@ -17,6 +18,7 @@ const categories = ['全部', ...new Set(posts.map((post) => post.data.category)
   <section class="home-hero" aria-labelledby="hero-title">
     <img src={withBase('/images/hero-japan.webp')} alt="夜晚盛开的樱花与河岸灯光" width="2400" height="1500" fetchpriority="high" />
     <div class="hero-shade" aria-hidden="true"></div>
+    <HeroScene />
     <div class="petals" aria-hidden="true">
       {Array.from({ length: 12 }).map((_, index) => <i style={`--i:${index}`}></i>)}
     </div>
@@ -26,7 +28,7 @@ const categories = ['全部', ...new Set(posts.map((post) => post.data.category)
       <p class="hero-intro">记录技术实践、项目复盘，也记录每一个认真生活的日子。</p>
       <a class="hero-link" href="#latest">进入我的世界 <ArrowDown size={18} /></a>
     </div>
-    <button class="petals-toggle glass-panel" type="button" data-petals-toggle><Sparkles size={17} /><span>关闭花瓣</span></button>
+    <button class="petals-toggle glass-panel" type="button" data-petals-toggle aria-pressed="true"><Sparkles size={17} /><span>关闭动态</span></button>
     <div class="hero-wave" aria-hidden="true"></div>
   </section>
 
@@ -77,5 +79,25 @@ const categories = ['全部', ...new Set(posts.map((post) => post.data.category)
         if (empty instanceof HTMLElement) empty.hidden = visible > 0;
       });
     });
+
+    const canTilt = matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (canTilt) {
+      cards.forEach((card) => {
+        if (!(card instanceof HTMLElement)) return;
+        card.addEventListener('pointermove', (event) => {
+          const rect = card.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width;
+          const y = (event.clientY - rect.top) / rect.height;
+          card.style.setProperty('--tilt-x', `${(0.5 - y) * 5}deg`);
+          card.style.setProperty('--tilt-y', `${(x - 0.5) * 6}deg`);
+          card.style.setProperty('--shine-x', `${x * 100}%`);
+          card.style.setProperty('--shine-y', `${y * 100}%`);
+        });
+        card.addEventListener('pointerleave', () => {
+          card.style.setProperty('--tilt-x', '0deg');
+          card.style.setProperty('--tilt-y', '0deg');
+        });
+      });
+    }
   </script>
 </BaseLayout>

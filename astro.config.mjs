@@ -12,6 +12,8 @@ export default defineConfig({
   vite: {
     build: {
       assetsInlineLimit: 0,
+      // The lazily loaded Three.js runtime is about 130 KB after gzip.
+      chunkSizeWarningLimit: 550,
     },
   },
 });

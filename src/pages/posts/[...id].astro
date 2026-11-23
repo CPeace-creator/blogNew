@@ -1,5 +1,6 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
 import { ArrowLeft, Link as LinkIcon } from 'lucide-astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { withBase } from '../../lib/paths';
@@ -16,14 +17,18 @@ interface Props {
 
 const { post, posts } = Astro.props;
 const { Content, headings } = await render(post);
+const coverWidth = Math.min(1920, post.data.cover.width);
+const socialImage = await getImage({ src: post.data.cover, width: Math.min(1200, coverWidth), format: 'webp', quality: 78 });
 const date = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(post.data.publishedAt);
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} image={withBase(post.data.cover)} posts={posts}>
+<BaseLayout title={post.data.title} description={post.data.description} image={socialImage.src} posts={posts}>
   <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
   <article class="article-page">
     <header class="article-hero">
-      <img src={withBase(post.data.cover)} alt={post.data.coverAlt} width="1500" height="900" />
+      <Image src={post.data.cover} alt={post.data.coverAlt} layout="none"
+        width={coverWidth} widths={[...new Set([320, 640, 960, 1280, coverWidth])].filter((width) => width <= coverWidth)} sizes="100vw"
+        format="webp" quality={78} loading="eager" decoding="async" fetchpriority="high" />
       <div class="hero-shade"></div>
       <div class="article-hero-content shell">
         <a class="back-link" href={withBase('/archive/')}><ArrowLeft size={17} /> 返回文章</a>

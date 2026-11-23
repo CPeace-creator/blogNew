@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { migrateContentImages } from './lib/content-images.mjs';
 
 const sourceRoot = 'F:/blog/restored-blog/source/_posts';
 const targetRoot = path.resolve('src/content/blog');
@@ -133,7 +134,7 @@ await mkdir(targetRoot, { recursive: true });
 for (const post of posts) {
   const source = await readFile(path.join(sourceRoot, post.source), 'utf8');
   const body = rewriteImages(stripFrontmatter(source), post.target);
-  await writeFile(path.join(targetRoot, post.target), `${frontmatter(post, estimateReadingTime(body))}${body}\n`, 'utf8');
+  await writeFile(path.join(targetRoot, post.target), migrateContentImages(`${frontmatter(post, estimateReadingTime(body))}${body}\n`), 'utf8');
 }
 
 console.log(`Migrated ${posts.length} posts to ${targetRoot}`);

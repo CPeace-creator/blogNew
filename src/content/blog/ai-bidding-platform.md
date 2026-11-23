@@ -6,7 +6,7 @@ category: "项目"
 tags: ["AI 审查","标书解析","Vue 3","Spring Boot"]
 featured: true
 draft: false
-cover: "/images/posts/ai-bidding-platform/login.png"
+cover: "../../assets/images/posts/ai-bidding-platform/login.png"
 coverAlt: "AI 投标平台登录界面"
 readingTime: "7 分钟"
 ---
@@ -14,7 +14,11 @@ readingTime: "7 分钟"
 
 这是一个围绕招投标业务搭建的 AI 辅助平台，核心目标不是做一个普通的管理后台，而是把 **标书上传、读标解析、纪律性审查、响应性检查、模板沉淀、方案生成和在线编辑** 串成一条完整链路，帮助业务人员减少重复性整理和人工比对工作。
 
-<img src="../../images/posts/ai-bidding-platform/doc-review.png" width="75%" alt="AI标书审查模块配图">
+<figure style="width:75%">
+
+![AI标书审查模块配图](../../assets/images/posts/ai-bidding-platform/doc-review.png)
+
+</figure>
 
 整套系统主要服务于以下几个真实业务场景：
 
@@ -32,9 +36,21 @@ readingTime: "7 分钟"
 
 对应 `AI助手标书` 页面,文件解析项目概要和分析解读、会话管理、聊天能力。
 
-<img src="../../images/posts/ai-bidding-platform/read1.png" width="72%" alt="AI读标分析配图">
-<img src="../../images/posts/ai-bidding-platform/read2.png" width="72%" alt="AI读标分析配图">
-<img src="../../images/posts/ai-bidding-platform/read3.png" width="72%" alt="AI读标分析配图">
+<figure style="width:72%">
+
+![AI读标分析配图](../../assets/images/posts/ai-bidding-platform/read1.png)
+
+</figure>
+<figure style="width:72%">
+
+![AI读标分析配图](../../assets/images/posts/ai-bidding-platform/read2.png)
+
+</figure>
+<figure style="width:72%">
+
+![AI读标分析配图](../../assets/images/posts/ai-bidding-platform/read3.png)
+
+</figure>
 
 - 支持上传 Word、PDF 等文件进行解析。
 - 将 OSS 中的文件下载到本地后做文本提取，并入库保存解析结果。
@@ -60,8 +76,16 @@ readingTime: "7 分钟"
 
 这一块由资源模板库、方案类型、目录模板、文档模板共同组成，是整个系统后续复用能力的基础。
 
-<img src="../../images/posts/ai-bidding-platform/template1.png" width="68%" alt="模板资源库配图">
-<img src="../../images/posts/ai-bidding-platform/template2.png" width="68%" alt="模板资源库配图">
+<figure style="width:68%">
+
+![模板资源库配图](../../assets/images/posts/ai-bidding-platform/template1.png)
+
+</figure>
+<figure style="width:68%">
+
+![模板资源库配图](../../assets/images/posts/ai-bidding-platform/template2.png)
+
+</figure>
 
 - 可维护方案类型。
 - 可维护模板分类。
@@ -75,7 +99,11 @@ readingTime: "7 分钟"
 
 这是我认为最有价值的一块，也是整个项目把业务价值真正闭环的地方。
 
-<img src="../../images/posts/ai-bidding-platform/preparation.png" width="76%" alt="智能方案编制配图">
+<figure style="width:76%">
+
+![智能方案编制配图](../../assets/images/posts/ai-bidding-platform/preparation.png)
+
+</figure>
 
 - 支持创建技术标方案，并绑定项目名称、方案名称、专业类型、原始招标文件等信息。
 - 支持选择目录模板，并在前端对目录树做编辑、增删和保存。

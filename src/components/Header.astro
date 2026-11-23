@@ -1,5 +1,7 @@
 ---
 import { Archive, BookOpen, Home, Menu, Moon, Palette, Search, Sun, UserRound, X } from 'lucide-astro';
+import { Image } from 'astro:assets';
+import avatar from '../assets/images/profile-avatar.jpg';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 
@@ -14,7 +16,8 @@ const nav = [
 
 <header class="site-header glass-panel" data-header>
   <a class="brand" href={withBase('/')} aria-label={`${SITE.title}首页`}>
-    <img src={withBase('/images/profile-avatar.jpg')} alt="" width="38" height="38" />
+    <Image src={avatar} alt="" layout="none" width={38} height={38}
+      widths={[38, 76]} sizes="38px" format="webp" quality={80} loading="eager" decoding="async" />
     <span>{SITE.shortTitle}</span>
   </a>
 

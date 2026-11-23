@@ -1,5 +1,7 @@
 ---
 import { ArrowUpRight } from 'lucide-astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import { withBase } from '../lib/paths';
 
 interface Props {
@@ -11,7 +13,7 @@ interface Props {
       publishedAt: Date;
       category: string;
       tags: string[];
-      cover: string;
+      cover: ImageMetadata;
       coverAlt: string;
       readingTime: string;
     };
@@ -25,7 +27,10 @@ const date = new Intl.DateTimeFormat('zh-CN', { month: 'short', day: 'numeric', 
 
 <article class:list={['post-card', `post-card--${layout}`, 'glass-card']} data-post-card data-category={post.data.category}>
   <a class="post-card-image" href={withBase(`/posts/${post.id}/`)} tabindex="-1" aria-hidden="true">
-    <img src={withBase(post.data.cover)} alt="" loading="lazy" width="720" height="480" />
+    <Image src={post.data.cover} alt="" layout="none" format="webp" quality={78}
+      width={640} height={480} fit="cover" widths={[320, 480, 640, 960]}
+      sizes="(max-width: 640px) calc(100vw - 36px), (max-width: 980px) 289px, 326px"
+      loading="lazy" decoding="async" />
   </a>
   <div class="post-card-body">
     <div class="post-meta">

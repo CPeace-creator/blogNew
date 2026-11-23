@@ -6,7 +6,7 @@ category: "自我介绍"
 tags: ["个人介绍","Web 开发","独立开发"]
 featured: true
 draft: false
-cover: "/images/profile-avatar.jpg"
+cover: "../../assets/images/profile-avatar.jpg"
 coverAlt: "陈嘉鸿的个人头像"
 readingTime: "2 分钟"
 ---

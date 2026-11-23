@@ -1,17 +1,21 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import sky from '../assets/images/about-sky.jpg';
+import avatar from '../assets/images/profile-avatar.jpg';
 import { ArrowUpRight, Github, Mail } from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProfileSidebar from '../components/ProfileSidebar.astro';
 import { SITE } from '../config';
-import { withBase } from '../lib/paths';
 
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 ---
 
 <BaseLayout title="关于" description="关于湘江中路，以及它的作者陈嘉鸿。" posts={posts}>
   <section class="subpage-hero">
-    <img src={withBase('/images/about-sky.jpg')} alt="城市高架与暮色天空" width="1920" height="1080" />
+    <Image src={sky} alt="城市高架与暮色天空" layout="none"
+      width={1920} widths={[640, 960, 1280, 1920]} sizes="100vw"
+      format="webp" quality={78} loading="eager" decoding="async" fetchpriority="high" />
     <div class="hero-shade"></div>
     <div class="subpage-title"><p>ABOUT ME</p><h1>关于我</h1><span>在设计与技术之间，保持好奇。</span></div>
     <div class="hero-wave"></div>
@@ -27,7 +31,9 @@ const posts = await getCollection('blog', ({ data }) => !data.draft);
             <p>来自福建厦门的 Web Developer &amp; Designer，主要使用 Java、Vue、Python、Go 与 Flutter 完成产品开发。</p>
             <p>「湘江中路」用来沉淀真实的项目经验、技术实践和阶段性思考，保留从问题到结论的完整过程。</p>
           </div>
-          <div class="about-image"><img src={withBase('/images/profile-avatar.jpg')} alt="陈嘉鸿的个人头像" width="1024" height="1024" /></div>
+          <div class="about-image"><Image src={avatar} alt="陈嘉鸿的个人头像" layout="none"
+            width={640} widths={[320, 640, 960]} sizes="(max-width: 640px) calc(100vw - 76px), 640px"
+            format="webp" quality={80} loading="lazy" decoding="async" /></div>
         </section>
         <section class="principles glass-card">
           <p class="section-kicker">WRITING PRINCIPLES</p>

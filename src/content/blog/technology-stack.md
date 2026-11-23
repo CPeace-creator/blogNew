@@ -6,7 +6,7 @@ category: "技术成长"
 tags: ["技术栈","开发技能","编程语言"]
 featured: true
 draft: false
-cover: "/images/github-pages.webp"
+cover: "../../assets/images/github-pages.webp"
 coverAlt: "代码开发工作台"
 readingTime: "2 分钟"
 ---

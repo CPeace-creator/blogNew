@@ -1,5 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import heroImage from '../assets/images/hero-japan.webp';
 import { ArrowUpRight } from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProfileSidebar from '../components/ProfileSidebar.astro';
@@ -13,7 +15,9 @@ const grouped = Map.groupBy(posts, (post) => post.data.publishedAt.getFullYear()
 
 <BaseLayout title="文章" description="湘江中路的全部文章归档。" posts={posts}>
   <section class="subpage-hero">
-    <img src={withBase('/images/hero-japan.webp')} alt="夜晚的樱花河岸" width="2400" height="1500" />
+    <Image src={heroImage} alt="夜晚的樱花河岸" layout="none"
+      width={1920} widths={[640, 960, 1280, 1920]} sizes="100vw"
+      format="webp" quality={76} loading="eager" decoding="async" fetchpriority="high" />
     <div class="hero-shade"></div>
     <div class="subpage-title"><p>ARCHIVE / {posts.length.toString().padStart(2, '0')}</p><h1>文章归档</h1><span>把一路上的想法，整理成可以再次抵达的坐标。</span></div>
     <div class="hero-wave"></div>

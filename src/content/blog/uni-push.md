@@ -6,7 +6,7 @@ category: "项目"
 tags: ["uni-app","uniCloud","实时推送","微信小程序"]
 featured: false
 draft: false
-cover: "/images/posts/uni-push/raffle-pic.jpg"
+cover: "../../assets/images/posts/uni-push/raffle-pic.jpg"
 coverAlt: "UniPush 抽奖项目界面"
 readingTime: "3 分钟"
 ---
@@ -38,42 +38,66 @@ readingTime: "3 分钟"
 
 ### 抽奖活动页
 
-<img src="../../images/posts/uni-push/20250308180107.png" width="60%">
+<figure style="width:60%">
+
+![项目界面截图](../../assets/images/posts/uni-push/20250308180107.png)
+
+</figure>
 
 - 采用 **大转盘动画**，增强交互体验。
 - 抽奖结果由 **云函数** 计算，确保数据安全。
 
 ### 创建抽奖
 
-<img src="../../images/posts/uni-push/20250308180505.png" width="60%">
+<figure style="width:60%">
+
+![项目界面截图](../../assets/images/posts/uni-push/20250308180505.png)
+
+</figure>
 
 - 管理员可自定义 **抽奖规则**、**奖品信息**，并设置开奖时间。
 - **存储至 uniCloud 数据库**，支持实时更新。
 
 ### 记录获取
 
-<img src="../../images/posts/uni-push/20250308180555.png" width="60%">
+<figure style="width:60%">
+
+![项目界面截图](../../assets/images/posts/uni-push/20250308180555.png)
+
+</figure>
 
 - **分页加载优化**，确保流畅浏览历史记录。
 - 结合 **uniCloud** 实现 **数据筛选和排序**。
 
 ### 开启抽奖
 
-<img src="../../images/posts/uni-push/20250308180620.png" width="60%">
+<figure style="width:60%">
+
+![项目界面截图](../../assets/images/posts/uni-push/20250308180620.png)
+
+</figure>
 
 - 倒计时结束后，自动触发 **uniCloud 云函数** 进行开奖。
 - 中奖信息会 **实时推送至用户端**。
 
 ### 中奖核销
 
-<img src="../../images/posts/uni-push/20250308180646.png" width="60%">
+<figure style="width:60%">
+
+![项目界面截图](../../assets/images/posts/uni-push/20250308180646.png)
+
+</figure>
 
 - 采用 **小程序码扫码核销**，保证领取的唯一性。
 - 订单状态会 **实时更新至数据库**。
 
 ### 正在抽奖
 
-<img src="../../images/posts/uni-push/20250308180709.png" width="60%">
+<figure style="width:60%">
+
+![项目界面截图](../../assets/images/posts/uni-push/20250308180709.png)
+
+</figure>
 
 - **动态 UI 展示**，提升抽奖仪式感。
 - 结合 **CSS 动画**，让转盘更生动。
@@ -82,13 +106,21 @@ readingTime: "3 分钟"
 
 #### 未中奖
 
-<img src="../../images/posts/uni-push/20250308180739.png" width="50%">
+<figure style="width:50%">
+
+![项目界面截图](../../assets/images/posts/uni-push/20250308180739.png)
+
+</figure>
 
 - 提示 **未中奖**，并提供 **参与更多抽奖活动** 的入口。
 
 #### 已中奖
 
-<img src="../../images/posts/uni-push/20250308180739.png" width="50%">
+<figure style="width:50%">
+
+![项目界面截图](../../assets/images/posts/uni-push/20250308180739.png)
+
+</figure>
 
 - 中奖用户可直接进入 **兑奖流程**，扫码核销后完成订单。
 
@@ -113,7 +145,7 @@ readingTime: "3 分钟"
 
 ## 项目部分展示图
 
-<img src="../../images/posts/uni-push/raffle-pic.jpg">
+![项目界面截图](../../assets/images/posts/uni-push/raffle-pic.jpg)
 
 ## 总结
 

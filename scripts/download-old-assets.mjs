@@ -31,7 +31,7 @@ const assets = {
 };
 
 async function download(folder, name) {
-  const targetDirectory = path.resolve('public/images/posts', folder);
+  const targetDirectory = path.resolve('src/assets/images/posts', folder);
   const target = path.join(targetDirectory, name);
   const temporary = `${target}.download`;
   await mkdir(targetDirectory, { recursive: true });

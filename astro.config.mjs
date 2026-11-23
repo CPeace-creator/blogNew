@@ -9,6 +9,10 @@ export default defineConfig({
   base,
   output: 'static',
   integrations: [sitemap()],
+  image: {
+    layout: 'constrained',
+    breakpoints: [320, 480, 640, 960, 1280, 1920],
+  },
   vite: {
     build: {
       assetsInlineLimit: 0,

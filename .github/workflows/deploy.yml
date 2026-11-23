@@ -54,6 +54,9 @@ jobs:
           ASTRO_TELEMETRY_DISABLED: 1
         run: npm run build
 
+      - name: Verify optimized images and deployment paths
+        run: npm run test:images
+
       - name: Configure Pages
         uses: actions/configure-pages@v6
 

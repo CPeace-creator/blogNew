@@ -1,5 +1,7 @@
 ---
 import { Bell, Github, Mail, Sparkles } from 'lucide-astro';
+import { Image } from 'astro:assets';
+import avatar from '../assets/images/profile-avatar.jpg';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 
@@ -15,7 +17,9 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].slice(0, 8);
 <aside class="profile-sidebar" aria-label="站点信息">
   <section class="profile-card glass-card">
     <div class="profile-cover"></div>
-    <img class="profile-avatar" src={withBase('/images/profile-avatar.jpg')} alt="陈嘉鸿的头像" width="112" height="112" />
+    <Image class="profile-avatar" src={avatar} alt="陈嘉鸿的头像" layout="none"
+      width={112} height={112} widths={[112, 224]} sizes="96px" format="webp" quality={80}
+      loading="lazy" decoding="async" />
     <h2>{SITE.author}</h2>
     <p>你好，我是陈嘉鸿。<br />关注 Web、AI 与工程实践。</p>
     <div class="profile-socials">

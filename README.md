@@ -29,6 +29,7 @@ npm run dev
 
 ```bash
 npm run build
+npm run test:images
 npm run preview
 ```
 
@@ -39,7 +40,9 @@ npm run preview
 旧 Hexo 博客内容可通过 `node scripts/migrate-old-blog.mjs` 重新转换。脚本只读取 `F:/blog/restored-blog/source/_posts`，输出到当前项目的 `src/content/blog/`。
 旧图床资产可通过 `node scripts/download-old-assets.mjs` 重新下载；需要本地代理时，先设置 `OLD_BLOG_PROXY`，例如 `http://127.0.0.1:7890`。
 
-站点名称、作者、邮箱和 GitHub 地址集中在 `src/config.ts`。图片放在 `public/images/`，文章里的 `cover` 使用 `/images/文件名.webp`。
+站点名称、作者、邮箱和 GitHub 地址集中在 `src/config.ts`。图片放在 `src/assets/images/`，文章里的 `cover` 使用相对于 Markdown 文件的路径，例如 `../../assets/images/about-sky.jpg`。正文也使用 Markdown 图片语法：`![图片说明](../../assets/images/posts/项目名/图片.png)`。
+
+图片由 Astro 在构建时自动生成 WebP 和多尺寸版本，浏览器通过 `srcset` / `sizes` 选择合适的文件。首页背景优先加载，列表封面、头像和正文图片按需加载；无需额外图片服务器，GitHub Pages 和 EdgeOne 都可直接发布构建结果。不要把需要优化的图片放回 `public/` 或使用原始 `<img>` 标签，否则会绕过这条处理流程。
 
 ## GitHub Pages 发布
 

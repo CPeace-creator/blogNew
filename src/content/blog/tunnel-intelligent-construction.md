@@ -6,7 +6,7 @@ category: "项目"
 tags: ["隧道工程","Vue 3","Spring Boot","Three.js"]
 featured: true
 draft: false
-cover: "/images/about-sky.jpg"
+cover: "../../assets/images/about-sky.jpg"
 coverAlt: "城市高架与暮色天空"
 readingTime: "8 分钟"
 ---

@@ -287,6 +287,9 @@
   .prose h2 { margin-top: 2.3em; scroll-margin-top: 100px; font-size: 27px; }
   .prose h3 { margin-top: 2em; font-size: 21px; }
   .prose p { color: var(--ink); }
+  .prose img { height: auto; }
+  .prose figure { max-width: 100%; }
+  .prose figure img { width: 100%; }
   .prose a { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 3px; }
   .prose blockquote { padding: 14px 18px; border-left: 4px solid var(--accent); border-radius: 0 7px 7px 0; background: var(--accent-soft); color: var(--ink); }
   .prose ul, .prose ol { padding-left: 1.3em; }

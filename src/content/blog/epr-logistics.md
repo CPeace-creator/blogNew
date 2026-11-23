@@ -6,7 +6,7 @@ category: "项目"
 tags: ["Spring Boot","Vue","物流系统","性能优化"]
 featured: false
 draft: false
-cover: "/images/posts/epr-logistics/cover.png"
+cover: "../../assets/images/posts/epr-logistics/cover.png"
 coverAlt: "卡车物流管理系统界面"
 readingTime: "2 分钟"
 ---
@@ -14,7 +14,7 @@ readingTime: "2 分钟"
 面向全球木材运输的智能物流平台，整合运输合同管理、司机调度、实时追踪、财务结算等核心模块，支撑日均数万级订单的跨国物流业务。
 
 ## 项目图片
-<img src="../../images/posts/epr-logistics/20250316153125.png">
+![项目界面截图](../../assets/images/posts/epr-logistics/20250316153125.png)
 
 ## 核心工作内容
 ### 技术架构优化

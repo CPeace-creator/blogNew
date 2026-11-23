@@ -3,6 +3,7 @@ title: "卡车物流项目"
 description: "面向全球木材运输的智能物流平台，覆盖合同、调度、追踪与财务结算。"
 publishedAt: 2025-03-23
 category: "项目"
+projectTopic: "web"
 tags: ["Spring Boot","Vue","物流系统","性能优化"]
 featured: false
 draft: false

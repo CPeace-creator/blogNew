@@ -1,8 +1,10 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Image, getImage } from 'astro:assets';
-import { ArrowLeft, Link as LinkIcon } from 'lucide-astro';
+import { ArrowLeft, ArrowUpRight, Link as LinkIcon } from 'lucide-astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleGallery from '../../components/ArticleGallery.astro';
+import BridgeComparison from '../../components/BridgeComparison.astro';
 import { withBase } from '../../lib/paths';
 
 export async function getStaticPaths() {
@@ -17,6 +19,12 @@ interface Props {
 
 const { post, posts } = Astro.props;
 const { Content, headings } = await render(post);
+const showBridgeDemo = post.id === 'bim-project-management';
+const tocHeadings = headings.filter((heading) => heading.depth === 2);
+if (showBridgeDemo) tocHeadings.push({ depth: 2, slug: 'article-demo-title', text: '动手看看进度视图' });
+const related = post.data.relatedPosts
+  .map((id) => posts.find((entry) => entry.id === id))
+  .filter((entry) => entry !== undefined);
 const coverWidth = Math.min(1920, post.data.cover.width);
 const socialImage = await getImage({ src: post.data.cover, width: Math.min(1200, coverWidth), format: 'webp', quality: 78 });
 const date = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(post.data.publishedAt);
@@ -31,7 +39,9 @@ const date = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', 
         format="webp" quality={78} loading="eager" decoding="async" fetchpriority="high" />
       <div class="hero-shade"></div>
       <div class="article-hero-content shell">
-        <a class="back-link" href={withBase('/archive/')}><ArrowLeft size={17} /> 返回文章</a>
+        <a class="back-link" href={withBase(post.data.category === '项目' ? '/projects/' : post.data.category === '技术笔记' ? '/notes/' : '/archive/')}>
+          <ArrowLeft size={17} aria-hidden="true" /> {post.data.category === '项目' ? '返回项目' : post.data.category === '技术笔记' ? '返回技术笔记' : '返回文章'}
+        </a>
         <div class="article-kicker"><span>{post.data.category}</span><time datetime={post.data.publishedAt.toISOString()}>{date}</time><span>{post.data.readingTime}</span></div>
         <h1>{post.data.title}</h1>
         <p>{post.data.description}</p>
@@ -42,28 +52,98 @@ const date = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', 
 
     <div class="page-surface">
       <div class="article-layout shell">
-        <div class="prose glass-card"><Content /></div>
+        <div class="prose glass-card">
+          {post.data.projectSummary && (
+            <div class="case-summary" aria-label="项目速览">
+              <dl>
+                <dt>我负责</dt>
+                <dd>{post.data.projectSummary.role}</dd>
+                <dt>目前能做什么</dt>
+                <dd>{post.data.projectSummary.status}</dd>
+              </dl>
+              {showBridgeDemo && <a class="text-link" href={withBase('/lab/#standard-floor-task')}>试用 BIM 演示 <ArrowUpRight size={16} aria-hidden="true" /></a>}
+            </div>
+          )}
+          {tocHeadings.length > 0 && (
+            <details class="article-mobile-toc">
+              <summary>文章目录</summary>
+              <nav aria-label="文章目录">
+                {tocHeadings.map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}
+              </nav>
+            </details>
+          )}
+          <Content />
+          {showBridgeDemo && <section class="article-demo" aria-labelledby="article-demo-title">
+            <h2 id="article-demo-title">动手看看进度视图</h2>
+            <BridgeComparison />
+            <p><a href={withBase('/lab/#standard-floor-task')}>去实验室查一条落后部位的进度记录 →</a></p>
+          </section>}
+          {related.length > 0 && (
+            <section class="article-related" aria-labelledby="related-heading">
+              <h2 id="related-heading">接着读</h2>
+              <ul>
+                {related.map((entry) => (
+                  <li>
+                    <a href={withBase(`/posts/${entry.id}/`)}>{entry.data.title} <ArrowUpRight size={15} aria-hidden="true" /></a>
+                    <p>{entry.data.description}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
         <aside class="article-aside glass-card">
-          <p>文章目录</p>
-          <nav aria-label="文章目录">{headings.filter((heading) => heading.depth === 2).map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}</nav>
+          {tocHeadings.length > 0 && (
+            <>
+              <p>文章目录</p>
+              <nav aria-label="文章目录" data-article-toc>
+                {tocHeadings.map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}
+              </nav>
+            </>
+          )}
           <button class="copy-link" type="button" data-copy-link><LinkIcon size={16} /> <span>复制链接</span></button>
         </aside>
       </div>
     </div>
   </article>
+  <ArticleGallery />
 
   <script>
     const progress = document.querySelector('[data-reading-progress]');
     const copyButton = document.querySelector('[data-copy-link]');
     const copyLabel = copyButton?.querySelector('span');
 
-    const updateProgress = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const value = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
-      if (progress instanceof HTMLElement) progress.style.transform = `scaleX(${value})`;
+    const root = document.documentElement;
+    const toc = [...document.querySelectorAll<HTMLAnchorElement>('[data-article-toc] a')].reverse()
+      .map((link) => ({ link, heading: document.getElementById(decodeURIComponent(link.hash.slice(1))) }))
+      .filter(({ heading }) => heading !== null);
+    const cssProgress = progress && getComputedStyle(progress).animationName.includes('article-progress');
+    let requestedFrame = 0;
+    let activeLink: HTMLAnchorElement | undefined;
+    const updateReading = () => {
+      requestedFrame = 0;
+      if (!cssProgress && progress instanceof HTMLElement) {
+        const max = root.scrollHeight - innerHeight;
+        progress.style.transform = `scaleX(${max > 0 ? Math.min(scrollY / max, 1) : 0})`;
+      }
+      const marker = Math.max(120, innerHeight * .23);
+      const current = toc.find(({ heading }) => heading!.getBoundingClientRect().top <= marker)?.link;
+      if (activeLink !== current) {
+        activeLink?.removeAttribute('aria-current');
+        current?.setAttribute('aria-current', 'location');
+        activeLink = current;
+      }
     };
-    addEventListener('scroll', updateProgress, { passive: true });
-    updateProgress();
+    const requestUpdate = () => {
+      if (!requestedFrame) requestedFrame = requestAnimationFrame(updateReading);
+    };
+    addEventListener('scroll', requestUpdate, { passive: true });
+    addEventListener('resize', requestUpdate, { passive: true });
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(requestUpdate);
+      toc.forEach(({ heading }) => { if (heading) observer.observe(heading); });
+    }
+    requestUpdate();
 
     copyButton?.addEventListener('click', async () => {
       await navigator.clipboard.writeText(location.href);
@@ -72,3 +152,27 @@ const date = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', 
     });
   </script>
 </BaseLayout>
+
+<style>
+  .case-summary { display: grid; gap: 12px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--page); font-size: 14px; }
+  .case-summary dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 5px 16px; margin: 0; }
+  .case-summary dt { font-weight: 700; color: var(--ink-strong); }
+  .case-summary dd { margin: 0; }
+  .case-summary a { justify-self: start; }
+  .article-mobile-toc { display: none; }
+  .article-related { margin-top: 2.4em; padding-top: 1.25em; border-top: 1px solid var(--line); }
+  .article-related h2 { margin-top: 0; }
+  .article-related ul { display: grid; gap: 10px; padding: 0; margin-top: 10px; list-style: none; }
+  .article-related li { padding: 12px 15px; border: 1px solid var(--line); border-radius: 8px; }
+  .article-related a { font-weight: 700; }
+  .article-related a svg { display: inline-block; vertical-align: -.12em; }
+  .article-related li p { margin-top: 3px; font-size: 14px; color: var(--muted); }
+  @media (max-width: 640px) {
+    .case-summary dl { grid-template-columns: 1fr; }
+    .case-summary dt:not(:first-child) { margin-top: 6px; }
+    .article-mobile-toc { display: block; padding: 8px 14px; border: 1px solid var(--line); border-radius: 8px; }
+    .article-mobile-toc summary { min-height: 30px; padding-block: 3px; cursor: pointer; font-weight: 700; }
+    .article-mobile-toc nav { display: grid; gap: 2px; margin-block: 6px; }
+    .article-mobile-toc nav a { display: flex; align-items: center; min-height: 36px; font-size: 14px; }
+  }
+</style>

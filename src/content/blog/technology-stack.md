@@ -2,7 +2,7 @@
 title: "我的技术栈"
 description: "后端、前端、数据库与中间件能力的阶段性知识库概览。"
 publishedAt: 2025-04-19
-category: "技术成长"
+category: "技术笔记"
 tags: ["技术栈","开发技能","编程语言"]
 featured: true
 draft: false

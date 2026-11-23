@@ -1,5 +1,5 @@
 ---
-import { Bell, Github, Mail, Sparkles } from 'lucide-astro';
+import { BookOpen, Github, Mail, Sparkles } from 'lucide-astro';
 import { Image } from 'astro:assets';
 import avatar from '../assets/images/profile-avatar.jpg';
 import { SITE } from '../config';
@@ -11,6 +11,12 @@ interface Props {
 
 const { posts } = Astro.props;
 const categories = [...new Set(posts.map((post) => post.data.category))];
+const categoryRoutes = new Map([
+  ['项目', '/projects/'],
+  ['技术笔记', '/notes/'],
+  ['技术成长', '/notes/'],
+  ['自我介绍', '/about/'],
+]);
 const tags = [...new Set(posts.flatMap((post) => post.data.tags))].slice(0, 8);
 ---
 
@@ -21,7 +27,7 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].slice(0, 8);
       width={112} height={112} widths={[112, 224]} sizes="96px" format="webp" quality={80}
       loading="lazy" decoding="async" />
     <h2>{SITE.author}</h2>
-    <p>你好，我是陈嘉鸿。<br />关注 Web、AI 与工程实践。</p>
+    <p>我写自己做过的项目，以及那些做完还想再核对一遍的细节。</p>
     <div class="profile-socials">
       <a href={SITE.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={18} /></a>
       <a href={`mailto:${SITE.email}`} aria-label="邮件"><Mail size={18} /></a>
@@ -35,16 +41,16 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].slice(0, 8);
   </section>
 
   <section class="notice-card glass-card">
-    <h2><Bell size={17} /> 公告</h2>
-    <p>欢迎来到我的个人空间。这里正在持续更新文章、项目与生活记录。</p>
-    <a href={withBase('/about/')}>了解更多</a>
+    <h2><BookOpen size={17} aria-hidden="true" /> 一篇项目复盘</h2>
+    <p>从一次模型更新和一份标书导出，看看我会怎样检查功能。</p>
+    <a href={withBase('/posts/project-workflow-checks/')}>我怎么检查一个功能能不能接着用</a>
   </section>
 
   <section class="taxonomy-card glass-card">
     <h2>分类</h2>
     <div class="category-links">
       {categories.map((category) => (
-        <a href={withBase('/archive/')}><span>{category}</span><strong>{posts.filter((post) => post.data.category === category).length}</strong></a>
+        <a href={withBase(categoryRoutes.get(category) ?? '/archive/')}><span>{category}</span><strong>{posts.filter((post) => post.data.category === category).length}</strong></a>
       ))}
     </div>
   </section>

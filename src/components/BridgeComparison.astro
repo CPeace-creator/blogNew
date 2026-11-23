@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+import baseline from '../assets/images/posts/bim-project-management/bridge-cover.jpg';
+import progress from '../assets/images/posts/bim-project-management/bridge-status.jpg';
+---
+
+<details class="bridge-comparison" data-comparison>
+  <summary>拖动对比构件选中和进度着色</summary>
+  <div class="compare-controls">
+    <label for="bridge-compare">进度着色覆盖比例</label>
+    <input id="bridge-compare" type="range" min="0" max="100" value="50" data-compare-slider />
+  </div>
+  <div class="compare-viewport" data-compare-viewport>
+    <Image src={baseline} alt="同一座示例桥梁，第二座桥墩被选中" width={960} widths={[480, 720, 960, 1440]} sizes="(max-width: 760px) 90vw, 680px" />
+    <Image src={progress} alt="桥梁按计划完成、计划未完成和计划外完成三种状态着色" class="compare-overlay" width={960} widths={[480, 720, 960, 1440]} sizes="(max-width: 760px) 90vw, 680px" />
+    <span class="compare-divider" aria-hidden="true"></span>
+  </div>
+  <p class="compare-legend">左侧为进度着色，右侧为构件选中。两图使用同一视角和演示数据。</p>
+</details>
+
+<script>
+  const comparison = document.querySelector('[data-comparison]');
+  const slider = comparison?.querySelector<HTMLInputElement>('[data-compare-slider]');
+  const viewport = comparison?.querySelector<HTMLElement>('[data-compare-viewport]');
+  slider?.addEventListener('input', () => viewport?.style.setProperty('--reveal', `${slider.value}%`));
+</script>
+
+<style>
+  .bridge-comparison { padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-solid); }
+  summary { color: var(--accent-strong); font-weight: 700; cursor: pointer; }
+  .compare-controls { margin-block: 12px; display: grid; gap: 4px; font-size: .85rem; }
+  .compare-controls input { width: 100%; min-height: 30px; accent-color: var(--accent-strong); }
+  .compare-viewport { --reveal: 50%; position: relative; overflow: hidden; border-radius: 8px; }
+  .compare-viewport img { display: block; width: 100%; }
+  .compare-overlay { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--reveal)) 0 0); }
+  .compare-divider { position: absolute; inset: 0 auto 0 var(--reveal); width: 2px; background: white; box-shadow: 0 0 6px #0008; pointer-events: none; }
+  .compare-legend { margin-top: 8px; font-size: .82rem; }
+</style>

@@ -13,7 +13,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 const grouped = Map.groupBy(posts, (post) => post.data.publishedAt.getFullYear());
 ---
 
-<BaseLayout title="文章" description="湘江中路的全部文章归档。" posts={posts}>
+<BaseLayout title="文章归档" description="湘江中路的全部文章归档。" posts={posts}>
   <section class="subpage-hero">
     <Image src={heroImage} alt="夜晚的樱花河岸" layout="none"
       width={1920} widths={[640, 960, 1280, 1920]} sizes="100vw"

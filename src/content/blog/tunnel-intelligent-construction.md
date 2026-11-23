@@ -3,6 +3,8 @@ title: "隧道智能建造平台"
 description: "把工程对象、智能爆破、围岩识别、超欠挖分析和施工看板串成完整业务链路。"
 publishedAt: 2026-07-16
 category: "项目"
+projectTopic: "bim"
+relatedPosts: ["bim-project-management", "bim-progress-color-modes"]
 tags: ["隧道工程","Vue 3","Spring Boot","Three.js"]
 featured: true
 draft: false

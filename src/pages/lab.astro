@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import { ArrowDown, ArrowUpRight } from 'lucide-astro';
+import StandardFloor from '../components/StandardFloor.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/paths';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+---
+
+<BaseLayout title="实验室" description="回放标准层的施工进度，在 BIM 模型上查找落后部位和业务记录。" posts={posts}>
+  <section class="shell collection-page">
+    <header class="collection-heading"><h1>实验室</h1><p>回放标准层的施工进度，查找落后部位和对应记录。</p></header>
+    <section class="floor-task glass-card" id="standard-floor-task" aria-labelledby="floor-task-heading">
+      <h2 id="floor-task-heading">施工进度落后后，怎么跟进？</h2>
+      <p>5 月 20 日，B01 作业面实际完成 65%，计划是 85%。我把进度、核对资料和待办关联到同一个部位，方便开完进度会的人接着查发生了什么、谁要跟进。</p>
+      <ol>
+        <li>打开 B01 示例，核对当日「进度」。</li>
+        <li>在「资料」里打开现场核对记录，再看「待办」里的处理人。</li>
+        <li>切到 5 月 27 日，看看待办完成后，施工进度还差多少。</li>
+      </ol>
+      <div class="floor-task-links">
+        <a class="text-link" href="#standard-floor" data-floor-example>打开 B01 示例 <ArrowDown size={16} aria-hidden="true" /></a>
+        <a class="text-link" href={withBase('/posts/bim-project-management/')}>阅读 BIM 项管案例 <ArrowUpRight size={16} aria-hidden="true" /></a>
+      </div>
+    </section>
+    <StandardFloor />
+  </section>
+</BaseLayout>
+
+<style>
+  .floor-task { display: grid; gap: 10px; margin-bottom: 22px; padding: 18px clamp(16px, 4vw, 26px); scroll-margin-top: 92px; }
+  .floor-task h2 { font-size: clamp(18px, 3vw, 23px); }
+  .floor-task ol { margin: 0; padding-left: 1.5em; }
+  .floor-task li { padding-block: 2px; }
+  .floor-task p { color: var(--muted); font-size: 14px; }
+  .floor-task-links { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  .floor-task-links a { min-height: 32px; }
+</style>

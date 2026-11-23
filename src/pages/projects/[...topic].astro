@@ -1,0 +1,127 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { PROJECT_TOPICS } from '../../lib/project-topics';
+import { withBase } from '../../lib/paths';
+import { SITE } from '../../config';
+
+export function getStaticPaths() {
+  return [{ params: { topic: undefined } }, ...PROJECT_TOPICS.map(({ slug }) => ({ params: { topic: slug } }))];
+}
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => +b.data.publishedAt - +a.data.publishedAt);
+const projects = posts.filter(({ data }) => data.category === '项目');
+const topic = PROJECT_TOPICS.find(({ slug }) => slug === Astro.params.topic);
+const current = topic?.slug ?? 'all';
+const title = topic?.label ?? '项目';
+const description = '从遇到的问题、做过的取舍，到最后能用的界面。';
+const topics = [{ slug: 'all', label: '全部项目', description }, ...PROJECT_TOPICS];
+const count = (slug: string) => slug === 'all' ? projects.length : projects.filter(({ data }) => data.projectTopic === slug).length;
+---
+
+<BaseLayout title={title} description={topic?.description ?? description} posts={posts}>
+  <section class="shell collection-page" data-projects data-topic={current} data-site-title={SITE.title}>
+    <header class="collection-heading">
+      <h1>项目</h1>
+      <p data-topic-description>{topic?.description ?? description}</p>
+    </header>
+    <nav class="project-filters" aria-label="项目分类">
+      <span class="project-filter-indicator" aria-hidden="true"></span>
+      {topics.map(({ slug, label, description: blurb }) => (
+        <a href={withBase(slug === 'all' ? '/projects/' : `/projects/${slug}/`)}
+          data-topic-link={slug} data-description={blurb} data-page-title={slug === 'all' ? '项目' : label}
+          data-count={count(slug)} aria-current={current === slug ? 'page' : undefined}>
+          {label} <span>{count(slug)}</span>
+        </a>
+      ))}
+    </nav>
+    <p class="project-count" aria-live="polite" data-project-count>{count(current)} 个项目</p>
+    <div class="posts-grid project-list">
+      {projects.map((post) => (
+        <div data-project-entry={post.data.projectTopic ?? ''} style={`--project-transition: project-${post.id.replace(/[^a-z0-9-]/gi, '-')}`}
+          hidden={current !== 'all' && post.data.projectTopic !== current}>
+          <PostCard post={post} layout="row" showProjectSummary />
+        </div>
+      ))}
+    </div>
+    <p data-project-empty hidden={count(current) !== 0}>这个方向暂时没有项目。</p>
+  </section>
+</BaseLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-projects]');
+  if (root) {
+    const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-topic-link]')];
+    const entries = [...root.querySelectorAll<HTMLElement>('[data-project-entry]')];
+    const description = root.querySelector('[data-topic-description]');
+    const count = root.querySelector('[data-project-count]');
+    const empty = root.querySelector<HTMLElement>('[data-project-empty]');
+    const indicator = root.querySelector<HTMLElement>('.project-filter-indicator');
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    const updateIndicator = () => {
+      const active = links.find((link) => link.getAttribute('aria-current') === 'page');
+      if (!active || !indicator) return;
+      indicator.style.width = `${active.offsetWidth}px`;
+      indicator.style.transform = `translateX(${active.offsetLeft}px)`;
+      indicator.dataset.ready = '';
+    };
+    const apply = (link: HTMLAnchorElement, navigate: boolean) => {
+      const slug = link.dataset.topicLink;
+      if (navigate) history.pushState(null, '', link.href);
+      root.dataset.topic = slug;
+      links.forEach((item) => item === link ? item.setAttribute('aria-current', 'page') : item.removeAttribute('aria-current'));
+      entries.forEach((entry) => { entry.hidden = slug !== 'all' && entry.dataset.projectEntry !== slug; });
+      if (description) description.textContent = link.dataset.description ?? '';
+      if (count) count.textContent = `${link.dataset.count} 个项目`;
+      if (empty) empty.hidden = link.dataset.count !== '0';
+      document.title = `${link.dataset.pageTitle} | ${root.dataset.siteTitle}`;
+      if (canonical) canonical.href = new URL(new URL(link.href).pathname, canonical.href).href;
+      updateIndicator();
+    };
+    let transition: ViewTransition | undefined;
+    let navigation = 0;
+    links.forEach((link) => link.addEventListener('click', (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      event.preventDefault();
+      const request = ++navigation;
+      transition?.skipTransition();
+      if (link.dataset.topicLink === root.dataset.topic) return;
+      if (document.startViewTransition && !motion.matches) {
+        transition = document.startViewTransition(() => {
+          if (request === navigation) apply(link, true);
+        });
+      } else {
+        apply(link, true);
+      }
+    }));
+    addEventListener('popstate', () => {
+      const link = links.find((item) => new URL(item.href).pathname === location.pathname);
+      if (link) {
+        navigation++;
+        transition?.skipTransition();
+        apply(link, false);
+      }
+    });
+    const filterNav = indicator?.parentElement;
+    if (filterNav && 'ResizeObserver' in window) new ResizeObserver(updateIndicator).observe(filterNav);
+    updateIndicator();
+  }
+</script>
+
+<style>
+  .project-filters { position: relative; isolation: isolate; display: flex; width: fit-content; max-width: 100%; gap: 4px; padding: 5px; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-solid); }
+  .project-filters a { position: relative; flex: none; padding: 7px 13px; border-radius: 8px; white-space: nowrap; color: var(--muted); font-size: 14px; }
+  .project-filters a span { margin-left: .35em; font-variant-numeric: tabular-nums; font-size: 12px; }
+  .project-filters a[aria-current='page'] { color: var(--accent-strong); font-weight: 700; }
+  .project-filters:not(:has([data-ready])) a[aria-current='page'] { background: var(--accent-soft); }
+  .project-filter-indicator { position: absolute; z-index: -1; left: 0; top: 5px; bottom: 5px; border-radius: 8px; background: var(--accent-soft); }
+  .project-filter-indicator[data-ready] { transition: width .26s ease, transform .26s ease; }
+  .project-count { margin-block: 16px 12px; color: var(--muted); font-size: 13px; }
+  .project-list { max-width: 880px; }
+  [data-project-entry]:not([hidden]) { view-transition-name: var(--project-transition); }
+  :global(::view-transition-group(*)) { animation-duration: .26s; }
+  :global(::view-transition-old(root)), :global(::view-transition-new(root)) { animation: none; }
+</style>

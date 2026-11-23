@@ -2,11 +2,12 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import heroImage from '../assets/images/hero-japan.webp';
-import { ArrowDown, ArrowRight, CalendarDays, Sparkles } from 'lucide-astro';
+import { ArrowDown, ArrowRight, Box, Sparkles } from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import ProfileSidebar from '../components/ProfileSidebar.astro';
 import HeroScene from '../components/HeroScene.astro';
+import FeaturedProjects from '../components/FeaturedProjects.astro';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 
@@ -27,27 +28,26 @@ const categories = ['全部', ...new Set(posts.map((post) => post.data.category)
       {Array.from({ length: 12 }).map((_, index) => <i style={`--i:${index}`}></i>)}
     </div>
     <div class="hero-content shell">
-      <p class="hero-badge"><Sparkles size={15} /> CHEN JIAHONG'S PERSONAL SPACE</p>
       <h1 id="hero-title">{SITE.title}</h1>
-      <p class="hero-intro">记录技术实践、项目复盘，也记录每一个认真生活的日子。</p>
-      <a class="hero-link" href="#latest">进入我的世界 <ArrowDown size={18} /></a>
+      <p class="hero-intro">我是陈嘉鸿，做过 BIM 项管系统、AI 投标平台，也给自己做过学习记录工具。这里写我在这些项目里解决过的问题，以及做决定时考虑过什么。</p>
+      <div class="hero-actions">
+        <a class="hero-link hero-link-primary" href="#featured-projects">看代表项目 <ArrowDown size={18} aria-hidden="true" /></a>
+        <a class="hero-link" href={withBase('/lab/#standard-floor-task')}><Box size={17} aria-hidden="true" /> 试用 BIM 演示</a>
+      </div>
+      <a class="hero-about" href={withBase('/about/')}>了解我和这些项目 <ArrowRight size={15} aria-hidden="true" /></a>
     </div>
     <button class="petals-toggle glass-panel" type="button" data-petals-toggle aria-pressed="true"><Sparkles size={17} /><span>关闭动态</span></button>
     <div class="hero-wave" aria-hidden="true"></div>
   </section>
 
-  <div class="home-surface" id="latest">
+  <div class="home-surface">
     <div class="dashboard shell">
       <div class="main-feed">
-        <section class="welcome-strip glass-card">
-          <div class="welcome-icon"><Sparkles size={22} /></div>
-          <div><strong>欢迎回来</strong><p>今天也要保持热爱，认真生活。</p></div>
-          <div class="welcome-date"><CalendarDays size={16} /><span>{new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' }).format(new Date())}</span></div>
-        </section>
+        <FeaturedProjects posts={posts} />
 
-        <section class="content-section" aria-labelledby="latest-heading">
+        <section class="content-section" id="latest" aria-labelledby="latest-heading">
           <div class="section-heading">
-            <div><p class="section-kicker">LATEST POSTS</p><h2 id="latest-heading">最近更新</h2></div>
+            <h2 id="latest-heading">最近更新</h2>
             <a class="text-link" href={withBase('/archive/')}>全部文章 <ArrowRight size={17} /></a>
           </div>
           <div class="category-tabs" role="tablist" aria-label="按分类筛选">

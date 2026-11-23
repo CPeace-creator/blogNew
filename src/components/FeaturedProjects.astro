@@ -1,0 +1,61 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { ArrowRight, ArrowUpRight, Box } from 'lucide-astro';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { posts } = Astro.props;
+const featuredIds = ['bim-project-management', 'ai-bidding-platform'];
+const featured = featuredIds.flatMap((id) => posts.filter((post) => post.id === id));
+---
+
+{featured.length > 0 && (
+  <section class="content-section" id="featured-projects" aria-labelledby="featured-heading">
+    <div class="section-heading">
+      <h2 id="featured-heading">代表项目</h2>
+      <a class="text-link" href={withBase('/projects/')}>全部项目 <ArrowRight size={17} aria-hidden="true" /></a>
+    </div>
+    <div class="featured-projects">
+      {featured.map((post) => (
+        <article class="featured-project glass-card">
+          <Image src={post.data.cover} alt="" layout="none" width={640} height={360} fit="cover"
+            widths={[320, 480, 640]} sizes="(max-width: 640px) calc(100vw - 36px), 400px"
+            format="webp" quality={76} loading="lazy" decoding="async" />
+          <div class="featured-body">
+            <h3><a href={withBase(`/posts/${post.id}/`)}>{post.data.title}</a></h3>
+            <p>{post.data.description}</p>
+            {post.data.projectSummary && <p class="featured-role"><strong>我负责</strong> {post.data.projectSummary.role}</p>}
+            <div class="featured-actions">
+              <a class="text-link" href={withBase(`/posts/${post.id}/`)} aria-label={`阅读《${post.data.title}》案例`}>
+                看案例 <ArrowUpRight size={16} aria-hidden="true" />
+              </a>
+              {post.id === 'bim-project-management' && (
+                <a class="text-link" href={withBase('/lab/#standard-floor-task')}><Box size={16} aria-hidden="true" /> 动手试</a>
+              )}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .featured-projects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 14px; }
+  .featured-project { display: flex; flex-direction: column; overflow: hidden; }
+  .featured-project img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+  .featured-body { display: flex; flex: 1; flex-direction: column; gap: 9px; padding: 18px; }
+  .featured-body h3 { font-size: 21px; }
+  .featured-body h3 a:hover { color: var(--accent-strong); }
+  .featured-body p { color: var(--muted); font-size: 14px; }
+  .featured-body .featured-role { color: var(--ink); font-size: 13px; }
+  .featured-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: auto; padding-top: 4px; }
+  .featured-actions a { min-height: 36px; }
+  @media (max-width: 640px) {
+    .featured-projects { grid-template-columns: 1fr; }
+  }
+</style>

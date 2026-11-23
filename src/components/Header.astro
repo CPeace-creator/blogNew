@@ -1,5 +1,5 @@
 ---
-import { Archive, BookOpen, Home, Menu, Moon, Palette, Search, Sun, UserRound, X } from 'lucide-astro';
+import { Archive, BookOpen, FlaskConical, FolderKanban, Home, Menu, Moon, Palette, Search, Sun, UserRound, X } from 'lucide-astro';
 import { Image } from 'astro:assets';
 import avatar from '../assets/images/profile-avatar.jpg';
 import { SITE } from '../config';
@@ -8,10 +8,13 @@ import { withBase } from '../lib/paths';
 const pathname = Astro.url.pathname;
 const nav = [
   { label: '主页', href: '/', icon: Home },
-  { label: '文章', href: '/#latest', icon: BookOpen },
+  { label: '项目', href: '/projects/', icon: FolderKanban },
+  { label: '技术笔记', href: '/notes/', icon: BookOpen },
+  { label: '实验室', href: '/lab/', icon: FlaskConical },
   { label: '归档', href: '/archive/', icon: Archive },
   { label: '关于', href: '/about/', icon: UserRound },
 ];
+const activePage = (href: string) => href === '/' ? pathname === withBase(href) : pathname.startsWith(withBase(href));
 ---
 
 <header class="site-header glass-panel" data-header>
@@ -23,7 +26,7 @@ const nav = [
 
   <nav class="desktop-nav" aria-label="主导航">
     {nav.map(({ label, href, icon: Icon }) => (
-      <a href={withBase(href)} aria-current={(href === '/archive/' && pathname.includes('/archive/')) || (href === '/about/' && pathname.includes('/about/')) ? 'page' : undefined}>
+      <a href={withBase(href)} aria-current={activePage(href) ? 'page' : undefined}>
         <Icon size={16} strokeWidth={2} /> {label}
       </a>
     ))}
@@ -48,7 +51,7 @@ const nav = [
   </div>
 
   <nav class="mobile-nav" data-mobile-nav aria-label="移动端导航">
-    {nav.map(({ label, href, icon: Icon }) => <a href={withBase(href)}><Icon size={17} />{label}</a>)}
+    {nav.map(({ label, href, icon: Icon }) => <a href={withBase(href)} aria-current={activePage(href) ? 'page' : undefined}><Icon size={17} />{label}</a>)}
     <button type="button" data-search-open>搜索文章</button>
   </nav>
 

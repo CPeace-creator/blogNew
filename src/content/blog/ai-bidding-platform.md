@@ -4,6 +4,11 @@ description: "一个帮助工程投标人员读懂要求、整理资料、编写
 publishedAt: 2026-04-02
 updatedAt: 2026-11-23
 category: "项目"
+projectTopic: "ai"
+projectSummary:
+  role: "串接文件上传、读标、正文编辑和 Word 导出，处理文件等待、修改保存和再次进入页面时的状态。"
+  status: "案例展示读标、编标、辅助检查和 Word 导出的主要流程，界面使用演示资料。"
+relatedPosts: ["ai-tender-source-verification", "project-workflow-checks"]
 tags: ["AI 应用", "项目实践", "产品设计", "招投标"]
 featured: true
 draft: false

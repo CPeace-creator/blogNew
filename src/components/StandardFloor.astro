@@ -1,0 +1,177 @@
+---
+import { statSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { Box, RotateCcw, ScanLine } from 'lucide-astro';
+import { FLOOR_COLOR_MODES, FLOOR_DATES, FLOOR_DEFAULT_STEP, FLOOR_STATUSES, FLOOR_ZONES, getFloorSnapshot } from '../lib/floor-demo';
+import { withBase } from '../lib/paths';
+import '../styles/floor-workbench.css';
+
+const names = ['standard-floor.meshopt.glb', 'standard-floor.glb'];
+const models = names.map((name) => ({ name, size: statSync(resolve('public/models/local', name), { throwIfNoEntry: false })?.size }));
+const model = models.find(({ size }) => size);
+const modelUrl = model ? withBase(`/models/local/${model.name}`) : undefined;
+const tabs = [['progress', '进度'], ['measurement', '计量'], ['documents', '资料'], ['todos', '待办']];
+---
+
+<section class="floor-workbench" id="standard-floor" data-floor-viewer data-model={modelUrl} aria-labelledby="floor-title">
+  <span class="floor-anchor" id="bridge" aria-hidden="true"></span>
+  <header class="floor-heading">
+    <div>
+      <h2 id="floor-title">1# 标准层 · 施工进度回放</h2>
+      <p>选择日期后，点示意图上的作业面查进度、资料和待办。</p>
+    </div>
+    <a href={withBase('/posts/bim-project-management/')}>阅读 BIM 项管系统 →</a>
+  </header>
+
+  <div class="floor-layout">
+    <div class="floor-main">
+      <section class="floor-plan" aria-labelledby="floor-plan-title">
+        <div class="floor-plan-heading">
+          <h3 id="floor-plan-title">作业面示意图</h3>
+          <a href="#floor-record" data-floor-record-link hidden>查看所选记录 ↓</a>
+        </div>
+        <div class="floor-plan-grid">
+          {FLOOR_ZONES.map((zone) => (
+            <div class="floor-plan-zone" role="group" aria-label={zone.label}>
+              <span>{zone.label.replace('标准层 · ', '')}</span>
+              {zone.packages.map((item) => {
+                const { actual, status } = getFloorSnapshot(item, FLOOR_DEFAULT_STEP);
+                return (
+                  <button type="button" data-floor-map={item.key} aria-pressed="false" style={`--swatch:${FLOOR_STATUSES[status].color}`}>
+                    <strong>{item.label}</strong>
+                    <span data-floor-map-status>{FLOOR_STATUSES[status].label}</span>
+                    <span data-floor-map-actual>实际 {actual}%</span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </section>
+      <section class="floor-timeline" aria-label="进度时间轴">
+        <div class="floor-timeline-heading">
+          <button type="button" data-floor-play>播放进度</button>
+          <time data-floor-date datetime={FLOOR_DATES[FLOOR_DEFAULT_STEP]}>{FLOOR_DATES[FLOOR_DEFAULT_STEP]}</time>
+          <span data-floor-summary></span>
+        </div>
+        <input type="range" min="0" max={FLOOR_DATES.length - 1} step="1" value={FLOOR_DEFAULT_STEP} aria-label="进度日期" data-floor-time />
+        <div class="floor-days" role="group" aria-label="按日期查看进度">
+          {FLOOR_DATES.map((date, index) => <button type="button" data-floor-day={index} aria-label={date} aria-pressed={index === FLOOR_DEFAULT_STEP ? 'true' : 'false'}>{date.slice(5)}</button>)}
+        </div>
+      </section>
+      <details class="floor-model" hidden={!model}>
+        <summary>查看三维标准层</summary>
+        <div class="floor-viewport" data-floor-viewport>
+          <div class="floor-start" data-floor-start>
+            {model ? <button type="button" data-floor-load><Box size={18} /> 加载标准层</button> : <Box size={35} aria-hidden="true" />}
+            <p role="status" data-floor-feedback>{model ? `约 ${(model.size! / 1_000_000).toFixed(1)} MB，点击后加载。` : '此版本可回放演示记录，三维模型需在本地预览。'}</p>
+          </div>
+          <div class="floor-view-state" data-floor-view-state hidden></div>
+        </div>
+
+          <div class="floor-tools" data-floor-tools hidden>
+            <div class="floor-controls">
+              <label>着色 <select data-floor-color>
+                {Object.entries(FLOOR_COLOR_MODES).map(([mode, label]) => <option value={mode}>{label}</option>)}
+              </select></label>
+              <button type="button" data-floor-isolate aria-pressed="false" disabled><ScanLine size={15} /> 隔离所选</button>
+              <button type="button" data-floor-reset><RotateCcw size={15} /> 重置视角</button>
+            </div>
+            <div class="floor-controls">
+              <label>剖切方向 <select data-floor-axis>
+                <option value="">关闭剖切</option><option value="x">纵向</option><option value="y">高度</option><option value="z">横向</option>
+              </select></label>
+              <label class="floor-section-slider" data-floor-section-control hidden>剖切位置
+                <input type="range" min="1" max="100" value="65" data-floor-section />
+              </label>
+            </div>
+            <div class="floor-legend" data-floor-legend="status">
+              {Object.values(FLOOR_STATUSES).map(({ label, color }) => <span><i style={`--swatch:${color}`}></i>{label}</span>)}
+              <span><i style="--swatch:#64768e"></i>无演示记录</span>
+            </div>
+            <div class="floor-legend" data-floor-legend="progress" hidden>
+              <span>0%</span><i class="floor-gradient"></i><span>100%</span><span><i style="--swatch:#64768e"></i>无演示记录</span>
+            </div>
+            <div class="floor-legend" data-floor-highlight hidden><span><i style="--swatch:#ffce5c"></i>当前选中</span></div>
+          </div>
+      </details>
+    </div>
+
+    <aside class="floor-side" aria-label="施工部位与业务记录">
+      <section class="floor-finder" aria-labelledby="floor-finder-title">
+        <h3 id="floor-finder-title">工程部位</h3>
+        <form class="floor-search" data-floor-search role="search" aria-label="搜索工程部位">
+          <input type="search" name="query" aria-label="输入作业面或构件编号" placeholder="作业面或构件编号" maxlength="50" />
+          <button type="submit">查找</button>
+        </form>
+        <div class="floor-filters" role="group" aria-label="快捷查询">
+          <button type="button" data-floor-filter="all" aria-pressed="true">全部</button>
+          <button type="button" data-floor-filter="behind" aria-pressed="false">只看落后</button>
+          <button type="button" data-floor-filter="due" aria-pressed="false">到期或逾期待办</button>
+        </div>
+        <div data-floor-tree>
+          {FLOOR_ZONES.map((zone) => <details data-floor-zone open>
+            <summary>{zone.label}</summary>
+            <ul>
+              {zone.packages.map((item) => <li data-floor-row={item.key}>
+                <button type="button" data-floor-package={item.key} aria-pressed="false">
+                  <span><i data-floor-package-dot></i>{item.label}</span><small data-floor-package-status></small>
+                </button>
+              </li>)}
+            </ul>
+          </details>)}
+        </div>
+        <p class="floor-hint" data-floor-results role="status" hidden></p>
+      </section>
+
+      <section class="floor-detail" id="floor-record" tabindex="-1" aria-labelledby="floor-selection">
+        <div class="floor-detail-heading" aria-live="polite">
+          <h3 id="floor-selection" data-floor-selection>部位详情</h3>
+          <p class="floor-hint" data-floor-element>选择一个作业面查看记录。</p>
+        </div>
+        <div class="floor-tabs" role="group" aria-label="业务记录" data-floor-tabs hidden>
+          {tabs.map(([id, label]) => <button type="button" data-floor-tab={id} aria-pressed={id === 'progress' ? 'true' : 'false'}>{label}</button>)}
+        </div>
+        <div data-floor-panel="progress" hidden>
+          <dl class="floor-metrics">
+            <div><dt>计划</dt><dd data-floor-plan></dd></div>
+            <div><dt>实际</dt><dd data-floor-actual></dd></div>
+            <div><dt>差额</dt><dd data-floor-delta></dd></div>
+          </dl>
+          <meter data-floor-meter min="0" max="100" value="0" aria-label="实际完成比例"></meter>
+          <p class="floor-hint" data-floor-progress-note></p>
+        </div>
+        <div data-floor-panel="measurement" hidden>
+          <dl class="floor-metrics">
+            <div><dt>合同量</dt><dd data-floor-contract></dd></div>
+            <div><dt>本期量</dt><dd data-floor-period></dd></div>
+            <div><dt>累计量</dt><dd data-floor-cumulative></dd></div>
+          </dl>
+          <p class="floor-hint">单位 m²，按演示完成比例折算。</p>
+        </div>
+        <div data-floor-panel="documents" hidden>
+          <p class="floor-hint" data-floor-document-note></p>
+          <button type="button" data-floor-document>预览资料</button>
+        </div>
+        <div data-floor-panel="todos" hidden>
+          <p data-floor-todo></p>
+          <p class="floor-hint" data-floor-todo-meta></p>
+        </div>
+      </section>
+      <p class="floor-hint floor-data-note">作业面位置、进度、计量、资料和待办使用演示数据。{model && '三维视图中的几何和构件编号来自 Revit。'}</p>
+    </aside>
+  </div>
+
+  <dialog class="floor-document" data-floor-dialog aria-labelledby="floor-document-title">
+    <form method="dialog"><button type="submit" autofocus>关闭预览</button></form>
+    <h3 id="floor-document-title" data-floor-document-title></h3>
+    <p class="floor-hint" data-floor-document-date></p>
+    <dl data-floor-document-fields></dl>
+  </dialog>
+</section>
+
+<script>
+  import { bindFloorWorkbench } from '../scripts/floor-workbench';
+  const root = document.querySelector<HTMLElement>('[data-floor-viewer]');
+  if (root) bindFloorWorkbench(root);
+</script>

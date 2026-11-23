@@ -3,6 +3,7 @@ title: "UniPush 推送项目"
 description: "基于 uni-app 与 uniCloud 实现实时推送、抽奖转盘、订单同步和扫码核销。"
 publishedAt: 2025-03-16
 category: "项目"
+projectTopic: "web"
 tags: ["uni-app","uniCloud","实时推送","微信小程序"]
 featured: false
 draft: false

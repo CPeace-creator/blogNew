@@ -1,0 +1,32 @@
+---
+import { ChevronLeft, ChevronRight, X } from 'lucide-astro';
+---
+
+<dialog class="article-gallery" data-article-gallery aria-labelledby="gallery-heading">
+  <header>
+    <h2 id="gallery-heading">文章配图</h2>
+    <button type="button" data-gallery-close aria-label="关闭大图"><X size={20} /></button>
+  </header>
+  <div class="gallery-stage" data-gallery-stage></div>
+  <footer>
+    <button type="button" data-gallery-prev aria-label="上一张"><ChevronLeft size={20} /></button>
+    <p data-gallery-caption aria-live="polite"></p>
+    <button type="button" data-gallery-next aria-label="下一张"><ChevronRight size={20} /></button>
+  </footer>
+</dialog>
+
+<script>
+  import '../scripts/article-gallery';
+</script>
+
+<style>
+  .article-gallery { width: min(1120px, calc(100% - 28px)); max-width: none; max-height: 94dvh; padding: 16px; overflow: auto; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-solid); color: var(--ink); }
+  .article-gallery::backdrop { background: #080e1ce0; }
+  header, footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  h2 { font-size: 1rem; }
+  button { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; }
+  button:disabled { opacity: .45; cursor: default; }
+  .gallery-stage { display: grid; place-items: center; margin-block: 12px; min-height: min(160px, 30dvh); background: var(--page); border-radius: 8px; }
+  .gallery-stage :global(img) { display: block; width: auto; max-width: 100%; max-height: 68dvh; object-fit: contain; }
+  footer p { text-align: center; color: var(--muted); font-size: 13px; }
+</style>

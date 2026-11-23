@@ -7,17 +7,18 @@ import { ArrowUpRight, Github, Mail } from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProfileSidebar from '../components/ProfileSidebar.astro';
 import { SITE } from '../config';
+import { withBase } from '../lib/paths';
 
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 ---
 
-<BaseLayout title="关于" description="关于湘江中路，以及它的作者陈嘉鸿。" posts={posts}>
+<BaseLayout title="关于我" description="关于湘江中路，以及它的作者陈嘉鸿。" posts={posts}>
   <section class="subpage-hero">
     <Image src={sky} alt="城市高架与暮色天空" layout="none"
       width={1920} widths={[640, 960, 1280, 1920]} sizes="100vw"
       format="webp" quality={78} loading="eager" decoding="async" fetchpriority="high" />
     <div class="hero-shade"></div>
-    <div class="subpage-title"><p>ABOUT ME</p><h1>关于我</h1><span>在设计与技术之间，保持好奇。</span></div>
+    <div class="subpage-title"><h1>关于我</h1></div>
     <div class="hero-wave"></div>
   </section>
 
@@ -25,27 +26,40 @@ const posts = await getCollection('blog', ({ data }) => !data.draft);
     <div class="dashboard shell">
       <div class="about-main">
         <section class="about-card glass-card">
-          <p class="section-kicker">HELLO, NICE TO MEET YOU</p>
-          <h1>你好，我是陈嘉鸿。</h1>
+          <h2 class="about-name">你好，我是陈嘉鸿。</h2>
           <div class="about-intro">
-            <p>来自福建厦门的 Web Developer &amp; Designer，主要使用 Java、Vue、Python、Go 与 Flutter 完成产品开发。</p>
-            <p>「湘江中路」用来沉淀真实的项目经验、技术实践和阶段性思考，保留从问题到结论的完整过程。</p>
+            <p>我来自福建厦门，做 Web 开发，也参与产品界面和交互设计。我做过面向工程人员的项目管理工具，也给自己做过学习记录工具。</p>
+            <p>做这些项目时，我常问一件事。一个人用完这个功能，接下来要做什么？点了桥墩，接下来要找到进度记录。改完标书，接下来要确认导出的确实是刚改的版本。这个博客记下我怎么把这些步骤接起来。</p>
           </div>
+          <p class="about-profile-link"><a class="text-link" href={withBase('/posts/about-me/')}>阅读我的完整介绍 <ArrowUpRight size={17} aria-hidden="true" /></a></p>
           <div class="about-image"><Image src={avatar} alt="陈嘉鸿的个人头像" layout="none"
             width={640} widths={[320, 640, 960]} sizes="(max-width: 640px) calc(100vw - 76px), 640px"
             format="webp" quality={80} loading="lazy" decoding="async" /></div>
         </section>
-        <section class="principles glass-card">
-          <p class="section-kicker">WRITING PRINCIPLES</p>
-          <h2>我希望这里保持</h2>
+        <section class="principles glass-card" aria-labelledby="project-choices-heading">
+          <h2 id="project-choices-heading">我在项目里做过的三个决定</h2>
           <div class="principles-grid">
-            <article><span>01</span><h3>具体</h3><p>从真实问题和完整过程出发，减少脱离语境的结论。</p></article>
-            <article><span>02</span><h3>诚实</h3><p>记录有效的方法，也保留失败、限制与仍未解决的部分。</p></article>
-            <article><span>03</span><h3>长久</h3><p>优先写几年后仍值得返回的内容，而不是追逐短暂热点。</p></article>
+            <article>
+              <h3>更新模型时，留下上一份可用版本</h3>
+              <p>新版还在转换时，项目人员可以继续用旧版查进度和资料。</p>
+              <a class="text-link" href={withBase('/posts/bim-model-version-fallback/')}>看模型怎么切换 <ArrowUpRight size={15} aria-hidden="true" /></a>
+            </article>
+            <article>
+              <h3>写标书时，保留能回去核对的原文</h3>
+              <p>AI 整理完要求，使用者还能回到文件里看它适用的范围和条件。</p>
+              <a class="text-link" href={withBase('/posts/ai-tender-source-verification/')}>看一条要求怎么核对 <ArrowUpRight size={15} aria-hidden="true" /></a>
+            </article>
+            <article>
+              <h3>给自己留一份能回看的学习记录</h3>
+              <p>把学过的课程、内容和用时放在一起，过一段时间还能接着学。</p>
+              <a class="text-link" href={withBase('/posts/course-sea/')}>看课海导航 <ArrowUpRight size={15} aria-hidden="true" /></a>
+            </article>
           </div>
+          <p class="about-profile-link"><a class="text-link" href={withBase('/posts/project-workflow-checks/')}>读《我怎么检查一个功能能不能接着用》 <ArrowUpRight size={16} aria-hidden="true" /></a></p>
         </section>
         <section class="contact-card glass-card">
-          <h2>从一次具体的交流开始。</h2>
+          <h2>和我聊聊你在做的东西</h2>
+          <p>如果你也在做工程软件、文档工作流或自己的小工具，欢迎告诉我你在哪一步遇到了问题。</p>
           <div><a href={`mailto:${SITE.email}`}><Mail size={18} /> {SITE.email} <ArrowUpRight size={15} /></a><a href={SITE.github} target="_blank" rel="noreferrer"><Github size={18} /> GitHub <ArrowUpRight size={15} /></a></div>
         </section>
       </div>

@@ -59,12 +59,12 @@ const tabs = [['progress', '进度'], ['measurement', '计量'], ['documents', '
           {FLOOR_DATES.map((date, index) => <button type="button" data-floor-day={index} aria-label={date} aria-pressed={index === FLOOR_DEFAULT_STEP ? 'true' : 'false'}>{date.slice(5)}</button>)}
         </div>
       </section>
-      <details class="floor-model" hidden={!model}>
-        <summary>查看三维标准层</summary>
+      <details class="floor-model">
+        <summary>{model ? '查看三维标准层' : '查看三维演示模型'}</summary>
         <div class="floor-viewport" data-floor-viewport>
           <div class="floor-start" data-floor-start>
-            {model ? <button type="button" data-floor-load><Box size={18} /> 加载标准层</button> : <Box size={35} aria-hidden="true" />}
-            <p role="status" data-floor-feedback>{model ? `约 ${(model.size! / 1_000_000).toFixed(1)} MB，点击后加载。` : '此版本可回放演示记录，三维模型需在本地预览。'}</p>
+            <button type="button" data-floor-load><Box size={18} aria-hidden="true" /> {model ? '加载标准层' : '加载三维演示'}</button>
+            <p role="status" data-floor-feedback>{model ? `约 ${(model.size! / 1_000_000).toFixed(1)} MB，点击后加载。` : '四个示例作业面，可旋转并点选构件查看记录。'}</p>
           </div>
           <div class="floor-view-state" data-floor-view-state hidden></div>
         </div>
@@ -158,7 +158,7 @@ const tabs = [['progress', '进度'], ['measurement', '计量'], ['documents', '
           <p class="floor-hint" data-floor-todo-meta></p>
         </div>
       </section>
-      <p class="floor-hint floor-data-note">作业面位置、进度、计量、资料和待办使用演示数据。{model && '三维视图中的几何和构件编号来自 Revit。'}</p>
+      <p class="floor-hint floor-data-note">作业面位置、进度、计量、资料和待办使用演示数据。{model ? '三维视图中的几何和构件编号来自 Revit。' : '三维演示采用简化的楼层几何。'}</p>
     </aside>
   </div>
 

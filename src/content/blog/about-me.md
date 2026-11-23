@@ -1,6 +1,6 @@
 ---
 title: "关于我"
-description: "我是陈嘉鸿，来自福建厦门。这篇文章介绍我做过的软件项目、我在开发中关心的问题，以及我为什么在「湘江中路」写博客。"
+description: "我是陈嘉鸿，来自福建厦门。这篇文章介绍我做过的软件项目、我在开发中关心的问题。"
 publishedAt: 2025-03-05
 category: "自我介绍"
 relatedPosts: ["project-workflow-checks", "course-sea"]

@@ -12,6 +12,7 @@ export function bindFloorWorkbench(root: HTMLElement) {
   const get = <T extends HTMLElement = HTMLElement>(name: string) => root.querySelector<T>(`[data-floor-${name}]`)!;
   const all = <T extends HTMLElement = HTMLElement>(name: string) => [...root.querySelectorAll<T>(`[data-floor-${name}]`)];
   const load = get<HTMLButtonElement>('load');
+  const modelUrl = root.dataset.model;
   const range = get<HTMLInputElement>('time');
   const play = get<HTMLButtonElement>('play');
   const isolate = get<HTMLButtonElement>('isolate');
@@ -52,7 +53,7 @@ export function bindFloorWorkbench(root: HTMLElement) {
   function renderDetails() {
     setText('selection', activePackage?.label ?? (elementId ? '构件详情' : '部位详情'));
     setText('element', elementId
-      ? `${root.dataset.model ? '构件' : '演示构件'} #${elementId}${activePackage ? '' : ' · 暂无关联记录'}`
+      ? `构件 #${elementId}${activePackage ? '' : ' · 暂无关联记录'}`
       : activePackage ? `关联 ${activePackage.elementIds.length} 个构件` : '选择一个作业面查看记录。');
     get('tabs').hidden = !activePackage;
     tabs.forEach((tab) => tab.setAttribute('aria-pressed', String(tab.dataset.floorTab === activeTab)));
@@ -255,12 +256,13 @@ export function bindFloorWorkbench(root: HTMLElement) {
   get('reset').addEventListener('click', () => scene?.reset());
 
   load.addEventListener('click', async () => {
+    if (!modelUrl) return;
     load.disabled = true;
     setText('feedback', '正在载入标准层模型…');
     try {
       const { mountStandardFloor } = await import('./standard-floor');
       if (disposed) return;
-      scene = await mountStandardFloor(get('viewport'), root.dataset.model, (id) => {
+      scene = await mountStandardFloor(get('viewport'), modelUrl, (id) => {
         choose(FLOOR_PACKAGE_BY_ELEMENT.get(id), id, false);
       }, (event) => {
         if (event.lengthComputable) {

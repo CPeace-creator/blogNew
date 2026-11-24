@@ -1,9 +1,9 @@
 import {
-  Box3, BoxGeometry, Color, DirectionalLight, DoubleSide, Group, HemisphereLight, Mesh, MeshStandardMaterial,
+  Box3, Color, DirectionalLight, DoubleSide, Group, HemisphereLight, Mesh, MeshStandardMaterial,
   Object3D, PerspectiveCamera, Plane, Raycaster, Scene, Vector2, Vector3, WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { FLOOR_DEFAULT_STEP, FLOOR_PACKAGE_BY_ELEMENT, FLOOR_STATUSES, FLOOR_ZONES, getFloorSnapshot, type FloorColorMode } from '../lib/floor-demo';
+import { FLOOR_DEFAULT_STEP, FLOOR_PACKAGE_BY_ELEMENT, FLOOR_STATUSES, getFloorSnapshot, type FloorColorMode } from '../lib/floor-demo';
 
 export type FloorAxis = 'x' | 'y' | 'z';
 
@@ -26,44 +26,8 @@ function elementId(object: Object3D): string {
   return '';
 }
 
-function createDemoFloor(): Group {
-  const floor = new Group();
-  const concrete = new MeshStandardMaterial({ color: 0xa9b8c6 });
-  const structure = new MeshStandardMaterial({ color: 0x758c9e });
-
-  function addBox(
-    parent: Group, size: [number, number, number], position: [number, number, number], material: MeshStandardMaterial,
-  ) {
-    const mesh = new Mesh(new BoxGeometry(...size), material);
-    mesh.position.set(...position);
-    parent.add(mesh);
-    return mesh;
-  }
-
-  addBox(floor, [2.1, .25, 11.9], [0, -.16, 0], structure);
-  FLOOR_ZONES.forEach((zone, side) => {
-    zone.packages.forEach((item, index) => {
-      const bay = new Group();
-      const outward = side === 0 ? -1 : 1;
-      bay.position.set(outward * 3.8, 0, (index - .5) * 6.2);
-      floor.add(bay);
-
-      const parts = [
-        addBox(bay, [5.45, .4, 5.72], [0, -.2, 0], concrete),
-        addBox(bay, [.24, 1.05, 5.5], [outward * 2.55, .525, 0], concrete),
-        addBox(bay, [4.86, .8, .24], [-outward * .15, .4, -2.63], structure),
-        addBox(bay, [.37, 1.45, .37], [-outward * 2.25, .725, 2.43], structure),
-      ];
-      parts.forEach((mesh, part) => {
-        mesh.userData.element_id = item.elementIds[part % item.elementIds.length];
-      });
-    });
-  });
-  return floor;
-}
-
 export async function mountStandardFloor(
-  viewport: HTMLElement, url: string | undefined, onSelect: (id: string) => void,
+  viewport: HTMLElement, url: string, onSelect: (id: string) => void,
   onProgress: (event: ProgressEvent<EventTarget>) => void,
 ): Promise<FloorScene> {
   const renderer = new WebGLRenderer({ antialias: true, powerPreference: 'low-power' });
@@ -107,16 +71,11 @@ export async function mountStandardFloor(
   };
 
   try {
-    let geometry: Group;
-    if (url) {
-      const [{ GLTFLoader }, { MeshoptDecoder }] = await Promise.all([
-        import('three/addons/loaders/GLTFLoader.js'),
-        import('three/addons/libs/meshopt_decoder.module.js'),
-      ]);
-      geometry = (await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url, onProgress)).scene;
-    } else {
-      geometry = createDemoFloor();
-    }
+    const [{ GLTFLoader }, { MeshoptDecoder }] = await Promise.all([
+      import('three/addons/loaders/GLTFLoader.js'),
+      import('three/addons/libs/meshopt_decoder.module.js'),
+    ]);
+    const geometry = (await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url, onProgress)).scene;
     model.add(geometry);
     model.traverse((object) => {
       if (!(object instanceof Mesh)) return;

@@ -21,7 +21,7 @@ const featured = featuredIds.flatMap((id) => posts.filter((post) => post.id === 
     </div>
     <div class="featured-projects">
       {featured.map((post) => (
-        <article class="featured-project glass-card">
+        <article class="featured-project glass-card" data-depth-card>
           <Image src={post.data.cover} alt="" layout="none" width={640} height={360} fit="cover"
             widths={[320, 480, 640]} sizes="(max-width: 640px) calc(100vw - 36px), 400px"
             format="webp" quality={76} loading="lazy" decoding="async" />

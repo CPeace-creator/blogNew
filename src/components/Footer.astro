@@ -1,21 +1,11 @@
 ---
-import { ArrowUpRight, Github, Mail } from 'lucide-astro';
+import { Github, Mail, Rss, Heart, Sparkles, Code2 } from 'lucide-astro';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 ---
-
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div>
-      <a class="footer-brand" href={withBase('/')}>{SITE.title}</a>
-      <p>{SITE.description}</p>
-    </div>
-    <div class="footer-links">
-      <a href={SITE.github} target="_blank" rel="noreferrer">
-        <Github size={17} /> GitHub <ArrowUpRight size={14} />
-      </a>
-      <a href={`mailto:${SITE.email}`}><Mail size={17} /> 联系</a>
-    </div>
-    <p class="copyright">© {new Date().getFullYear()} {SITE.author} · Powered by Astro</p>
-  </div>
-</footer>
+<footer class="site-footer"><div class="footer-inner shell">
+ <div class="footer-ornament" aria-hidden="true"><span>✧</span><Sparkles size={24}/><Heart size={21}/><Sparkles size={24}/><span>✧</span></div>
+ <div class="footer-badges"><span><Code2 size={13}/> Astro</span><span>TypeScript</span><span>静态生成</span><span>用心记录</span></div>
+ <nav class="footer-links" aria-label="页脚导航"><a href={withBase('/')}>博客</a><a href={SITE.github} target="_blank" rel="noreferrer"><Github size={14}/> GitHub</a><a href={`mailto:${SITE.email}`}><Mail size={14}/> 联系</a><a href={withBase('/rss.xml')}><Rss size={14}/> RSS</a><a href={withBase('/sitemap-index.xml')}>站点地图</a></nav>
+ <p>© {new Date().getFullYear()} {SITE.author} · {SITE.title}</p><p class="footer-note">记录技术实践、项目复盘与生活观察。</p>
+</div></footer>

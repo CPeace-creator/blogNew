@@ -1,0 +1,18 @@
+---
+import type {CollectionEntry} from 'astro:content';
+import {ArrowUpRight,CalendarDays} from 'lucide-astro';
+import {withBase} from '../lib/paths';
+interface Props{posts:CollectionEntry<'blog'>[];kind:'category'|'tag';}
+const {posts,kind}=Astro.props;
+const values=[...new Set(posts.flatMap(p=>kind==='tag'?p.data.tags:[p.data.category]))];
+const count=(v:string)=>posts.filter(p=>kind==='tag'?p.data.tags.includes(v):p.data.category===v).length;
+---
+<section class="collection-page" data-browse-root data-browse-key={kind}>
+ <header class="collection-heading"><h1>{kind==='tag'?'标签':'分类'}</h1><p>{kind==='tag'?'沿着一个关键词，找到相关的记录。':'按主题，把想读的文章放在一起。'}</p></header>
+ <div class="browse-filters" aria-label={kind==='tag'?'按标签筛选':'按分类筛选'}><button type="button" data-browse-filter="" aria-pressed="true">全部 <small>{posts.length}</small></button>{values.map(v=><button type="button" data-browse-filter={v} aria-pressed="false">{kind==='tag'?'# ':''}{v}<small>{count(v)}</small></button>)}</div>
+ <p class="project-count" data-browse-count>共 {posts.length} 篇文章</p>
+ <div class="browse-list">{posts.map(post=><article class="browse-entry theme-card" data-browse-values={JSON.stringify(kind==='tag'?post.data.tags:[post.data.category])}><div class="post-meta"><span>{post.data.category}</span><time datetime={post.data.publishedAt.toISOString()}><CalendarDays size={13} style="display:inline;vertical-align:-2px"/> {new Intl.DateTimeFormat('zh-CN').format(post.data.publishedAt)}</time></div><h2><a href={withBase(`/posts/${post.id}/`)}>{post.data.title} <ArrowUpRight size={15} style="display:inline"/></a></h2><p>{post.data.description}</p></article>)}</div>
+</section>
+<script>
+ const root=document.querySelector<HTMLElement>('[data-browse-root]');if(root){const buttons=[...root.querySelectorAll<HTMLButtonElement>('[data-browse-filter]')],entries=[...root.querySelectorAll<HTMLElement>('[data-browse-values]')],key=root.dataset.browseKey||'tag';const show=(value:string)=>{let total=0;buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.browseFilter===value)));entries.forEach(entry=>{const match=!value||(JSON.parse(entry.dataset.browseValues||'[]')as string[]).includes(value);entry.hidden=!match;if(match)total++;});const count=root.querySelector('[data-browse-count]');if(count)count.textContent=`共 ${total} 篇文章`;};const current=()=>{const value=new URL(location.href).searchParams.get(key)||'';return buttons.some(b=>b.dataset.browseFilter===value)?value:'';};buttons.forEach(b=>b.addEventListener('click',()=>{const value=b.dataset.browseFilter||'',url=new URL(location.href);if(value)url.searchParams.set(key,value);else url.searchParams.delete(key);history.pushState(null,'',url);show(value);}));addEventListener('popstate',()=>show(current()));show(current());}
+</script>

@@ -1,0 +1,22 @@
+---
+import { Image } from 'astro:assets';
+import stars from '../assets/images/starry-river.webp';
+import cherry from '../assets/images/hero-japan.webp';
+import sky from '../assets/images/profile-sakura.webp';
+import layeredSky from '../assets/images/scenery/sky.webp';
+import moon from '../assets/images/scenery/moon.webp';
+import branches from '../assets/images/scenery/branches.webp';
+interface Props { home?: boolean; }
+const { home=false }=Astro.props;
+---
+<div class="site-wallpaper" aria-hidden="true">
+  <Image class="wallpaper-image wallpaper-stars" src={home?layeredSky:stars} alt="" layout="none" width={1920} widths={[640,960,1280,1920]} sizes="100vw" format="webp" quality={82} loading={home?'eager':'lazy'} decoding="async" fetchpriority={home?'high':undefined}/>
+  {home&&<>
+    <Image class="wallpaper-image scenery-moon" src={moon} alt="" layout="none" width={1920} widths={[640,960,1280,1920]} sizes="100vw" format="webp" quality={88} loading="eager" decoding="async"/>
+    <Image class="wallpaper-image scenery-branches" src={branches} alt="" layout="none" width={1920} widths={[640,960,1280,1920]} sizes="100vw" format="webp" quality={85} loading="eager" decoding="async"/>
+  </>}
+  <Image class="wallpaper-image wallpaper-cherry" src={cherry} alt="" layout="none" width={1920} widths={[640,960,1280,1920]} sizes="100vw" format="webp" quality={78} loading="lazy" decoding="async"/>
+  <Image class="wallpaper-image wallpaper-sky" src={sky} alt="" layout="none" width={1600} widths={[640,960,1600]} sizes="100vw" format="webp" quality={80} loading="lazy" decoding="async"/>
+  <div class="wallpaper-custom"></div><div class="wallpaper-shade"></div>
+</div>
+<div class="ambient-petals" aria-hidden="true">{Array.from({length:14},(_,i)=><i style={`--i:${i};--drift:${i%3===0?'-80':'100'}px`}></i>)}</div>

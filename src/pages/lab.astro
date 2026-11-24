@@ -3,13 +3,15 @@ import { getCollection } from 'astro:content';
 import { ArrowDown, ArrowUpRight } from 'lucide-astro';
 import StandardFloor from '../components/StandardFloor.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ContentShell from '../components/ContentShell.astro';
 import { withBase } from '../lib/paths';
 
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 ---
 
 <BaseLayout title="实验室" description="回放标准层的施工进度，在 BIM 模型上查找落后部位和业务记录。" posts={posts}>
-  <section class="shell collection-page">
+  <ContentShell posts={posts} active="/lab/" wide>
+  <section class="collection-page">
     <header class="collection-heading"><h1>实验室</h1><p>回放标准层的施工进度，查找落后部位和对应记录。</p></header>
     <section class="floor-task glass-card" id="standard-floor-task" aria-labelledby="floor-task-heading">
       <h2 id="floor-task-heading">施工进度落后后，怎么跟进？</h2>
@@ -26,10 +28,11 @@ const posts = await getCollection('blog', ({ data }) => !data.draft);
     </section>
     <StandardFloor />
   </section>
+  </ContentShell>
 </BaseLayout>
 
 <style>
-  .floor-task { display: grid; gap: 10px; margin-bottom: 22px; padding: 18px clamp(16px, 4vw, 26px); scroll-margin-top: 92px; }
+  .floor-task { display: grid; gap: 10px; margin-bottom: 22px; padding: 18px clamp(16px, 4vw, 26px); scroll-margin-top: 28px; }
   .floor-task h2 { font-size: clamp(18px, 3vw, 23px); }
   .floor-task ol { margin: 0; padding-left: 1.5em; }
   .floor-task li { padding-block: 2px; }

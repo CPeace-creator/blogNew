@@ -1,107 +1,35 @@
 ---
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import heroImage from '../assets/images/hero-japan.webp';
-import { ArrowDown, ArrowRight, Box, Sparkles } from 'lucide-astro';
+import {getCollection} from 'astro:content';
+import {Image} from 'astro:assets';
+import {ArrowDown,BookOpen,Box,Github,Mail,Rss,Sparkles} from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ContentShell from '../components/ContentShell.astro';
 import PostCard from '../components/PostCard.astro';
-import ProfileSidebar from '../components/ProfileSidebar.astro';
-import HeroScene from '../components/HeroScene.astro';
-import FeaturedProjects from '../components/FeaturedProjects.astro';
-import { SITE } from '../config';
-import { withBase } from '../lib/paths';
-
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()
-);
-const categories = ['全部', ...new Set(posts.map((post) => post.data.category))];
+import avatar from '../assets/images/profile-avatar.jpg';
+import {SITE} from '../config';
+import {withBase} from '../lib/paths';
+const posts=(await getCollection('blog',({data})=>!data.draft)).sort((a,b)=>Number(b.data.featured)-Number(a.data.featured)||+b.data.publishedAt-+a.data.publishedAt);
+const categories=['全部',...new Set(posts.map(p=>p.data.category))];
 ---
-
-<BaseLayout posts={posts}>
-  <section class="home-hero" aria-labelledby="hero-title">
-    <Image src={heroImage} alt="夜晚盛开的樱花与河岸灯光" layout="none"
-      width={1920} widths={[640, 960, 1280, 1920]} sizes="100vw"
-      format="webp" quality={76} loading="eager" decoding="async" fetchpriority="high" />
-    <div class="hero-shade" aria-hidden="true"></div>
-    <HeroScene />
-    <div class="petals" aria-hidden="true">
-      {Array.from({ length: 12 }).map((_, index) => <i style={`--i:${index}`}></i>)}
-    </div>
-    <div class="hero-content shell">
-      <h1 id="hero-title">{SITE.title}</h1>
-      <p class="hero-intro">我是陈嘉鸿，做过 BIM 项管系统、AI 投标平台，也给自己做过学习记录工具。这里写我在这些项目里解决过的问题，以及做决定时考虑过什么。</p>
-      <div class="hero-actions">
-        <a class="hero-link hero-link-primary" href="#featured-projects">看代表项目 <ArrowDown size={18} aria-hidden="true" /></a>
-        <a class="hero-link" href={withBase('/lab/#standard-floor-task')}><Box size={17} aria-hidden="true" /> 试用 BIM 演示</a>
-      </div>
-      <a class="hero-about" href={withBase('/about/')}>了解我和这些项目 <ArrowRight size={15} aria-hidden="true" /></a>
-    </div>
-    <button class="petals-toggle glass-panel" type="button" data-petals-toggle aria-pressed="true"><Sparkles size={17} /><span>关闭动态</span></button>
-    <div class="hero-wave" aria-hidden="true"></div>
-  </section>
-
-  <div class="home-surface">
-    <div class="dashboard shell">
-      <div class="main-feed">
-        <FeaturedProjects posts={posts} />
-
-        <section class="content-section" id="latest" aria-labelledby="latest-heading">
-          <div class="section-heading">
-            <h2 id="latest-heading">最近更新</h2>
-            <a class="text-link" href={withBase('/archive/')}>全部文章 <ArrowRight size={17} /></a>
-          </div>
-          <div class="category-tabs" role="tablist" aria-label="按分类筛选">
-            {categories.map((category, index) => (
-              <button type="button" role="tab" aria-selected={index === 0 ? 'true' : 'false'} data-category-filter={category}>{category}</button>
-            ))}
-          </div>
-          <div class="posts-grid" data-posts-grid>
-            {posts.map((post) => <PostCard post={post} layout="row" />)}
-          </div>
-          <p class="filter-empty" data-filter-empty hidden>这个分类暂时还没有文章。</p>
-        </section>
-      </div>
-      <ProfileSidebar posts={posts} />
-    </div>
+<BaseLayout posts={posts} home>
+ <section class="landing-hero" aria-labelledby="hero-title">
+  <div class="landing-center">
+   <div class="landing-profile"><span class="landing-tape" aria-hidden="true"></span><span class="landing-sticker landing-sticker--left" aria-hidden="true"><BookOpen size={32}/></span><span class="landing-sticker landing-sticker--right" aria-hidden="true"><Box size={32}/></span>
+    <Image class="landing-avatar" src={avatar} alt="陈嘉鸿的头像" layout="none" width={96} height={96} widths={[96,192]} sizes="76px" format="webp" quality={82} loading="eager" decoding="async"/>
+    <span class="landing-author">{SITE.author}</span><h1 id="hero-title">{SITE.title}</h1><p>把项目里的问题，写成能回看的记录。</p>
+    <nav class="landing-links" aria-label="欢迎页导航"><a href="#articles">文章</a><a href={withBase('/projects/')}>项目</a><a href={withBase('/lab/')}>实验室</a><a href={withBase('/about/')}>关于</a></nav><span class="landing-note" aria-hidden="true">欢迎来访</span>
+   </div>
+   <div class="landing-socials"><a href={SITE.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={19}/></a><a href={withBase('/lab/')} aria-label="实验室"><Box size={19}/></a><a href={`mailto:${SITE.email}`} aria-label="邮件"><Mail size={19}/></a><a href={withBase('/rss.xml')} aria-label="RSS 订阅"><Rss size={19}/></a></div>
   </div>
-
-  <script>
-    const filterButtons = document.querySelectorAll('[data-category-filter]');
-    const cards = document.querySelectorAll('[data-post-card]');
-    const empty = document.querySelector('[data-filter-empty]');
-
-    filterButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const category = button.getAttribute('data-category-filter');
-        let visible = 0;
-        filterButtons.forEach((item) => item.setAttribute('aria-selected', String(item === button)));
-        cards.forEach((card) => {
-          const show = category === '全部' || card.getAttribute('data-category') === category;
-          card.toggleAttribute('hidden', !show);
-          if (show) visible += 1;
-        });
-        if (empty instanceof HTMLElement) empty.hidden = visible > 0;
-      });
-    });
-
-    const canTilt = matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (canTilt) {
-      cards.forEach((card) => {
-        if (!(card instanceof HTMLElement)) return;
-        card.addEventListener('pointermove', (event) => {
-          const rect = card.getBoundingClientRect();
-          const x = (event.clientX - rect.left) / rect.width;
-          const y = (event.clientY - rect.top) / rect.height;
-          card.style.setProperty('--tilt-x', `${(0.5 - y) * 5}deg`);
-          card.style.setProperty('--tilt-y', `${(x - 0.5) * 6}deg`);
-          card.style.setProperty('--shine-x', `${x * 100}%`);
-          card.style.setProperty('--shine-y', `${y * 100}%`);
-        });
-        card.addEventListener('pointerleave', () => {
-          card.style.setProperty('--tilt-x', '0deg');
-          card.style.setProperty('--tilt-y', '0deg');
-        });
-      });
-    }
-  </script>
+  <a class="landing-scroll" href="#articles" aria-label="向下阅读文章"><ArrowDown size={32}/></a><div class="landing-wave" aria-hidden="true"></div>
+ </section>
+ <section class="home-content" id="articles" aria-label="最新文章">
+  <ContentShell posts={posts} active="/" wide>
+   <div class="feed-heading theme-card"><h2><Sparkles size={16} style="display:inline;vertical-align:-2px;color:var(--accent)"/> 在这里，慢慢记录</h2><span data-feed-count>共 {posts.length} 篇文章</span></div>
+   <div class="feed-filters" aria-label="按分类筛选文章">{categories.map((category,i)=><button type="button" data-feed-category={category} aria-pressed={i===0?'true':'false'}>{category}</button>)}</div>
+   <div class="feed-grid" data-feed-grid>{posts.map((post,i)=><div data-feed-entry data-category={post.data.category} hidden={i>=6}><PostCard post={post}/></div>)}</div>
+   <p class="empty-card theme-card" data-feed-empty hidden>这个分类暂时没有文章。</p><nav class="pagination" data-feed-pagination aria-label="文章分页"></nav>
+  </ContentShell>
+ </section>
+ <script>import '../scripts/feed';</script>
 </BaseLayout>

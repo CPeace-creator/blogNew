@@ -1,11 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
-import sky from '../assets/images/about-sky.jpg';
 import avatar from '../assets/images/profile-avatar.jpg';
 import { ArrowUpRight, Github, Mail } from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProfileSidebar from '../components/ProfileSidebar.astro';
+import ContentShell from '../components/ContentShell.astro';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 
@@ -13,17 +12,8 @@ const posts = await getCollection('blog', ({ data }) => !data.draft);
 ---
 
 <BaseLayout title="关于我" description="关于湘江中路，以及它的作者陈嘉鸿。" posts={posts}>
-  <section class="subpage-hero">
-    <Image src={sky} alt="城市高架与暮色天空" layout="none"
-      width={1920} widths={[640, 960, 1280, 1920]} sizes="100vw"
-      format="webp" quality={78} loading="eager" decoding="async" fetchpriority="high" />
-    <div class="hero-shade"></div>
-    <div class="subpage-title"><h1>关于我</h1></div>
-    <div class="hero-wave"></div>
-  </section>
-
-  <div class="page-surface">
-    <div class="dashboard shell">
+  <ContentShell posts={posts} active="/about/">
+    <div class="collection-heading"><h1>关于我</h1><p>很高兴在这里遇见你。</p></div>
       <div class="about-main">
         <section class="about-card glass-card">
           <h2 class="about-name">你好，我是陈嘉鸿。</h2>
@@ -63,7 +53,5 @@ const posts = await getCollection('blog', ({ data }) => !data.draft);
           <div><a href={`mailto:${SITE.email}`}><Mail size={18} /> {SITE.email} <ArrowUpRight size={15} /></a><a href={SITE.github} target="_blank" rel="noreferrer"><Github size={18} /> GitHub <ArrowUpRight size={15} /></a></div>
         </section>
       </div>
-      <ProfileSidebar posts={posts} />
-    </div>
-  </div>
+  </ContentShell>
 </BaseLayout>

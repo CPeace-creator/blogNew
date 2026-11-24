@@ -1,0 +1,18 @@
+---
+import { Home, FolderKanban, BookOpen, FlaskConical, Archive, Tags } from 'lucide-astro';
+import { withBase } from '../lib/paths';
+interface Props { posts: Array<{data:{category:string}}>; active?: string; }
+const {posts,active}=Astro.props;
+const nav=[
+ {label:'主页',href:'/',icon:Home,count:undefined},
+ {label:'项目',href:'/projects/',icon:FolderKanban,count:posts.filter(p=>p.data.category==='项目').length},
+ {label:'技术笔记',href:'/notes/',icon:BookOpen,count:posts.filter(p=>['技术笔记','技术成长'].includes(p.data.category)).length},
+ {label:'实验室',href:'/lab/',icon:FlaskConical,count:undefined},
+ {label:'归档',href:'/archive/',icon:Archive,count:posts.length},
+ {label:'标签',href:'/tags/',icon:Tags,count:undefined}
+];
+const pathname=Astro.url.pathname;
+---
+<nav class="section-nav theme-card" aria-label="栏目导航">
+ {nav.map(({label,href,icon:Icon,count})=><a href={withBase(href)} class:list={[{'is-home':href==='/'}]} aria-label={label} aria-current={(active?active===href:pathname===withBase(href))?'page':undefined}><Icon size={16}/><span>{label}</span>{count!==undefined&&<small>{count}</small>}</a>)}
+</nav>

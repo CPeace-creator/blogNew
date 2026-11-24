@@ -1,0 +1,8 @@
+---
+import {getCollection} from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContentShell from '../components/ContentShell.astro';
+import BrowseCollection from '../components/BrowseCollection.astro';
+const posts=(await getCollection('blog',({data})=>!data.draft)).sort((a,b)=>+b.data.publishedAt-+a.data.publishedAt);
+---
+<BaseLayout title="标签" description="按标签查找湘江中路的文章。" posts={posts}><ContentShell posts={posts} active="/tags/"><BrowseCollection posts={posts} kind="tag"/></ContentShell></BaseLayout>

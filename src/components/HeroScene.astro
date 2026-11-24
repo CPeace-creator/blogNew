@@ -1,7 +1,98 @@
-<div class="hero-3d" data-hero-scene aria-hidden="true">
-  <canvas data-hero-canvas></canvas>
+---
+import { BookOpen, ArrowUpRight } from 'lucide-astro';
+---
+
+<div class="studio-scene" data-hero-scene aria-hidden="true">
+  <div class="studio-position">
+    <div class="studio-floor"></div>
+    <div class="studio-world" data-hero-world>
+      <span class="studio-orbit studio-orbit--back"></span>
+      <span class="studio-orbit studio-orbit--front"></span>
+      <div class="studio-papers">
+        <div class="studio-paper studio-paper--back"></div>
+        <div class="studio-paper studio-paper--middle"></div>
+        <div class="studio-paper studio-paper--front">
+          <span class="paper-mark"><BookOpen size={23} strokeWidth={1.4} /><ArrowUpRight size={19} strokeWidth={1.4} /></span>
+          <span class="paper-caption">灵感与实践</span>
+          <strong>项目随记</strong>
+          <span class="paper-rule"></span>
+          <span class="paper-rule paper-rule--short"></span>
+          <div class="paper-chart"><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="paper-number">01 / NOTES</span>
+        </div>
+      </div>
+      <div class="studio-cube">
+        <span class="studio-face studio-face--front"></span><span class="studio-face studio-face--back"></span>
+        <span class="studio-face studio-face--right"></span><span class="studio-face studio-face--left"></span>
+        <span class="studio-face studio-face--top"></span><span class="studio-face studio-face--bottom"></span>
+      </div>
+      <span class="studio-sphere"></span>
+      <span class="studio-small-sphere"></span>
+      <span class="studio-dot studio-dot--one"></span>
+      <span class="studio-dot studio-dot--two"></span>
+    </div>
+  </div>
 </div>
 
 <script>
-  import '../scripts/hero-loader';
+  import '../scripts/hero-scene';
 </script>
+
+<style>
+  .studio-scene { position: absolute; z-index: 1; inset: 0; overflow: hidden; pointer-events: none; }
+  .studio-position { position: absolute; top: 49%; left: 74%; width: 420px; height: 360px; transform: translate(-50%, -50%); }
+  .studio-world { position: absolute; inset: 0; transform-style: preserve-3d; transform: perspective(1000px) rotateX(var(--studio-rx, 0deg)) rotateY(var(--studio-ry, 0deg)); transition: transform 400ms ease-out; }
+  .studio-floor { position: absolute; right: -70px; bottom: -25px; left: -70px; height: 230px; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 35px 35px; mask-image: radial-gradient(ellipse, #000 12%, transparent 68%); opacity: .55; transform: perspective(650px) rotateX(62deg) rotateZ(-12deg); }
+  .studio-orbit { position: absolute; top: 49px; left: 20px; width: 355px; height: 224px; border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent); border-radius: 50%; }
+  .studio-orbit--back { transform: rotateZ(-26deg) rotateY(24deg); }
+  .studio-orbit--front { top: 70px; left: 25px; transform: rotateZ(32deg) rotateX(48deg) translateZ(35px); opacity: .6; }
+  .studio-papers { position: absolute; top: 30px; left: 96px; width: 198px; height: 258px; transform-style: preserve-3d; animation: studio-paper-float 9s ease-in-out infinite; }
+  .studio-paper { position: absolute; inset: 0; border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line)); border-radius: 9px 16px 16px 9px; background: var(--surface-solid); }
+  .studio-paper--back { background: color-mix(in srgb, var(--accent-soft) 75%, var(--page)); transform: translate3d(24px, -10px, -25px) rotateZ(11deg); box-shadow: 0 14px 30px rgba(58,77,94,.08); }
+  .studio-paper--middle { background: repeating-linear-gradient(0deg, var(--line) 0 1px, var(--surface-solid) 1px 4px); transform: translate3d(9px, 9px, -8px); }
+  .studio-paper--front { display: flex; flex-direction: column; padding: 24px 24px 18px; background: linear-gradient(145deg, var(--surface-solid) 45%, var(--page-soft)); box-shadow: 0 26px 45px rgba(58,77,94,.12), 0 3px 5px rgba(58,77,94,.05); transform: translateZ(15px); }
+  .studio-paper--front::before { position: absolute; inset: 0 auto 0 0; width: 7px; border-radius: 8px 0 0 8px; background: var(--accent-soft); content: ''; }
+  .paper-mark { display: flex; align-items: center; justify-content: space-between; color: var(--accent-strong); }
+  .paper-caption { margin-top: 22px; color: var(--muted); font-size: 10px; letter-spacing: .14em; }
+  .studio-paper strong { margin-top: 5px; color: var(--ink-strong); font-size: 25px; font-weight: 650; letter-spacing: .05em; }
+  .paper-rule { height: 2px; flex: none; margin-top: 15px; border-radius: 2px; background: var(--line); }
+  .paper-rule--short { width: 65%; margin-top: 7px; }
+  .paper-chart { display: flex; height: 43px; align-items: end; gap: 7px; margin-top: 14px; padding-bottom: 5px; border-bottom: 1px solid var(--line); }
+  .paper-chart i { width: 16px; height: 40%; border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent); border-radius: 3px 3px 0 0; background: var(--accent-soft); }
+  .paper-chart i:nth-child(2) { height: 65%; }
+  .paper-chart i:nth-child(3) { height: 48%; }
+  .paper-chart i:nth-child(4) { height: 90%; background: color-mix(in srgb, var(--accent) 50%, var(--accent-soft)); }
+  .paper-chart i:nth-child(5) { height: 75%; }
+  .paper-number { margin-top: auto; color: var(--muted); font-size: 8px; letter-spacing: .16em; }
+  .studio-cube { position: absolute; top: 235px; left: 319px; width: 52px; height: 52px; transform-style: preserve-3d; animation: studio-cube-turn 32s linear infinite; }
+  .studio-face { position: absolute; inset: 0; border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); background: var(--accent-soft); backface-visibility: hidden; }
+  .studio-face--front { transform: translateZ(26px); }
+  .studio-face--back { transform: rotateY(180deg) translateZ(26px); }
+  .studio-face--right { background: color-mix(in srgb, var(--accent) 55%, var(--accent-soft)); transform: rotateY(90deg) translateZ(26px); }
+  .studio-face--left { transform: rotateY(-90deg) translateZ(26px); }
+  .studio-face--top { background: var(--surface-solid); transform: rotateX(90deg) translateZ(26px); }
+  .studio-face--bottom { transform: rotateX(-90deg) translateZ(26px); }
+  .studio-sphere { position: absolute; top: 34px; left: 329px; width: 48px; height: 48px; border: 1px solid color-mix(in srgb, var(--accent) 12%, transparent); border-radius: 50%; background: radial-gradient(circle at 28% 22%, var(--surface-solid), var(--accent-soft) 48%, color-mix(in srgb, var(--accent) 75%, var(--page)) 95%); box-shadow: 8px 14px 24px color-mix(in srgb, var(--accent) 13%, transparent); animation: studio-sphere-float 11s ease-in-out infinite; }
+  .studio-small-sphere { position: absolute; top: 239px; left: 31px; width: 27px; height: 27px; border-radius: 50%; background: radial-gradient(circle at 28% 22%, var(--surface-solid), var(--accent-soft) 40%, var(--accent) 98%); box-shadow: 5px 9px 13px color-mix(in srgb, var(--accent) 18%, transparent); }
+  .studio-dot { position: absolute; width: 5px; height: 5px; border: 1px solid var(--accent); border-radius: 50%; opacity: .45; }
+  .studio-dot--one { top: 116px; left: 33px; }
+  .studio-dot--two { top: 315px; left: 252px; width: 8px; height: 8px; }
+  @keyframes studio-paper-float { 0%, 100% { transform: translateY(0) rotateZ(-8deg) rotateY(-16deg) rotateX(9deg); } 50% { transform: translateY(-9px) rotateZ(-6deg) rotateY(-16deg) rotateX(9deg); } }
+  @keyframes studio-sphere-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
+  @keyframes studio-cube-turn { from { transform: rotateX(-18deg) rotateY(32deg) rotateZ(8deg); } to { transform: rotateX(-18deg) rotateY(392deg) rotateZ(8deg); } }
+  .studio-scene[data-active='false'] :is(.studio-papers, .studio-cube, .studio-sphere),
+  :global(:root[data-petals='off']) :is(.studio-papers, .studio-cube, .studio-sphere) { animation-play-state: paused; }
+  :global(:root[data-petals='off']) .studio-world { transform: none; transition: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .studio-world { transform: none; transition: none; }
+    .studio-papers { animation: none; transform: rotateZ(-8deg) rotateY(-16deg) rotateX(9deg); }
+    .studio-sphere { animation: none; }
+    .studio-cube { animation: none; transform: rotateX(-18deg) rotateY(32deg) rotateZ(8deg); }
+  }
+  @media (min-width: 641px) and (max-width: 980px) {
+    .studio-position { left: 77%; transform: translate(-50%, -50%) scale(.78); }
+  }
+  @media (max-width: 640px) {
+    .studio-position { top: auto; bottom: 2px; left: 50%; transform: translateX(-50%) scale(.65); transform-origin: center bottom; }
+  }
+</style>

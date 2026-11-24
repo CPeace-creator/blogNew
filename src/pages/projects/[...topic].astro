@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentShell from '../../components/ContentShell.astro';
 import PostCard from '../../components/PostCard.astro';
 import { PROJECT_TOPICS } from '../../lib/project-topics';
 import { withBase } from '../../lib/paths';
@@ -22,7 +23,8 @@ const count = (slug: string) => slug === 'all' ? projects.length : projects.filt
 ---
 
 <BaseLayout title={title} description={topic?.description ?? description} posts={posts}>
-  <section class="shell collection-page" data-projects data-topic={current} data-site-title={SITE.title}>
+  <ContentShell posts={posts} active="/projects/" wide>
+  <section class="collection-page" data-projects data-topic={current} data-site-title={SITE.title}>
     <header class="collection-heading">
       <h1>项目</h1>
       <p data-topic-description>{topic?.description ?? description}</p>
@@ -48,6 +50,7 @@ const count = (slug: string) => slug === 'all' ? projects.length : projects.filt
     </div>
     <p data-project-empty hidden={count(current) !== 0}>这个方向暂时没有项目。</p>
   </section>
+  </ContentShell>
 </BaseLayout>
 
 <script>

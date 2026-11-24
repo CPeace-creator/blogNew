@@ -1,0 +1,13 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ProfileSidebar from './ProfileSidebar.astro';
+import SectionNav from './SectionNav.astro';
+import SiteWidgets from './SiteWidgets.astro';
+interface Props {posts:CollectionEntry<'blog'>[]; active?:string; reading?:boolean; wide?:boolean; id?:string;}
+const {posts,active,reading=false,wide=false,id}=Astro.props;
+---
+<div class:list={['theme-shell','shell',{'theme-shell--reading':reading,'theme-shell--wide':wide}]} id={id}>
+ <ProfileSidebar posts={posts} widgets={wide}/>
+ <div class="theme-main"><SectionNav posts={posts} active={active}/><slot/></div>
+ {!wide&&<aside class="theme-rail" aria-label={reading?'阅读辅助':'时间与站点信息'}><slot name="rail"><SiteWidgets posts={posts}/></slot></aside>}
+</div>

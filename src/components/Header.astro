@@ -1,67 +1,24 @@
 ---
-import { Archive, BookOpen, FlaskConical, FolderKanban, Home, Menu, Moon, Palette, Search, Sun, UserRound, X } from 'lucide-astro';
+import { Search, SlidersHorizontal, Sun, Moon, Menu, CloudRain, Sparkles } from 'lucide-astro';
 import { Image } from 'astro:assets';
 import avatar from '../assets/images/profile-avatar.jpg';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
-
-const pathname = Astro.url.pathname;
-const nav = [
-  { label: '主页', href: '/', icon: Home },
-  { label: '项目', href: '/projects/', icon: FolderKanban },
-  { label: '技术笔记', href: '/notes/', icon: BookOpen },
-  { label: '实验室', href: '/lab/', icon: FlaskConical },
-  { label: '归档', href: '/archive/', icon: Archive },
-  { label: '关于', href: '/about/', icon: UserRound },
-];
-const activePage = (href: string) => href === '/' ? pathname === withBase(href) : pathname.startsWith(withBase(href));
+interface Props { activeSection?: string; }
 ---
-
-<header class="site-header glass-panel" data-header>
-  <a class="brand" href={withBase('/')} aria-label={`${SITE.title}首页`}>
-    <Image src={avatar} alt="" layout="none" width={38} height={38}
-      widths={[38, 76]} sizes="38px" format="webp" quality={80} loading="eager" decoding="async" />
-    <span>{SITE.shortTitle}</span>
-  </a>
-
-  <nav class="desktop-nav" aria-label="主导航">
-    {nav.map(({ label, href, icon: Icon }) => (
-      <a href={withBase(href)} aria-current={activePage(href) ? 'page' : undefined}>
-        <Icon size={16} strokeWidth={2} /> {label}
-      </a>
-    ))}
-  </nav>
-
-  <div class="header-actions">
-    <button class="search-trigger" type="button" data-search-open aria-label="打开搜索">
-      <Search size={18} strokeWidth={1.8} />
-      <span>搜索</span>
-    </button>
-    <button class="icon-button palette-toggle" type="button" data-palette-toggle aria-label="选择主题色" aria-expanded="false">
-      <Palette size={19} strokeWidth={1.8} />
-    </button>
-    <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="切换深浅主题">
-      <Sun class="theme-sun" size={19} strokeWidth={1.8} />
-      <Moon class="theme-moon" size={19} strokeWidth={1.8} />
-    </button>
-    <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-label="打开导航" aria-expanded="false">
-      <Menu class="menu-open-icon" size={21} />
-      <X class="menu-close-icon" size={21} />
-    </button>
-  </div>
-
-  <nav class="mobile-nav" data-mobile-nav aria-label="移动端导航">
-    {nav.map(({ label, href, icon: Icon }) => <a href={withBase(href)} aria-current={activePage(href) ? 'page' : undefined}><Icon size={17} />{label}</a>)}
-    <button type="button" data-search-open>搜索文章</button>
-  </nav>
-
-  <div class="palette-popover glass-panel" data-palette-popover hidden>
-    <p>主题色</p>
-    <div class="color-swatches" aria-label="选择主题色">
-      <button type="button" data-accent="sakura" aria-label="樱花粉" style="--swatch:#ef7197"></button>
-      <button type="button" data-accent="sky" aria-label="晴空蓝" style="--swatch:#43a9d8"></button>
-      <button type="button" data-accent="mint" aria-label="薄荷绿" style="--swatch:#3caf91"></button>
-      <button type="button" data-accent="sunset" aria-label="落日橙" style="--swatch:#f07a4f"></button>
+<header class="site-header" data-header>
+  <div class="header-inner shell">
+    <a class="brand" href={withBase('/')} aria-label={`${SITE.title}首页`}>
+      <Image src={avatar} alt="" layout="none" width={34} height={34} widths={[34,68]} sizes="34px" format="webp" quality={80} loading="eager" decoding="async" />
+      <span>{SITE.title}</span>
+    </a>
+    <div class="header-actions">
+      <button class="header-tool search-trigger" type="button" data-search-open aria-label="打开搜索"><Search size={19}/></button>
+      <button class="header-tool ambient-trigger" type="button" data-open-dialog="ambient-dialog" aria-label="环境雨声"><CloudRain size={19}/></button>
+      <button class="header-tool motion-trigger" type="button" data-motion-toggle aria-label="暂停背景动态" aria-pressed="true"><Sparkles size={19}/></button>
+      <button class="header-tool" type="button" data-open-dialog="appearance-dialog" aria-label="外观设置"><SlidersHorizontal size={19}/></button>
+      <button class="header-tool" type="button" data-theme-toggle aria-label="切换深浅主题"><Sun class="theme-sun" size={20}/><Moon class="theme-moon" size={20}/></button>
+      <button class="header-tool" type="button" data-open-dialog="navigation-dialog" aria-label="打开导航"><Menu size={22}/></button>
     </div>
   </div>
 </header>

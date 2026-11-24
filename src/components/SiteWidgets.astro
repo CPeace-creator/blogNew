@@ -1,0 +1,11 @@
+---
+import { Clock, CalendarDays, ChevronLeft, ChevronRight, TrendingUp } from 'lucide-astro';
+interface Props {posts:Array<{data:{publishedAt:Date}}>}
+const {posts}=Astro.props;
+const dates=posts.map(p=>p.data.publishedAt.toISOString().slice(0,10));
+---
+<div class="site-widgets">
+ <section class="clock-card theme-card decorated-card"><h2 class="widget-title"><Clock size={17}/> 此时此刻</h2><p class="clock-greeting" data-clock-greeting>你好，欢迎来到这里</p><time class="live-clock" data-live-clock>--:--:--</time><p class="clock-date" data-clock-date>北京时间</p><span class="clock-timezone">留一点时间，记录今天。</span></section>
+ <section class="calendar-card theme-card"><div class="calendar-heading"><h2 class="widget-title"><CalendarDays size={17}/> 日历</h2><div><button type="button" data-calendar-prev aria-label="上个月"><ChevronLeft size={15}/></button><button type="button" data-calendar-next aria-label="下个月"><ChevronRight size={15}/></button></div></div><p data-calendar-label></p><div class="calendar-week">{['一','二','三','四','五','六','日'].map(day=><span>{day}</span>)}</div><div class="calendar-days" data-calendar-days></div><small>圆点表示文章发布日期</small><script type="application/json" is:inline data-post-dates set:html={JSON.stringify(dates)}></script></section>
+ <section class="time-progress-card theme-card"><h2 class="widget-title"><TrendingUp size={17}/> 时间刻度</h2>{[['year','这一年'],['month','这个月'],['week','这一周']].map(([key,label])=><div class="time-progress-row"><span>{label}</span><b data-time-value={key}>0%</b><div><i data-time-bar={key}></i></div></div>)}<small>按北京时间计算</small></section>
+</div>

@@ -1,62 +1,27 @@
 ---
-import { BookOpen, Github, Mail, Sparkles } from 'lucide-astro';
+import { BookOpen, Github, Mail, Sparkles, ArrowUpRight, Tags, FolderOpen, Rss } from 'lucide-astro';
 import { Image } from 'astro:assets';
 import avatar from '../assets/images/profile-avatar.jpg';
+import cherry from '../assets/images/profile-sakura.webp';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
-
-interface Props {
-  posts: Array<{ data: { category: string; tags: string[] } }>;
-}
-
-const { posts } = Astro.props;
-const categories = [...new Set(posts.map((post) => post.data.category))];
-const categoryRoutes = new Map([
-  ['项目', '/projects/'],
-  ['技术笔记', '/notes/'],
-  ['技术成长', '/notes/'],
-  ['自我介绍', '/about/'],
-]);
-const tags = [...new Set(posts.flatMap((post) => post.data.tags))].slice(0, 8);
+import SiteWidgets from './SiteWidgets.astro';
+interface Props { widgets?:boolean; posts:Array<{id?:string;data:{category:string;tags:string[];title?:string;publishedAt:Date}}> }
+const {posts,widgets=false}=Astro.props;
+const categories=[...new Set(posts.map(p=>p.data.category))];
+const tags=[...new Set(posts.flatMap(p=>p.data.tags))];
 ---
-
 <aside class="profile-sidebar" aria-label="站点信息">
-  <section class="profile-card glass-card">
-    <div class="profile-cover"></div>
-    <Image class="profile-avatar" src={avatar} alt="陈嘉鸿的头像" layout="none"
-      width={112} height={112} widths={[112, 224]} sizes="96px" format="webp" quality={80}
-      loading="lazy" decoding="async" />
-    <h2>{SITE.author}</h2>
-    <p>我写自己做过的项目，以及那些做完还想再核对一遍的细节。</p>
-    <div class="profile-socials">
-      <a href={SITE.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={18} /></a>
-      <a href={`mailto:${SITE.email}`} aria-label="邮件"><Mail size={18} /></a>
-      <a href={withBase('/about/')} aria-label="关于我"><Sparkles size={18} /></a>
-    </div>
-    <div class="profile-stats">
-      <a href={withBase('/archive/')}><strong>{posts.length}</strong><span>文章</span></a>
-      <a href={withBase('/archive/')}><strong>{categories.length}</strong><span>分类</span></a>
-      <a href={withBase('/archive/')}><strong>{new Set(posts.flatMap((post) => post.data.tags)).size}</strong><span>标签</span></a>
-    </div>
-  </section>
-
-  <section class="notice-card glass-card">
-    <h2><BookOpen size={17} aria-hidden="true" /> 一篇项目复盘</h2>
-    <p>从一次模型更新和一份标书导出，看看我会怎样检查功能。</p>
-    <a href={withBase('/posts/project-workflow-checks/')}>我怎么检查一个功能能不能接着用</a>
-  </section>
-
-  <section class="taxonomy-card glass-card">
-    <h2>分类</h2>
-    <div class="category-links">
-      {categories.map((category) => (
-        <a href={withBase(categoryRoutes.get(category) ?? '/archive/')}><span>{category}</span><strong>{posts.filter((post) => post.data.category === category).length}</strong></a>
-      ))}
-    </div>
-  </section>
-
-  <section class="taxonomy-card glass-card">
-    <h2>标签</h2>
-    <div class="sidebar-tags">{tags.map((tag) => <span>#{tag}</span>)}</div>
-  </section>
+ <section class="profile-card theme-card">
+  <div class="profile-cover"><Image src={cherry} alt="" layout="none" width={500} height={220} fit="cover" widths={[250,500]} sizes="250px" format="webp" quality={78} loading="lazy" decoding="async"/></div>
+  <a class="profile-avatar-link" href={withBase('/about/')} aria-label="了解陈嘉鸿"><Image class="profile-avatar" src={avatar} alt="陈嘉鸿的头像" layout="none" width={112} height={112} widths={[112,224]} sizes="88px" format="webp" quality={80} loading="lazy" decoding="async"/></a>
+  <h2>{SITE.author}</h2><p class="profile-motto">把做过的事，写成能回看的记录。</p>
+  <div class="profile-socials"><a href={SITE.github} aria-label="GitHub" target="_blank" rel="noreferrer"><Github size={18}/></a><a href={`mailto:${SITE.email}`} aria-label="邮件"><Mail size={18}/></a><a href={withBase('/about/')} aria-label="关于我"><Sparkles size={18}/></a><a href={withBase('/rss.xml')} aria-label="RSS 订阅"><Rss size={18}/></a></div>
+  <div class="profile-stats"><a href={withBase('/archive/')}><BookOpen size={14}/><span>文章</span><strong>{posts.length}</strong></a><a href={withBase('/tags/')}><Tags size={14}/><span>标签</span><strong>{tags.length}</strong></a></div>
+ </section>
+ <section class="welcome-card theme-card decorated-card"><h2 class="widget-title">📣 欢迎来访</h2><p>你好，我是陈嘉鸿。这里记录我做过的软件项目、开发中遇到的问题，以及那些值得再次核对的细节。</p><div class="widget-links"><a href={withBase('/about/')}>了解更多 <ArrowUpRight size={13}/></a><a href={SITE.github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={13}/></a></div></section>
+ <section class="sidebar-note theme-card decorated-card"><h2 class="widget-title"><BookOpen size={17}/> 给自己的一句话</h2><p>把问题说清楚，再把事情做好。</p><span>—— 开发中的小提醒</span></section>
+ <section class="taxonomy-card theme-card"><h2 class="widget-title"><FolderOpen size={17}/> 分类</h2><div class="category-links">{categories.map(category=><a href={withBase(`/categories/?category=${encodeURIComponent(category)}`)}><span>{category}</span><small>{posts.filter(p=>p.data.category===category).length}</small></a>)}</div></section>
+ <section class="taxonomy-card theme-card"><h2 class="widget-title"><Tags size={17}/> 标签</h2><div class="sidebar-tags">{tags.slice(0,12).map(tag=><a href={withBase(`/tags/?tag=${encodeURIComponent(tag)}`)}># {tag}</a>)}</div></section>
+{widgets&&<SiteWidgets posts={posts}/>}
 </aside>

@@ -16,7 +16,7 @@ const { posts } = Astro.props;
 const index = posts.map((post) => ({ ...post, url: withBase(`/posts/${post.id}/`) }));
 ---
 
-<dialog class="search-dialog" data-search-dialog>
+<dialog class="search-dialog" id="search-dialog" data-search-dialog aria-label="搜索文章">
   <div class="search-panel">
     <div class="search-field">
       <Search size={20} aria-hidden="true" />

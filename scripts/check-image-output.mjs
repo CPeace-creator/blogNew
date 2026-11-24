@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 
-const output = path.resolve('dist');
+const output = path.resolve(process.argv[2] ?? 'dist');
 const home = await readFile(path.join(output, 'index.html'), 'utf8');
 const canonical = home.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/)?.[1];
 assert.ok(canonical, 'The built home page must have a canonical URL');
@@ -47,9 +47,12 @@ for (const page of pages) {
 assert.ok(bodyImages > 0, 'The migrated article screenshots must be optimized, too');
 const homeImages = [...home.matchAll(/<img\b([^>]*)>/g)].map(([, image]) => image);
 const hero = homeImages.find((image) => attribute(image, 'fetchpriority') === 'high');
-assert.ok(hero, 'The LCP hero image must have high fetch priority');
-assert.equal(attribute(hero, 'loading'), 'eager', 'The LCP hero must not be lazy loaded');
-const covers = homeImages.filter((image) => attribute(image, 'sizes')?.includes('326px'));
+if (hero) {
+  assert.equal(attribute(hero, 'loading'), 'eager', 'The LCP hero must not be lazy loaded');
+} else {
+  assert.match(home, /<h1\b[^>]*id="hero-title"/, 'A text-led home page must render its primary heading in the initial HTML');
+}
+const covers = [...home.matchAll(/<a\b[^>]*class="post-card-image"[^>]*>\s*<img\b([^>]*)>/g)].map(([, image]) => image);
 const cardCount = [...home.matchAll(/<article\b[^>]*\bdata-post-card(?:\s|>|=)/g)].length;
 assert.equal(covers.length, cardCount, 'Every homepage cover must use responsive thumbnails');
 const homeSources = new Set(homeImages.map((image) => attribute(image, 'src')));

@@ -1,10 +1,16 @@
 ---
-import { ChevronLeft, ChevronRight, X } from 'lucide-astro';
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, RotateCcw } from 'lucide-astro';
 ---
 
 <dialog class="article-gallery" data-article-gallery aria-labelledby="gallery-heading">
   <header>
     <h2 id="gallery-heading">文章配图</h2>
+    <div class="gallery-zoom-tools" role="group" aria-label="图片缩放">
+      <button type="button" data-gallery-zoom-out aria-label="缩小图片" disabled><ZoomOut size={18}/></button>
+      <span data-gallery-zoom aria-label="缩放比例">100%</span>
+      <button type="button" data-gallery-zoom-in aria-label="放大图片" disabled><ZoomIn size={18}/></button>
+      <button type="button" data-gallery-reset aria-label="恢复图片大小" disabled><RotateCcw size={18}/></button>
+    </div>
     <button type="button" data-gallery-close aria-label="关闭大图"><X size={20} /></button>
   </header>
   <div class="gallery-stage" data-gallery-stage></div>
@@ -13,6 +19,7 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-astro';
     <p data-gallery-caption aria-live="polite"></p>
     <button type="button" data-gallery-next aria-label="下一张"><ChevronRight size={20} /></button>
   </footer>
+  <p class="gallery-help">滚轮或双指缩放 · 放大后拖动 · 双击恢复 · 左右切图</p>
 </dialog>
 
 <script>
@@ -26,7 +33,26 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-astro';
   h2 { font-size: 1rem; }
   button { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; }
   button:disabled { opacity: .45; cursor: default; }
-  .gallery-stage { display: grid; place-items: center; margin-block: 12px; min-height: min(160px, 30dvh); background: var(--page); border-radius: 8px; }
-  .gallery-stage :global(img) { display: block; width: auto; max-width: 100%; max-height: 68dvh; object-fit: contain; }
+  .gallery-zoom-tools { display: flex; align-items: center; justify-content: center; gap: 6px; margin-left: auto; }
+  .gallery-zoom-tools span { min-width: 44px; text-align: center; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .gallery-zoom-tools button { width: 36px; height: 36px; }
+  .gallery-stage { position: relative; display: grid; place-items: center; height: min(65dvh, 720px); margin-block: 12px; overflow: hidden; background: var(--page); border: 1px solid var(--line); border-radius: 10px; touch-action: none; user-select: none; }
+  .gallery-stage :global(img) { position: absolute; top: 50%; left: 50%; display: block; max-width: none; max-height: none; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+  .gallery-stage[data-zoomed='true'] { cursor: grab; }
+  .gallery-stage[data-zoomed='true'][data-dragging='true'] { cursor: grabbing; }
+  .gallery-help { margin: 9px 0 0; text-align: center; color: var(--muted); font-size: 12px; }
   footer p { text-align: center; color: var(--muted); font-size: 13px; }
+  @media(max-width:640px) {
+    .article-gallery { padding: 11px; width: calc(100% - 16px); }
+    header { flex-wrap: wrap; gap: 7px; }
+    header h2 { font-size: 15px; }
+    header > button { width: 32px; height: 32px; }
+    .gallery-zoom-tools { gap: 3px; }
+    .gallery-zoom-tools button { width: 31px; height: 32px; }
+    .gallery-zoom-tools span { min-width: 37px; }
+    .gallery-stage { height: 57dvh; }
+    footer p { font-size: 11px; overflow-wrap: anywhere; }
+    footer button { width: 35px; height: 35px; }
+    .gallery-help { font-size: 10px; }
+  }
 </style>

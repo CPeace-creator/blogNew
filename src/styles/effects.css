@@ -1,0 +1,72 @@
+/* Decorative motion is limited to the welcome scene and interactive cards. */
+html[data-home-page][data-image='stars'] .scenery-moon,
+html[data-home-page][data-image='stars'] .scenery-branches { display: block; }
+html[data-home-page] .wallpaper-stars {
+  transform: translate3d(calc(var(--hero-x, 0) * -4px), calc(var(--hero-y, 0) * -3px + var(--hero-scroll, 0) * .025px), 0) scale(1.045);
+}
+.scenery-moon {
+  transform: translate3d(calc(var(--hero-x, 0) * -10px), calc(var(--hero-y, 0) * -7px + var(--hero-scroll, 0) * .045px), 0) scale(1.045);
+}
+.scenery-branches {
+  transform: translate3d(calc(var(--hero-x, 0) * -20px), calc(var(--hero-y, 0) * -13px + var(--hero-scroll, 0) * .065px), 0) scale(1.045);
+}
+.landing-center {
+  perspective: 1100px;
+  transform: translate3d(calc(var(--hero-x, 0) * 5px), calc(var(--hero-y, 0) * 3px - var(--hero-scroll, 0) * .025px), 0);
+}
+.landing-profile {
+  transform: rotateX(var(--card-rx, 0deg)) rotateY(var(--card-ry, 0deg));
+  transition: transform .25s ease-out, box-shadow .25s ease;
+  animation: welcome-fade .65s ease both;
+}
+@keyframes welcome-fade { from { opacity: 0; } to { opacity: 1; } }
+.landing-profile[data-tilt-active] { box-shadow: 0 22px 65px #12112c35; }
+.post-card {
+  transform: perspective(1100px) rotateX(var(--card-rx, 0deg)) rotateY(var(--card-ry, 0deg));
+  transition: transform .28s ease-out, box-shadow .25s ease, border-color .2s ease;
+}
+.post-card[data-tilt-active] { transition-duration: .12s; box-shadow: 0 12px 28px #30476718; }
+.post-card::after, .landing-profile::after {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+  pointer-events: none;
+  content: '';
+  background: radial-gradient(ellipse at var(--shine-x, 50%) var(--shine-y, 50%), #ffffff26, transparent 60%);
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+:is(.post-card, .landing-profile)[data-tilt-active]::after { opacity: 1; }
+[data-reveal='pending'] { opacity: 0; translate: 0 10px; }
+[data-reveal='shown'] {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity .32s ease, translate .32s cubic-bezier(.2,.7,.3,1), transform .28s ease-out, box-shadow .25s ease, border-color .2s ease;
+  transition-delay: var(--entry-delay, 0ms), var(--entry-delay, 0ms), 0s, 0s, 0s;
+}
+html[data-theme-transition] { view-transition-name: theme-root; }
+html[data-theme-transition] .site-wallpaper { view-transition-name: none; }
+html[data-theme-transition]::view-transition-old(theme-root),
+html[data-theme-transition]::view-transition-new(theme-root) { animation: none; mix-blend-mode: normal; }
+html[data-theme-transition]::view-transition-old(theme-root) { z-index: 1; }
+html[data-theme-transition]::view-transition-new(theme-root) { z-index: 2; }
+html[data-motion='off'] :is(.post-card, .landing-profile, .landing-center, .scenery-moon, .scenery-branches, .wallpaper-stars) { transform: none; transition: none; animation: none; }
+html[data-motion='off'] [data-reveal] { opacity: 1; translate: none; transition: none; }
+html[data-motion='off'] :is(.post-card, .landing-profile)::after { display: none; }
+@media (hover: none), (pointer: coarse) {
+  :is(.post-card, .landing-profile, .landing-center, .scenery-moon, .scenery-branches) { transform: none; }
+  html[data-home-page] .wallpaper-stars { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.post-card, .landing-profile, .landing-center, .scenery-moon, .scenery-branches), html[data-home-page] .wallpaper-stars { transform: none; transition: none; animation: none; }
+  [data-reveal] { opacity: 1; translate: none; transition: none; }
+  :is(.post-card, .landing-profile)::after { display: none; }
+}
+
+/* Keep page entry independent from native navigation snapshots during resizing. */
+.theme-main { animation: content-appear .24s ease-out both; }
+@keyframes content-appear { from { opacity: .65; translate: 0 4px; } to { opacity: 1; translate: 0 0; } }
+html[data-motion='off'] .theme-main { animation: none; }
+@media (prefers-reduced-motion: reduce) { .theme-main { animation: none; } }

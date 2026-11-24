@@ -1,49 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import heroImage from '../assets/images/hero-japan.webp';
-import { ArrowUpRight } from 'lucide-astro';
+import {getCollection} from 'astro:content';
+import {ArrowUpRight} from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProfileSidebar from '../components/ProfileSidebar.astro';
-import { withBase } from '../lib/paths';
-
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()
-);
-const grouped = Map.groupBy(posts, (post) => post.data.publishedAt.getFullYear());
+import ContentShell from '../components/ContentShell.astro';
+import {withBase} from '../lib/paths';
+const posts=(await getCollection('blog',({data})=>!data.draft)).sort((a,b)=>+b.data.publishedAt-+a.data.publishedAt);
+const groups=Map.groupBy(posts,p=>p.data.publishedAt.getFullYear());
 ---
-
-<BaseLayout title="文章归档" description="湘江中路的全部文章归档。" posts={posts}>
-  <section class="subpage-hero">
-    <Image src={heroImage} alt="夜晚的樱花河岸" layout="none"
-      width={1920} widths={[640, 960, 1280, 1920]} sizes="100vw"
-      format="webp" quality={76} loading="eager" decoding="async" fetchpriority="high" />
-    <div class="hero-shade"></div>
-    <div class="subpage-title"><p>ARCHIVE / {posts.length.toString().padStart(2, '0')}</p><h1>文章归档</h1><span>把一路上的想法，整理成可以再次抵达的坐标。</span></div>
-    <div class="hero-wave"></div>
-  </section>
-
-  <div class="page-surface">
-    <div class="dashboard shell" id="timeline">
-      <div class="archive">
-        {[...grouped.entries()].map(([year, yearPosts]) => (
-          <section class="archive-year" aria-labelledby={`year-${year}`}>
-            <h2 id={`year-${year}`}>{year}</h2>
-            <div class="archive-list">
-              {yearPosts.map((post) => (
-                <a class="archive-item glass-card" href={withBase(`/posts/${post.id}/`)}>
-                  <time datetime={post.data.publishedAt.toISOString()}>
-                    {new Intl.DateTimeFormat('zh-CN', { month: '2-digit', day: '2-digit' }).format(post.data.publishedAt)}
-                  </time>
-                  <div><span>{post.data.category}</span><h3>{post.data.title}</h3><p>{post.data.description}</p></div>
-                  <ArrowUpRight size={21} />
-                </a>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
-      <ProfileSidebar posts={posts} />
-    </div>
-  </div>
-</BaseLayout>
+<BaseLayout title="文章归档" description="把一路上的记录，整理成可以再次抵达的坐标。" posts={posts}><ContentShell posts={posts} active="/archive/"><section class="collection-page"><header class="collection-heading"><h1>文章归档</h1><p>共 {posts.length} 篇记录，把一路上的想法慢慢收好。</p></header><div class="archive">{[...groups].map(([year,items])=><section class="archive-year" id={`year-${year}`}><h2>{year}<small>{items.length} 篇文章</small></h2><div class="archive-list">{items.map(post=><a class="archive-item theme-card" href={withBase(`/posts/${post.id}/`)}><time datetime={post.data.publishedAt.toISOString()}>{new Intl.DateTimeFormat('zh-CN',{month:'2-digit',day:'2-digit'}).format(post.data.publishedAt)}</time><div><span>{post.data.category}</span><h3>{post.data.title}</h3><p>{post.data.description}</p></div><ArrowUpRight size={17}/></a>)}</div></section>)}</div></section></ContentShell></BaseLayout>

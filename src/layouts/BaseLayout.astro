@@ -2,182 +2,36 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import SearchDialog from '../components/SearchDialog.astro';
+import ThemeBackdrop from '../components/ThemeBackdrop.astro';
+import ThemeControls from '../components/ThemeControls.astro';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 import '../styles/global.css';
-
+import '../styles/theme.css';
+import '../styles/effects.css';
 interface Props {
-  title?: string;
-  description?: string;
-  image?: string;
-  posts?: Array<{
-    id: string;
-    data: {
-      title: string;
-      description: string;
-      category: string;
-      tags: string[];
-    };
-  }>;
+ title?:string;description?:string;image?:string;reading?:boolean;home?:boolean;activeSection?:string;
+ posts?:Array<{id:string;data:{title:string;description:string;category:string;tags:string[]}}>;
 }
-
-const { title, description = SITE.description, image, posts = [] } = Astro.props;
-const pageTitle = title ? `${title} | ${SITE.title}` : `${SITE.title} | 个人博客`;
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const searchPosts = posts.map(({ id, data }) => ({ id, ...data }));
+const {title,description=SITE.description,image,reading=false,home=false,activeSection,posts=[]}=Astro.props;
+const pageTitle=title?`${title} | ${SITE.title}`:`${SITE.title} | 个人博客`;
+const canonical=new URL(Astro.url.pathname,Astro.site);
+const searchPosts=posts.map(({id,data})=>({id,...data}));
 ---
-
 <!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={description} />
-    <meta name="theme-color" content="#f4f2ed" />
-    <link rel="icon" href={withBase('/xiangjiang-tab.ico')} sizes="16x16 32x32 48x48" />
-    <link rel="icon" href={withBase('/xiangjiang-tab.png')} type="image/png" sizes="32x32" />
-    <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
-    <title>{pageTitle}</title>
-    <script is:inline>
-      const saved = localStorage.getItem('theme');
-      const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      document.documentElement.dataset.theme = theme;
-      document.documentElement.dataset.accent = localStorage.getItem('accent') || 'sakura';
-      if (localStorage.getItem('petals') === 'off') document.documentElement.dataset.petals = 'off';
-    </script>
-  </head>
-  <body>
-    <a class="skip-link" href="#main">跳到正文</a>
-    <Header />
-    <main id="main"><slot /></main>
-    <Footer />
-    <SearchDialog posts={searchPosts} />
-    <script>
-      const root = document.documentElement;
-      const themeToggle = document.querySelector('[data-theme-toggle]');
-      const menuToggle = document.querySelector('[data-menu-toggle]');
-      const mobileNav = document.querySelector('[data-mobile-nav]');
-      const paletteToggle = document.querySelector('[data-palette-toggle]');
-      const palettePopover = document.querySelector<HTMLElement>('[data-palette-popover]');
-      const dialog = document.querySelector('[data-search-dialog]');
-      const input = document.querySelector<HTMLInputElement>('[data-search-input]');
-      const results = document.querySelector('[data-search-results]');
-      const indexElement = document.querySelector('#search-index');
-      const motionToggle = document.querySelector<HTMLElement>('[data-petals-toggle]');
-      type SearchPost = {
-        title: string;
-        description: string;
-        category: string;
-        tags: string[];
-        url: string;
-      };
-      const searchIndex: SearchPost[] = indexElement ? JSON.parse(indexElement.textContent || '[]') : [];
-
-      if (motionToggle) {
-        const motionOff = root.dataset.petals === 'off';
-        motionToggle.setAttribute('aria-pressed', String(!motionOff));
-        const label = motionToggle.querySelector('span');
-        if (label) label.textContent = motionOff ? '开启动态' : '关闭动态';
-      }
-
-      themeToggle?.addEventListener('click', () => {
-        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-        root.dataset.theme = next;
-        localStorage.setItem('theme', next);
-      });
-
-      menuToggle?.addEventListener('click', () => {
-        const open = menuToggle.getAttribute('aria-expanded') === 'true';
-        menuToggle.setAttribute('aria-expanded', String(!open));
-        mobileNav?.toggleAttribute('data-open', !open);
-      });
-
-      paletteToggle?.addEventListener('click', () => {
-        const open = paletteToggle.getAttribute('aria-expanded') === 'true';
-        paletteToggle.setAttribute('aria-expanded', String(!open));
-        if (palettePopover) palettePopover.hidden = open;
-      });
-      document.querySelectorAll<HTMLButtonElement>('.color-swatches [data-accent]').forEach((button) => {
-        button.addEventListener('click', () => {
-          const accent = button.getAttribute('data-accent') || 'sakura';
-          root.dataset.accent = accent;
-          localStorage.setItem('accent', accent);
-          paletteToggle?.setAttribute('aria-expanded', 'false');
-          if (palettePopover) palettePopover.hidden = true;
-        });
-      });
-
-      motionToggle?.addEventListener('click', (event) => {
-        const off = root.dataset.petals === 'off';
-        root.dataset.petals = off ? 'on' : 'off';
-        localStorage.setItem('petals', off ? 'on' : 'off');
-        const button = event.currentTarget as HTMLElement;
-        button.setAttribute('aria-pressed', String(off));
-        const label = button.querySelector('span');
-        if (label) label.textContent = off ? '关闭动态' : '开启动态';
-      });
-
-      const renderResults = (query: string) => {
-        if (!(results instanceof HTMLElement)) return;
-        const term = query.trim().toLocaleLowerCase('zh-CN');
-        if (!term) {
-          results.innerHTML = '<p class="search-empty">输入关键词开始搜索</p>';
-          return;
-        }
-        const matches = searchIndex.filter((post) =>
-          [post.title, post.description, post.category, ...post.tags]
-            .join(' ')
-            .toLocaleLowerCase('zh-CN')
-            .includes(term)
-        );
-        results.replaceChildren();
-        if (!matches.length) {
-          results.innerHTML = '<p class="search-empty">没有找到相关文章</p>';
-          return;
-        }
-        matches.forEach((post) => {
-          const link = document.createElement('a');
-          link.className = 'search-result';
-          link.href = post.url;
-          const category = document.createElement('span');
-          category.textContent = post.category;
-          const title = document.createElement('strong');
-          title.textContent = post.title;
-          const description = document.createElement('p');
-          description.textContent = post.description;
-          link.append(category, title, description);
-          results.append(link);
-        });
-      };
-
-      document.querySelectorAll('[data-search-open]').forEach((button) => {
-        button.addEventListener('click', () => {
-          if (dialog instanceof HTMLDialogElement) {
-            dialog.showModal();
-            setTimeout(() => input?.focus(), 50);
-          }
-        });
-      });
-      document.querySelector('[data-search-close]')?.addEventListener('click', () => {
-        if (dialog instanceof HTMLDialogElement) dialog.close();
-      });
-      dialog?.addEventListener('click', (event) => {
-        if (event.target === dialog && dialog instanceof HTMLDialogElement) dialog.close();
-      });
-      input?.addEventListener('input', () => renderResults(input.value));
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && dialog instanceof HTMLDialogElement) dialog.close();
-        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-          event.preventDefault();
-          if (dialog instanceof HTMLDialogElement) dialog.showModal();
-          setTimeout(() => input?.focus(), 50);
-        }
-      });
-    </script>
-  </body>
+<html lang="zh-CN" data-blog-theme data-reading-page={reading||undefined} data-home-page={home||undefined}>
+ <head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width"/><meta name="generator" content={Astro.generator}/><meta name="description" content={description}/><meta name="theme-color" content="#f7f9fc"/>
+  <link rel="icon" href={withBase('/xiangjiang-tab.ico')} sizes="16x16 32x32 48x48"/><link rel="icon" href={withBase('/xiangjiang-tab.png')} type="image/png" sizes="32x32"/>
+  <link rel="canonical" href={canonical}/><meta property="og:type" content={reading?'article':'website'}/><meta property="og:title" content={pageTitle}/><meta property="og:description" content={description}/>{image&&<meta property="og:image" content={new URL(image,Astro.site)}/>}<title>{pageTitle}</title>
+  <script is:inline>
+   (()=>{const r=document.documentElement;let p={};try{p=JSON.parse(localStorage.getItem('xiangjiang-appearance')||'{}');if(!p.theme)p.theme=localStorage.getItem('theme')||'light';}catch{}const values={layout:'cards',font:'wenkai',wallpaper:'banner',image:'stars',cards:'border',nav:'flow',motion:'on'};for(const [k,v]of Object.entries(values))r.dataset[k]=typeof p[k]==='string'?p[k]:v;const m=p.theme||'light';r.dataset.theme=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;r.style.setProperty('--hue',String(Math.max(0,Math.min(360,Number(p.hue)||210))));r.style.setProperty('--reading-size',`${Math.max(16,Math.min(22,Number(p.fontSize)||18))}px`);r.style.setProperty('--wallpaper-dim',String(Math.max(0,Math.min(.65,Number(p.dim??.18)))));try{const image=localStorage.getItem('xiangjiang-wallpaper');if(image&&/^data:image\/(webp|png|jpeg);base64,/.test(image))r.style.setProperty('--custom-wallpaper',`url("${image}")`);}catch{}})();
+  </script>
+ </head>
+ <body id="site-top">
+  <a class="skip-link" href="#main">跳到正文</a><ThemeBackdrop home={home}/><Header activeSection={activeSection}/>
+  <main id="main" tabindex="-1"><slot/></main><Footer/><SearchDialog posts={searchPosts}/><ThemeControls reading={reading}/>
+  <script>import '../scripts/theme';</script>
+  <script>import '../scripts/site-effects';</script>
+ </body>
 </html>

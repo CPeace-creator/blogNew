@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
-    "verify": "astro check && astro build --outDir .astro/verify-dist && node --test scripts/lib/content-images.test.mjs scripts/lib/gallery-geometry.test.mjs && node scripts/check-image-output.mjs .astro/verify-dist",
+    "verify": "astro check && astro build --outDir .astro/verify-dist && node --test scripts/lib/content-images.test.mjs scripts/lib/gallery-geometry.test.mjs scripts/lib/article-video.test.mjs && node scripts/check-image-output.mjs .astro/verify-dist && node scripts/check-video-output.mjs .astro/verify-dist",
     "preview": "astro preview",
     "check": "astro check",
     "test:interactions": "node --test scripts/lib/gallery-geometry.test.mjs",
-    "test:images": "node --test scripts/lib/content-images.test.mjs && node scripts/check-image-output.mjs"
+    "test:images": "node --test scripts/lib/content-images.test.mjs && node scripts/check-image-output.mjs",
+    "test:videos": "node --test scripts/lib/article-video.test.mjs && node scripts/check-video-output.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.3",

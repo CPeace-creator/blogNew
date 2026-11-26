@@ -57,6 +57,9 @@ jobs:
       - name: Verify optimized images and deployment paths
         run: npm run test:images
 
+      - name: Verify article videos and deployment paths
+        run: npm run test:videos
+
       - name: Configure Pages
         uses: actions/configure-pages@v6
 

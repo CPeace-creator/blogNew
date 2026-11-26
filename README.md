@@ -66,6 +66,52 @@ AI 写作和改稿前，请先阅读 [个人博客 AI 写作规范](BLOG_WRITING
 
 图片由 Astro 在构建时自动生成 WebP 和多尺寸版本，浏览器通过 `srcset` / `sizes` 选择合适的文件。首页背景优先加载，列表封面、头像和正文图片按需加载；无需额外图片服务器，GitHub Pages 和 EdgeOne 都可直接发布构建结果。不要把需要优化的图片放回 `public/` 或使用原始 `<img>` 标签，否则会绕过这条处理流程。
 
+## 文章底部的演示视频
+
+所有文章都可以配置一个或多个演示视频，位置在正文及文章自带演示之后、阅读操作与相关文章之前，每个视频会分别加入文章目录。没有配置视频的文章不显示播放器或空白占位。
+
+将实际 MP4 或 WebM 文件放到 `public/videos/` 后，在对应文章的 frontmatter 中加入：
+
+```yaml
+demoVideo:
+  src: "/videos/demo.mp4"
+  title: "演示视频"
+  description: "在这里填写视频说明。"
+```
+
+`title`、`description` 可省略。封面默认使用文章封面，也可增加 `poster`，填写相对于当前 Markdown 的图片路径，与文章 `cover` 的写法相同。
+
+同一篇文章放置多个视频时，使用 `demoVideos` 列表，按从上到下的展示顺序填写：
+
+```yaml
+demoVideos:
+  - src: "/videos/tutorial.mp4"
+    title: "使用教程"
+  - src: "/videos/demo.mp4"
+    title: "演示视频"
+```
+
+已有的 `demoVideo` 单视频配置仍可使用；若与 `demoVideos` 同时填写，单视频会排在列表后面。每个视频都有独立的目录入口和标题定位。
+
+`src` 也可以是 HTTPS MP4/WebM 直链，或完整的 B 站、YouTube 视频地址。B 站支持 BV/av 地址和分 P；YouTube 支持观看页、分享短链接和 Shorts。B 站的 b23.tv 短链需先展开为完整视频地址。
+
+本地视频默认不自动播放，使用 `preload="none"`，保留手机内联播放、进度、音量和全屏操作。平台视频先显示封面，只有读者点击后才加载第三方播放器；没有脚本时仍可通过下方链接到原站观看。
+
+直接播放的视频可选配 WebVTT 字幕：
+
+```yaml
+demoVideo:
+  src: "/videos/demo.mp4"
+  captions:
+    src: "/videos/demo.zh-CN.vtt"
+    language: "zh-CN"
+    label: "中文字幕"
+```
+
+平台视频的字幕在对应平台维护。使用外部字幕时，视频和字幕所在服务器需允许匿名跨域请求。视频本身建议使用通用的 MP4（H.264 视频、AAC 音频）；较长的视频可使用平台链接或对象存储直链，减少仓库与站点的资源负担。
+
+`npm run verify` 和发布流程会检查配置、播放器属性、本地视频/字幕文件及部署前缀。也可单独运行 `npm run test:videos` 检查已有 `dist/` 产物。示例文件名只是配置说明，仓库没有为正式文章填入测试视频。
+
 ## GitHub Pages 发布
 
 1. 在 GitHub 创建空仓库并推送本项目，默认分支使用 `main`。

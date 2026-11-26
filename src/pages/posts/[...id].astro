@@ -5,6 +5,7 @@ import {BookOpen,CalendarDays,Clock,Hash,AlignLeft,Link as LinkIcon,ArrowUp,Arro
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ContentShell from '../../components/ContentShell.astro';
 import ArticleGallery from '../../components/ArticleGallery.astro';
+import ArticleVideo from '../../components/ArticleVideo.astro';
 import BridgeComparison from '../../components/BridgeComparison.astro';
 import {withBase} from '../../lib/paths';
 import {SITE} from '../../config';
@@ -13,8 +14,10 @@ interface Props{post:CollectionEntry<'blog'>;posts:CollectionEntry<'blog'>[];}
 const {post,posts}=Astro.props;
 const {Content,headings}=await render(post);
 const showBridgeDemo=post.id==='bim-project-management';
+const articleVideos=[...post.data.demoVideos,...(post.data.demoVideo?[post.data.demoVideo]:[])].map((video,index)=>({video,headingId:index===0?'article-video-title':`article-video-title-${index+1}`}));
 const toc=headings.filter(h=>h.depth===2||h.depth===3);
 if(showBridgeDemo)toc.push({depth:2,slug:'article-demo-title',text:'动手看看进度视图'});
+for(const {video,headingId} of articleVideos)toc.push({depth:2,slug:headingId,text:video.title});
 let number=0;const outline=toc.map(h=>({...h,number:h.depth===2?String(++number):'·'}));
 const related=post.data.relatedPosts.map(id=>posts.find(p=>p.id===id)).filter((p):p is CollectionEntry<'blog'>=>Boolean(p));
 const coverWidth=Math.min(1200,post.data.cover.width);
@@ -32,6 +35,7 @@ const section=post.id==='about-me'?'/about/':post.data.category==='项目'?'/pro
    {outline.length>0&&<details class="article-mobile-toc"><summary>文章目录</summary><nav aria-label="文章目录">{outline.map(h=><a href={`#${h.slug}`} data-level={h.depth}>{h.text}</a>)}</nav></details>}
    <Content/>
    {showBridgeDemo&&<section class="article-demo" aria-labelledby="article-demo-title"><h2 id="article-demo-title">动手看看进度视图</h2><BridgeComparison/><p><a href={withBase('/lab/#standard-floor-task')}>去实验室查一条落后部位的进度记录 →</a></p></section>}
+   {articleVideos.map(({video,headingId})=><ArticleVideo video={video} cover={post.data.cover} headingId={headingId}/>)}
    <div class="article-reading-actions" data-reading-end><a href="#site-top"><ArrowUp size={15}/> 返回文章开头</a><button class="copy-link" type="button" data-copy-link><LinkIcon size={15}/><span>复制链接</span></button></div>
    {related.length>0&&<section class="article-related" aria-labelledby="related-heading"><h2 id="related-heading">接着读</h2><ul>{related.map(entry=><li><a href={withBase(`/posts/${entry.id}/`)}>{entry.data.title} <ArrowUpRight size={14} style="display:inline"/></a><p>{entry.data.description}</p></li>)}</ul></section>}
   </article>

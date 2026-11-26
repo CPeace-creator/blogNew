@@ -1,0 +1,52 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image, getImage } from 'astro:assets';
+import { ArrowUpRight, PlayCircle } from 'lucide-astro';
+import { resolveArticleVideo, resolveMediaUrl } from '../lib/article-video';
+import '../styles/article-video.css';
+
+interface Props {
+  video: {
+    src: string;
+    title?: string;
+    description?: string;
+    poster?: ImageMetadata;
+    captions?: { src: string; label?: string; language?: string };
+  };
+  cover: ImageMetadata;
+  headingId?: string;
+}
+const { video, cover, headingId = 'article-video-title' } = Astro.props;
+const media = resolveArticleVideo(video.src, import.meta.env.BASE_URL);
+const title = video.title || '演示视频';
+const image = video.poster || cover;
+const posterWidth = Math.min(960, image.width);
+const posterWidths = [...new Set([320,640,posterWidth])].filter(width=>width<=posterWidth);
+const poster = await getImage({ src: image, width: posterWidth, format: 'webp', quality: 80 });
+const watchUrl = media.kind === 'file' ? media.src : media.watchUrl;
+const captions = video.captions ? resolveMediaUrl(video.captions.src, import.meta.env.BASE_URL) : undefined;
+---
+<section class="article-video" data-article-video data-video-kind={media.kind} aria-labelledby={headingId}>
+ <header class="article-video-heading"><PlayCircle size={20} aria-hidden="true"/><h2 id={headingId}>{title}</h2></header>
+ {video.description&&<p class="article-video-description">{video.description}</p>}
+ {media.kind==='file' ? (
+  <div class="article-video-stage">
+   <video controls playsinline preload="none" crossorigin={captions?.startsWith('https:')?'anonymous':undefined} poster={poster.src} width="960" height="540" aria-label={title} data-article-video-player>
+    <source src={media.src} type={media.mime}/>
+    {video.captions&&<track kind="captions" src={captions} srclang={video.captions.language||'zh-CN'} label={video.captions.label||'中文字幕'} default/>}
+    <p>浏览器暂不支持播放，<a href={media.src}>可以单独打开视频</a>。</p>
+   </video>
+   <p class="article-video-error" data-video-error hidden>视频暂时未能播放，请尝试<a href={watchUrl} target="_blank" rel="noreferrer">单独打开视频 ↗</a>。</p>
+  </div>
+ ) : (
+  <div class="article-video-stage article-video-embed" data-video-embed data-video-embed-url={media.embedUrl} data-video-title={title} data-video-provider={media.provider}>
+   <button class="article-video-cover" type="button" data-video-load aria-label={`播放${title}`}>
+    <Image src={image} alt="" layout="none" width={posterWidth} widths={posterWidths} sizes="(max-width:900px) calc(100vw - 72px), 720px" format="webp" quality={80} loading="lazy" decoding="async"/>
+    <span><PlayCircle size={46} aria-hidden="true"/><strong>播放演示视频</strong><small>{media.provider}</small></span>
+   </button>
+   <noscript><p><a href={media.watchUrl} target="_blank" rel="noreferrer">前往{media.provider}观看演示视频 ↗</a></p></noscript>
+  </div>
+ )}
+ <footer class="article-video-footer"><span>{media.kind==='file'?'点击播放，可拖动进度或全屏观看':`由${media.provider}提供播放`}</span><a href={watchUrl} target="_blank" rel="noreferrer">单独打开视频 <ArrowUpRight size={13}/></a></footer>
+</section>
+<script>import '../scripts/article-video';</script>

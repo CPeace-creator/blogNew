@@ -2,9 +2,18 @@
 title: "AI 投标平台"
 description: "一个帮助工程投标人员读懂要求、整理资料、编写和检查标书的项目，也是我把 AI 放进实际工作流程的一次尝试。"
 publishedAt: 2026-04-02
-updatedAt: 2026-11-23
+updatedAt: 2026-11-26
 category: "项目"
 projectTopic: "ai"
+demoVideos:
+  - src: "/videos/ai-bidding-reading-writing-tutorial-1080p.mp4"
+    title: "读标与编制标书使用教程"
+    description: "查看新版读标与编制标书的使用教程。"
+    poster: "../../assets/images/posts/ai-bidding-platform/reading-writing-tutorial-poster.jpg"
+  - src: "/videos/ai-bidding-platform.mp4"
+    title: "对外招标演示视频"
+    description: "观看对外招标演示的操作录屏。"
+    poster: "../../assets/images/posts/ai-bidding-platform/demo-video-poster.jpg"
 projectSummary:
   role: "串接文件上传、读标、正文编辑和 Word 导出，处理文件等待、修改保存和再次进入页面时的状态。"
   status: "案例展示读标、编标、辅助检查和 Word 导出的主要流程，界面使用演示资料。"

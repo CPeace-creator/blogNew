@@ -2,8 +2,14 @@
 title: "BIM 项管系统"
 description: "我做的工程项目管理工具。点一下三维模型里的桥墩，就能顺着它查进度、用料和相关资料。"
 publishedAt: 2026-11-23
+updatedAt: 2026-11-26
 category: "项目"
 projectTopic: "bim"
+demoVideo:
+  src: "/videos/bim-project-management.mp4"
+  title: "BIM 项管系统演示视频"
+  description: "观看 BIM 项管系统的操作录屏，可结合上文了解模型与项目记录的查询过程。"
+  poster: "../../assets/images/posts/bim-project-management/demo-video-poster.jpg"
 projectSummary:
   role: "关联三维构件和工程部位，让目录与模型能双向定位，再从选中的部位查进度、计量和资料。"
   status: "项目文章记录了模型查询和进度着色。实验室可用示例记录回放一个标准层的施工进度。"

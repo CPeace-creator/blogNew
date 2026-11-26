@@ -1,0 +1,17 @@
+Mercedes-Benz G-Class G63 AMG
+Author: pranav27 (https://sketchfab.com/pranav27)
+Source: https://sketchfab.com/3d-models/mercedes-benz-g-class-g63-amg-fa70ea228e5749c2b4951a895385b055
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+License link: https://creativecommons.org/licenses/by/4.0/
+
+This model is not an original model made by this website.
+The original creator credit and license are retained in the GLB asset metadata.
+Preparation: byte-for-byte copy of the original author GLB; no compression, quantization or mesh simplification.
+All 54 meshes, 187887 triangles and 17 materials are retained. The original contains no image textures.
+Display changes: size/grounding normalization and studio lighting. Original body, window, wheel and rubber materials are preserved.
+The interactive light switch uses cloned lamp materials for dark lenses/emission and adds lamp-aligned LED rings and soft glare. These are runtime display effects; the downloadable GLB is unchanged.
+The source has no animation tracks. This website provides rotation, view reset and a material-based light toggle.
+
+Original GLB bytes: 10315296
+Original GLB SHA-256: 4fec52ebf5c009cdf8a867bb5d8bb24dbb8a4464223f9d6a40312ba8231034d7
+Published GLB bytes: 10315296

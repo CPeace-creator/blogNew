@@ -1,0 +1,12 @@
+---
+import { ArrowUpRight, BookOpen, X } from 'lucide-astro';
+import '../styles/studio-details.css';
+---
+<div class="studio-details" id="studio-object-details" data-studio-details popover="manual" role="dialog" aria-labelledby="studio-details-title" aria-describedby="studio-details-description" tabindex="-1">
+ <header><span data-details-label>月湾书屋</span><button type="button" data-details-close aria-label="关闭物件详情"><X size={16}/></button></header>
+ <h3 id="studio-details-title" data-details-title></h3>
+ <p id="studio-details-description" data-details-description></p>
+ <div class="studio-details-related" data-details-related></div>
+ <button class="studio-details-read" type="button" data-details-read><BookOpen size={16}/><span data-details-action>在书屋里阅读</span><ArrowUpRight size={15}/></button>
+ <small class="studio-details-hint">移出物件与详情卡片即可收起 · Esc 关闭</small>
+</div>

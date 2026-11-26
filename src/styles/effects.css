@@ -1,4 +1,5 @@
 /* Decorative motion is limited to the welcome scene and interactive cards. */
+.landing-links { flex-wrap: wrap; column-gap: 18px; row-gap: 12px; }
 html[data-home-page][data-image='stars'] .scenery-moon,
 html[data-home-page][data-image='stars'] .scenery-branches { display: block; }
 html[data-home-page] .wallpaper-stars {

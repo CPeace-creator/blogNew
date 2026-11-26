@@ -47,7 +47,7 @@ const posts = await getCollection('blog', ({ data }) => !data.draft);
           </div>
           <p class="about-profile-link"><a class="text-link" href={withBase('/posts/project-workflow-checks/')}>读《我怎么检查一个功能能不能接着用》 <ArrowUpRight size={16} aria-hidden="true" /></a></p>
         </section>
-        <section class="contact-card glass-card">
+        <section class="contact-card glass-card" id="contact">
           <h2>和我聊聊你在做的东西</h2>
           <p>如果你也在做工程软件、文档工作流或自己的小工具，欢迎告诉我你在哪一步遇到了问题。</p>
           <div><a href={`mailto:${SITE.email}`}><Mail size={18} /> {SITE.email} <ArrowUpRight size={15} /></a><a href={SITE.github} target="_blank" rel="noreferrer"><Github size={18} /> GitHub <ArrowUpRight size={15} /></a></div>

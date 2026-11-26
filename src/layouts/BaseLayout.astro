@@ -9,6 +9,7 @@ import { withBase } from '../lib/paths';
 import '../styles/global.css';
 import '../styles/theme.css';
 import '../styles/effects.css';
+import '../styles/studio-embed.css';
 interface Props {
  title?:string;description?:string;image?:string;reading?:boolean;home?:boolean;activeSection?:string;
  posts?:Array<{id:string;data:{title:string;description:string;category:string;tags:string[]}}>;
@@ -25,6 +26,7 @@ const searchPosts=posts.map(({id,data})=>({id,...data}));
   <link rel="icon" href={withBase('/xiangjiang-tab.ico')} sizes="16x16 32x32 48x48"/><link rel="icon" href={withBase('/xiangjiang-tab.png')} type="image/png" sizes="32x32"/>
   <link rel="canonical" href={canonical}/><meta property="og:type" content={reading?'article':'website'}/><meta property="og:title" content={pageTitle}/><meta property="og:description" content={description}/>{image&&<meta property="og:image" content={new URL(image,Astro.site)}/>}<title>{pageTitle}</title>
   <script is:inline>
+   if(window.self!==window.top&&new URLSearchParams(location.search).get('studio-embed')==='1')document.documentElement.dataset.studioEmbed='true';
    (()=>{const r=document.documentElement;let p={};try{p=JSON.parse(localStorage.getItem('xiangjiang-appearance')||'{}');if(!p.theme)p.theme=localStorage.getItem('theme')||'light';}catch{}const values={layout:'cards',font:'wenkai',wallpaper:'banner',image:'stars',cards:'border',nav:'flow',motion:'on'};for(const [k,v]of Object.entries(values))r.dataset[k]=typeof p[k]==='string'?p[k]:v;const m=p.theme||'light';r.dataset.theme=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;r.style.setProperty('--hue',String(Math.max(0,Math.min(360,Number(p.hue)||210))));r.style.setProperty('--reading-size',`${Math.max(16,Math.min(22,Number(p.fontSize)||18))}px`);r.style.setProperty('--wallpaper-dim',String(Math.max(0,Math.min(.65,Number(p.dim??.18)))));try{const image=localStorage.getItem('xiangjiang-wallpaper');if(image&&/^data:image\/(webp|png|jpeg);base64,/.test(image))r.style.setProperty('--custom-wallpaper',`url("${image}")`);}catch{}})();
   </script>
  </head>

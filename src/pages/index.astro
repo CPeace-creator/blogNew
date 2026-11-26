@@ -1,13 +1,14 @@
 ---
 import {getCollection} from 'astro:content';
-import {Image} from 'astro:assets';
 import {ArrowDown,BookOpen,Box,Github,Mail,Rss,Sparkles} from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ContentShell from '../components/ContentShell.astro';
+import HomeNotebook from '../components/HomeNotebook.astro';
 import PostCard from '../components/PostCard.astro';
-import avatar from '../assets/images/profile-avatar.jpg';
+import StudioExperience from '../components/StudioExperience.astro';
+import AvatarCompanion from '../components/AvatarCompanion.astro';
 import {SITE} from '../config';
 import {withBase} from '../lib/paths';
+import '../styles/home-browse.css';
 const posts=(await getCollection('blog',({data})=>!data.draft)).sort((a,b)=>Number(b.data.featured)-Number(a.data.featured)||+b.data.publishedAt-+a.data.publishedAt);
 const categories=['全部',...new Set(posts.map(p=>p.data.category))];
 ---
@@ -15,21 +16,35 @@ const categories=['全部',...new Set(posts.map(p=>p.data.category))];
  <section class="landing-hero" aria-labelledby="hero-title">
   <div class="landing-center">
    <div class="landing-profile"><span class="landing-tape" aria-hidden="true"></span><span class="landing-sticker landing-sticker--left" aria-hidden="true"><BookOpen size={32}/></span><span class="landing-sticker landing-sticker--right" aria-hidden="true"><Box size={32}/></span>
-    <Image class="landing-avatar" src={avatar} alt="陈嘉鸿的头像" layout="none" width={96} height={96} widths={[96,192]} sizes="76px" format="webp" quality={82} loading="eager" decoding="async"/>
+    <AvatarCompanion/>
     <span class="landing-author">{SITE.author}</span><h1 id="hero-title">{SITE.title}</h1><p>把项目里的问题，写成能回看的记录。</p>
-    <nav class="landing-links" aria-label="欢迎页导航"><a href="#articles">文章</a><a href={withBase('/projects/')}>项目</a><a href={withBase('/lab/')}>实验室</a><a href={withBase('/about/')}>关于</a></nav><span class="landing-note" aria-hidden="true">欢迎来访</span>
+    <nav class="landing-links" aria-label="欢迎页导航"><a href="#articles">文章</a><a href="#studio">工作室</a><a href={withBase('/projects/')}>项目</a><a href={withBase('/lab/')}>实验室</a><a href={withBase('/about/')}>关于</a></nav><span class="landing-note" aria-hidden="true">欢迎来访</span>
    </div>
-   <div class="landing-socials"><a href={SITE.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={19}/></a><a href={withBase('/lab/')} aria-label="实验室"><Box size={19}/></a><a href={`mailto:${SITE.email}`} aria-label="邮件"><Mail size={19}/></a><a href={withBase('/rss.xml')} aria-label="RSS 订阅"><Rss size={19}/></a></div>
+   <div class="landing-socials"><a href={SITE.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={19}/></a><a href="#studio" aria-label="工作室"><Box size={19}/></a><a href={`mailto:${SITE.email}`} aria-label="邮件"><Mail size={19}/></a><a href={withBase('/rss.xml')} aria-label="RSS 订阅"><Rss size={19}/></a></div>
   </div>
-  <a class="landing-scroll" href="#articles" aria-label="向下阅读文章"><ArrowDown size={32}/></a><div class="landing-wave" aria-hidden="true"></div>
+  <a class="landing-scroll" href="#studio" aria-label="向下进入书屋"><ArrowDown size={32}/></a><div class="landing-wave" aria-hidden="true"></div>
  </section>
- <section class="home-content" id="articles" aria-label="最新文章">
-  <ContentShell posts={posts} active="/" wide>
-   <div class="feed-heading theme-card"><h2><Sparkles size={16} style="display:inline;vertical-align:-2px;color:var(--accent)"/> 在这里，慢慢记录</h2><span data-feed-count>共 {posts.length} 篇文章</span></div>
+ <div class="home-browse" data-home-browse>
+  <div class="home-desk-bar shell">
+   <div class="home-desk-title"><span aria-hidden="true">✧</span><div><p>月湾来信</p><small>换一页，继续慢慢逛。</small></div></div>
+   <nav class="home-desk-tabs" aria-label="首页阅读方式" data-home-tabs>
+    <a href="#studio" id="home-tab-studio" data-home-tab="studio"><Box size={17}/><span>逛逛书屋</span><small>01</small></a>
+    <a href="#articles" id="home-tab-articles" data-home-tab="articles"><BookOpen size={17}/><span>翻翻文章</span><small>{String(posts.length).padStart(2,'0')}</small></a>
+   </nav>
+  </div>
+  <div class="home-studio" id="home-panel-studio" data-home-panel="studio"><StudioExperience posts={posts} home/></div>
+  <section class="home-content" id="articles" data-home-panel="articles" aria-label="最新文章">
+   <div class="home-reading shell">
+    <div class="home-feed">
+   <div class="feed-heading theme-card"><h2><Sparkles size={16} style="display:inline;vertical-align:-2px;color:var(--accent)"/> 在这里，慢慢记录</h2><div class="home-feed-tools"><span data-feed-count aria-live="polite">共 {posts.length} 篇文章</span><HomeNotebook posts={posts}/></div></div>
    <div class="feed-filters" aria-label="按分类筛选文章">{categories.map((category,i)=><button type="button" data-feed-category={category} aria-pressed={i===0?'true':'false'}>{category}</button>)}</div>
-   <div class="feed-grid" data-feed-grid>{posts.map((post,i)=><div data-feed-entry data-category={post.data.category} hidden={i>=6}><PostCard post={post}/></div>)}</div>
+   <div class="feed-grid" data-feed-grid>{posts.map((post,i)=><div data-feed-entry data-category={post.data.category} hidden={i>=6}><PostCard post={post} coverFit="contain"/></div>)}</div>
    <p class="empty-card theme-card" data-feed-empty hidden>这个分类暂时没有文章。</p><nav class="pagination" data-feed-pagination aria-label="文章分页"></nav>
-  </ContentShell>
- </section>
+   <noscript><p><a href={withBase('/archive/')}>前往归档，阅读全部 {posts.length} 篇文章 →</a></p></noscript>
+    </div>
+   </div>
+  </section>
+ </div>
  <script>import '../scripts/feed';</script>
+ <script>import '../scripts/home-browse';</script>
 </BaseLayout>

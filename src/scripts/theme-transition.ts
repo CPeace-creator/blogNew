@@ -8,7 +8,10 @@ addEventListener('pagehide', () => active?.skipTransition());
 export function transitionTheme(change: () => void, event: MouseEvent) {
   const root = document.documentElement;
   active?.skipTransition();
-  if (!document.startViewTransition || root.dataset.motion === 'off' || matchMedia('(prefers-reduced-motion: reduce)').matches) { change(); return; }
+  // Live WebGL surfaces and embedded reading documents should not be captured
+  // into whole-page view-transition textures, especially in embedded browsers.
+  const liveSurface = root.hasAttribute('data-studio-embed') || document.querySelector('canvas,[data-studio-drawer][open]');
+  if (!document.startViewTransition || liveSurface || root.dataset.motion === 'off' || matchMedia('(prefers-reduced-motion: reduce)').matches) { change(); return; }
   const bounds = (event.currentTarget as HTMLElement | null)?.getBoundingClientRect();
   const x = event.detail ? event.clientX : bounds ? bounds.left + bounds.width / 2 : innerWidth / 2;
   const y = event.detail ? event.clientY : bounds ? bounds.top + bounds.height / 2 : innerHeight / 2;

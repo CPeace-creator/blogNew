@@ -1,0 +1,9 @@
+---
+import {getCollection} from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StudioExperience from '../components/StudioExperience.astro';
+const posts=(await getCollection('blog',({data})=>!data.draft)).sort((a,b)=>+b.data.publishedAt-+a.data.publishedAt);
+---
+<BaseLayout title="月湾樱花书屋" description="走进月湾樱花书屋，点击电脑、桥梁和书架，前往湘江中路的项目与文章。" posts={posts} activeSection="/studio/">
+ <StudioExperience posts={posts}/>
+</BaseLayout>

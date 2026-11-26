@@ -1,0 +1,23 @@
+{
+  "uid": "c92158ae4faf422e870319d0e92703ac",
+  "name": "Mercedes G63 AMG Mansory",
+  "license": {
+    "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution",
+    "fullName": "Creative Commons Attribution",
+    "requirements": "Author must be credited. Commercial use is allowed.",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "slug": "by"
+  },
+  "isDownloadable": true,
+  "faceCount": 63088,
+  "vertexCount": 38428,
+  "publishedAt": "2022-03-02T22:00:23.347415",
+  "animationCount": 0,
+  "viewerUrl": "https://sketchfab.com/3d-models/mercedes-g63-amg-mansory-c92158ae4faf422e870319d0e92703ac",
+  "author": {
+    "displayName": "RADMATTER12",
+    "username": "RADMATTER12",
+    "profileUrl": "https://sketchfab.com/RADMATTER12"
+  }
+}

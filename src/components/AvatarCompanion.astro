@@ -1,0 +1,36 @@
+---
+import { Lightbulb, RotateCcw, RotateCw, ArrowUpRight } from 'lucide-astro';
+import { G63_SOURCE } from '../lib/avatar/imported-car';
+import { withBase } from '../lib/paths';
+import '../styles/avatar.css';
+interface Props { variant?: 'home' | 'showcase' }
+const { variant = 'home' } = Astro.props;
+const hintId = `avatar-hint-${variant}`;
+---
+<div class="avatar-companion" data-avatar-root data-avatar-model="mercedes-g-class" data-avatar-model-url={withBase(G63_SOURCE.modelUrl)} data-variant={variant} data-state="loading" aria-busy="true">
+ <div class:list={['avatar-hello', { 'avatar-hello--quiet': variant === 'showcase' }]} data-avatar-message role="status" aria-live="polite">{variant === 'showcase' ? '拖动查看车模。' : '奔驰大 G，停在月湾等你。'}</div>
+ <div class="avatar-stage">
+  <span class="avatar-halo" aria-hidden="true"></span>
+  <button class="avatar-character" type="button" data-avatar-greet aria-label="切换奔驰大 G 车灯，拖动或使用左右方向键旋转车模" aria-pressed="false" aria-describedby={hintId} disabled>
+   <span class="avatar-canvas" data-avatar-canvas aria-hidden="true"></span>
+  </button>
+  <div class="avatar-loading" role="status" aria-live="polite" aria-atomic="true">
+   <span class="avatar-loading-mark" aria-hidden="true">G</span>
+   <p class="avatar-loading-title" data-avatar-loading-title>车模正在准备中</p>
+   <p class="avatar-loading-detail" data-avatar-loading-detail>稍等片刻，马上停靠。</p>
+   <button class="avatar-retry" type="button" data-avatar-retry hidden>重新加载</button>
+   <noscript><style is:inline>.avatar-loading-mark,.avatar-loading-title,[data-avatar-loading-detail]{display:none}</style><p class="avatar-loading-detail">开启 JavaScript 后即可查看互动展示。</p></noscript>
+  </div>
+ </div>
+ <div class="avatar-controls">
+  <p class="avatar-hint" id={hintId} data-avatar-hint>拖动旋转 · 轻点车身切换车灯</p>
+  <div class="avatar-actions" data-avatar-actions hidden>
+   <button type="button" data-avatar-action="lights" aria-pressed="false"><Lightbulb size={13}/><span>点亮车灯</span></button>
+   <button type="button" data-avatar-action="reset"><RotateCcw size={13}/><span>复位视角</span></button>
+   <button type="button" data-avatar-action="spin"><RotateCw size={13}/><span>转一圈</span></button>
+  </div>
+ </div>
+ {variant === 'home' && <a class="avatar-meet" href={withBase('/companion/')}>奔驰大 G · 放大看看 <ArrowUpRight size={11}/></a>}
+ <small class="avatar-credit">模型：<a href={G63_SOURCE.url} target="_blank" rel="noreferrer">{G63_SOURCE.author}</a> · <a href={withBase('/models/mercedes-g63-amg.LICENSE.txt')} target="_blank" rel="noreferrer" title="模型许可与修改记录">{G63_SOURCE.license}</a></small>
+</div>
+<script>import '../scripts/avatar';</script>

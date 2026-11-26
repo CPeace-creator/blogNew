@@ -1,0 +1,22 @@
+---
+import { getCollection } from 'astro:content';
+import { ArrowLeft, Download } from 'lucide-astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AvatarCompanion from '../components/AvatarCompanion.astro';
+import { withBase } from '../lib/paths';
+import { G63_SOURCE } from '../lib/avatar/imported-car';
+import '../styles/companion-page.css';
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+---
+<BaseLayout title="奔驰大 G · 月湾车库" description="停在月湾的一台奔驰 G63 AMG 车模。拖动旋转、点亮车灯，从不同角度欣赏车身和轮毂细节。" posts={posts}>
+ <div class="companion-page">
+  <nav class="companion-topline" aria-label="车模页面导航">
+   <a href={withBase('/')}><ArrowLeft size={14}/> 返回博客</a>
+   <a class="companion-download" href={withBase(G63_SOURCE.modelUrl)} download><Download size={14}/> 下载模型 <span>GLB</span></a>
+  </nav>
+  <section class="companion-viewer" data-companion-viewer aria-labelledby="companion-title">
+   <h1 id="companion-title">奔驰 G63 AMG</h1>
+   <AvatarCompanion variant="showcase"/>
+  </section>
+ </div>
+</BaseLayout>

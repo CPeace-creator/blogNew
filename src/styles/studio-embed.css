@@ -1,0 +1,24 @@
+html[data-studio-embed],html[data-studio-embed] body{min-width:0;background:var(--surface-solid)!important}
+html[data-studio-embed] :is(.site-header,.site-footer,.site-wallpaper,.ambient-petals,.reading-tools,.profile-sidebar,.theme-rail,.section-nav,.skip-link,.article-summary,.post-discussion,astro-dev-toolbar){display:none!important}
+html[data-studio-embed] main{min-height:100dvh;padding:0;background:var(--surface-solid)}
+html[data-studio-embed] .theme-shell{display:block;width:100%;max-width:none;margin:0;padding:0}
+html[data-studio-embed] .theme-main{min-width:0;margin:0;animation:none;transform:none}
+html[data-studio-embed] .collection-page{padding:22px clamp(16px,4vw,30px)}
+html[data-studio-embed] .collection-heading{margin-top:0}
+html[data-studio-embed] .theme-main>.collection-heading{padding:24px 22px 0}
+html[data-studio-embed] .article-page{margin:0;padding:22px clamp(18px,4vw,32px);border:0;border-radius:0;background:var(--surface-solid);box-shadow:none;transform:none}
+html[data-studio-embed] .article-header h1{font-size:clamp(25px,4.6vw,36px);line-height:1.55}
+html[data-studio-embed] .article-cover{margin-top:18px}
+html[data-studio-embed] .about-main{padding:0 20px 24px}
+html[data-studio-embed] .about-image{max-width:400px;margin-inline:auto}
+html[data-studio-embed] .notes-list .post-card{transform:none;box-shadow:none}
+html[data-studio-embed] .notes-list .post-card{display:block;min-height:0;border-radius:12px}
+html[data-studio-embed] .notes-list .post-card-image{display:none}
+html[data-studio-embed] .notes-list .post-card-body{position:relative;inset:auto;grid-area:auto;padding:15px 17px;background:var(--surface-solid)}
+html[data-studio-embed] .notes-list .post-card h3{margin:0;font-size:17px;line-height:1.6}
+html[data-studio-embed] .notes-list .post-card-body>p{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;margin-top:7px;font-size:12px;line-height:1.8}
+html[data-studio-embed] .notes-list .post-card-foot{display:none}
+html[data-studio-embed] .notes-list .post-meta{margin-top:9px;font-size:10px}
+html[data-studio-embed] .collection-heading::before,html[data-studio-embed] .collection-heading::after,html[data-studio-embed] .collection-page::before,html[data-studio-embed] .collection-page::after{display:none}
+@media(max-width:420px){html[data-studio-embed] .notes-list .post-card-body{padding:13px 14px}html[data-studio-embed] .notes-list .post-card h3{font-size:16px}}
+html[data-studio-embed] .landing-hero{min-height:650px}

@@ -1,0 +1,23 @@
+{
+  "uid": "fa70ea228e5749c2b4951a895385b055",
+  "name": "Mercedes-Benz G-Class G63 AMG",
+  "license": {
+    "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution",
+    "fullName": "Creative Commons Attribution",
+    "requirements": "Author must be credited. Commercial use is allowed.",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "slug": "by"
+  },
+  "isDownloadable": true,
+  "faceCount": 187912,
+  "vertexCount": 91376,
+  "publishedAt": "2023-09-28T19:54:03.653314",
+  "animationCount": 0,
+  "viewerUrl": "https://sketchfab.com/3d-models/mercedes-benz-g-class-g63-amg-fa70ea228e5749c2b4951a895385b055",
+  "author": {
+    "displayName": "pranav27",
+    "username": "pranav27",
+    "profileUrl": "https://sketchfab.com/pranav27"
+  }
+}

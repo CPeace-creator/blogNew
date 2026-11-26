@@ -1,0 +1,43 @@
+---
+import type {CollectionEntry} from 'astro:content';
+import {Image} from 'astro:assets';
+import {ArrowLeft,ArrowDown,BookOpen,Monitor,Mail,Flower2,Archive,RotateCcw,SunMoon,Download,Move,Box,PanelRightOpen} from 'lucide-astro';
+import {getStudioObjects} from '../lib/studio-content';
+import StudioDrawer from './StudioDrawer.astro';
+import StudioDetails from './StudioDetails.astro';
+import {withBase} from '../lib/paths';
+import poster from '../assets/images/moon-bay-studio.webp';
+import '../styles/studio.css';
+interface Props{posts:CollectionEntry<'blog'>[];home?:boolean;}
+const {posts,home=false}=Astro.props;
+const objects=getStudioObjects(posts);
+const presentation=[
+ {id:'ai',icon:Monitor,label:'AI 投标'}, {id:'bim',icon:Box,label:'BIM 项目'},
+ {id:'notes',icon:BookOpen,label:'技术笔记'}, {id:'archive',icon:Archive,label:'文章归档'},
+ {id:'about',icon:Flower2,label:'关于我'}, {id:'contact',icon:Mail,label:'联系我'}
+];
+const Heading=home?'h2':'h1';
+---
+<section class:list={['studio-experience','shell',{'studio-experience--home':home}]} id="studio" aria-labelledby="studio-heading" data-studio-root data-studio-auto="true" data-studio-navigation="drawer" data-studio-model={withBase('/models/moon-bay-studio.glb')}>
+ <header class="studio-heading">
+  <div>{!home&&<a class="studio-back" href={withBase('/')}><ArrowLeft size={14}/> 湘江中路</a>}<p class="studio-eyebrow">A LITTLE PLACE FOR IDEAS</p><Heading id="studio-heading">月湾樱花书屋<span><span class="studio-hover-copy">停在一件物品上，翻开它的故事。</span><span class="studio-touch-copy">轻点一件物品，翻开它的故事。</span></span></Heading></div>
+  {home?<a class="studio-onward" href="#articles">继续阅读文章 <ArrowDown size={15}/></a>:<a class="studio-model-download" href={withBase('/models/moon-bay-studio.glb')} download><Download size={15}/> 带走这间小屋 <small>GLB</small></a>}
+ </header>
+ <div class="studio-scene-card">
+  <div class="studio-viewport" data-studio-viewport data-state="poster" data-lighting="day">
+   <Image class="studio-poster" src={poster} alt="月湾樱花书屋，电脑、桥梁、书架和樱花树环绕开放式拱廊与月湾露台。" layout="none" width={1400} widths={[480,800,1100,1400]} sizes="(max-width:900px) calc(100vw - 24px), 1280px" format="webp" quality={86} loading={home?'lazy':'eager'} decoding="async"/>
+   <div class="studio-canvas" data-studio-canvas></div>
+   <div class="studio-scene-brand" aria-hidden="true"><span>XJ.</span><p>MOON BAY<br/>SAKURA STUDIO</p></div>
+   <nav class="studio-hotspots" data-studio-hotspots aria-label="书屋里的内容入口" hidden>{objects.map((object,index)=><a class="studio-hotspot" href={object.href} data-studio-hotspot={object.id} aria-label={`${object.label}：查看${object.title}`} aria-haspopup="dialog" aria-controls="studio-object-details" aria-expanded="false"><b aria-hidden="true">{String(index+1).padStart(2,'0')}</b><span>{object.label} · {presentation[index].label} <PanelRightOpen size={12}/></span></a>)}</nav>
+   <div class="studio-loading" data-studio-loading><span class="studio-loading-dot" aria-hidden="true"></span><p data-studio-status role="status">书屋正在准备中。</p><button type="button" data-studio-retry hidden>重试 3D</button></div>
+   <div class="studio-scene-tools" data-studio-tools hidden><button type="button" data-studio-night aria-label="切换工作室灯光" aria-pressed="false"><SunMoon size={17}/><span data-studio-night-label>月夜模式</span></button><button type="button" data-studio-reset><RotateCcw size={16}/> 回到全景</button></div>
+   <span class="studio-scene-corner" aria-hidden="true">MAKE ROOM<br/>FOR WHAT MATTERS.</span>
+  </div>
+  <div class="studio-scene-caption"><p><span class="studio-status-dot"></span><span data-studio-caption>在物件间停留，让故事慢慢展开。</span></p><span><Move size={14}/> 拖动查看 · 双指缩放</span></div>
+ </div>
+ <nav class="studio-destinations" aria-label="书屋栏目">{objects.map((object,index)=>{const {icon:Icon,label}=presentation[index];return <a href={object.href} data-studio-destination={object.id} aria-haspopup="dialog" aria-controls="studio-object-details" aria-expanded="false"><Icon size={19}/><span><strong>{label}</strong><small>{object.label}</small></span><PanelRightOpen class="studio-destination-arrow" size={15}/></a>;})}</nav>
+ <StudioDetails/>
+ <StudioDrawer/>
+ <script is:inline type="application/json" data-studio-content set:html={JSON.stringify(objects).replace(/</g,'\u003c')}/>
+ <script>import '../scripts/studio';</script>
+</section>

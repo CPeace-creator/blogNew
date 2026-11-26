@@ -1,0 +1,25 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { NotebookPen, PanelRightOpen, X } from 'lucide-astro';
+import ProfileSidebar from './ProfileSidebar.astro';
+import { withBase } from '../lib/paths';
+import '../styles/home-notebook.css';
+
+interface Props { posts: CollectionEntry<'blog'>[] }
+const { posts } = Astro.props;
+---
+<button class="home-notebook-trigger" type="button" data-home-notebook-open aria-haspopup="dialog" aria-controls="home-notebook" aria-expanded="false" hidden>
+ <NotebookPen size={16}/><span>窗边便笺</span><PanelRightOpen size={14}/>
+</button>
+<noscript><a href={withBase('/about/')}>关于我与站点 ↗</a></noscript>
+<dialog class="home-notebook" id="home-notebook" data-home-notebook aria-labelledby="home-notebook-title" aria-describedby="home-notebook-description">
+ <header class="home-notebook-header">
+  <div><p>NOTES BY THE WINDOW</p><h2 id="home-notebook-title">窗边便笺</h2></div>
+  <button type="button" data-home-notebook-close aria-label="关闭窗边便笺" autofocus><X size={20}/></button>
+ </header>
+ <div class="home-notebook-body" data-home-notebook-body>
+  <p class="home-notebook-intro" id="home-notebook-description">项目、笔记与日常，都收在这里。<a href={withBase('/archive/')}>全部 {posts.length} 篇记录 ↗</a></p>
+  <ProfileSidebar posts={posts} widgets/>
+ </div>
+</dialog>
+<script>import '../scripts/home-notebook';</script>

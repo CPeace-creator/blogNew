@@ -1,10 +1,10 @@
 ---
-import { X, Palette, Image as ImageIcon, Settings2, Home, FolderKanban, BookOpen, Archive, FlaskConical, Tags, UserRound, Layers, ArrowUp, List, CloudRain, Play, Upload, RotateCcw, Mail, Github } from 'lucide-astro';
+import { X, Palette, Image as ImageIcon, Settings2, Home, FolderKanban, BookOpen, Archive, FlaskConical, Tags, UserRound, Layers, ArrowUp, List, CloudRain, Play, Upload, RotateCcw, Mail, Github, Flower2 } from 'lucide-astro';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 interface Props { reading?:boolean; }
 const {reading=false}=Astro.props;
-const routes=[['主页','/',Home],['项目','/projects/',FolderKanban],['技术笔记','/notes/',BookOpen],['实验室','/lab/',FlaskConical],['文章归档','/archive/',Archive],['分类','/categories/',Layers],['标签','/tags/',Tags],['关于我','/about/',UserRound]] as const;
+const routes=[['主页','/',Home],['工作室','/#studio',Flower2],['项目','/projects/',FolderKanban],['技术笔记','/notes/',BookOpen],['实验室','/lab/',FlaskConical],['文章归档','/archive/',Archive],['分类','/categories/',Layers],['标签','/tags/',Tags],['关于我','/about/',UserRound]] as const;
 ---
 <dialog class="appearance-dialog theme-dialog" id="appearance-dialog" aria-labelledby="appearance-heading">
  <header class="dialog-heading"><h2 id="appearance-heading">外观设置</h2><button type="button" data-close-dialog aria-label="关闭外观设置"><X size={19}/></button></header>

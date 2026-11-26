@@ -1,0 +1,23 @@
+{
+  "uid": "975f1f41e7394703b1be23b67497dc90",
+  "name": "Mercedes-Benz G-Class Free Download",
+  "license": {
+    "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution",
+    "fullName": "Creative Commons Attribution",
+    "requirements": "Author must be credited. Commercial use is allowed.",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "slug": "by"
+  },
+  "isDownloadable": true,
+  "faceCount": 1524,
+  "vertexCount": 794,
+  "publishedAt": "2023-06-02T09:15:25.234786",
+  "animationCount": 0,
+  "viewerUrl": "https://sketchfab.com/3d-models/mercedes-benz-g-class-free-download-975f1f41e7394703b1be23b67497dc90",
+  "author": {
+    "displayName": "slowpoly",
+    "username": "slowpoly",
+    "profileUrl": "https://sketchfab.com/slowpoly"
+  }
+}

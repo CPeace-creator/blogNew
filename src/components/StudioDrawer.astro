@@ -1,0 +1,31 @@
+---
+import { ArrowLeft, BookOpen, Grip, Maximize2, Minimize2, Minus, Move, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-astro';
+import '../styles/studio-drawer.css';
+---
+<dialog class="studio-drawer" id="studio-content-window" data-studio-drawer aria-labelledby="studio-drawer-title" aria-describedby="studio-drawer-help">
+ <header class="studio-drawer-header">
+  <div class="studio-drawer-drag" data-drawer-drag tabindex="0" role="group" aria-label="移动内容窗口，可使用方向键调整位置">
+   <Move size={15} aria-hidden="true"/>
+   <div><p data-drawer-kicker>月湾书屋 · 正在翻阅</p><h2 id="studio-drawer-title" data-drawer-title>书屋里的故事</h2></div>
+  </div>
+  <div class="studio-drawer-actions" aria-label="内容窗口操作">
+   <button type="button" data-drawer-smaller aria-label="缩小内容窗口" title="缩小窗口"><ZoomOut size={16}/></button>
+   <button type="button" data-drawer-larger aria-label="放大内容窗口" title="放大窗口"><ZoomIn size={16}/></button>
+   <button type="button" data-drawer-maximize aria-label="最大化内容窗口" aria-pressed="false" title="最大化 / 还原"><Maximize2 size={16} class="drawer-expand-icon"/><Minimize2 size={16} class="drawer-contract-icon"/></button>
+   <button type="button" data-drawer-minimize aria-label="最小化内容窗口" title="先收起来"><Minus size={16}/></button>
+   <button type="button" data-drawer-close aria-label="关闭内容窗口" title="关闭 · Esc"><X size={17}/></button>
+  </div>
+ </header>
+ <div class="studio-drawer-context">
+  <button type="button" data-drawer-back disabled><ArrowLeft size={14}/><span>返回上一页</span></button>
+  <span><i aria-hidden="true"></i> 留在书屋，慢慢读</span>
+ </div>
+ <div class="studio-drawer-body" data-drawer-body data-state="loading">
+  <iframe class="studio-drawer-frame" data-drawer-frame title="书屋内容" referrerpolicy="same-origin" tabindex="-1"></iframe>
+  <div class="studio-drawer-loading" data-drawer-loading role="status"><BookOpen size={28} aria-hidden="true"/><p>正在翻开这一页。</p><span>片刻之后，故事就会出现在这里。</span></div>
+  <div class="studio-drawer-error" data-drawer-error hidden><BookOpen size={29} aria-hidden="true"/><p>这一页暂时没能打开。</p><button type="button" data-drawer-retry><RotateCcw size={14}/> 再试一次</button></div>
+  <div class="studio-drawer-shield" aria-hidden="true"></div>
+ </div>
+ <footer class="studio-drawer-footer"><p id="studio-drawer-help" data-drawer-help>拖动标题栏移动 · 拖动右下角调整大小 · Esc 关闭</p><button type="button" data-drawer-resize aria-label="调整窗口大小，可拖动或使用方向键" title="拖动调整大小"><Grip size={17}/></button></footer>
+</dialog>
+<aside class="studio-drawer-dock" data-drawer-dock aria-label="收起的书屋内容" hidden><button type="button" data-drawer-restore aria-label="恢复内容窗口"><span class="studio-drawer-dock-icon"><BookOpen size={18}/></span><span><small>接着读</small><strong data-drawer-dock-title>书屋里的故事</strong></span><Maximize2 size={14}/></button><button type="button" data-drawer-close aria-label="关闭收起的内容窗口"><X size={15}/></button></aside>

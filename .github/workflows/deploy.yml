@@ -60,6 +60,9 @@ jobs:
       - name: Verify article videos and deployment paths
         run: npm run test:videos
 
+      - name: Verify studio navigation and model
+        run: npm run test:studio && node scripts/check-studio-output.mjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v6
 

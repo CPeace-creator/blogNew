@@ -5,6 +5,7 @@ import avatar from '../assets/images/profile-avatar.jpg';
 import { ArrowUpRight, Github, Mail } from 'lucide-astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ContentShell from '../components/ContentShell.astro';
+import CareerTimeline from '../components/CareerTimeline.astro';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 
@@ -25,6 +26,10 @@ const posts = await getCollection('blog', ({ data }) => !data.draft);
           <div class="about-image"><Image src={avatar} alt="陈嘉鸿的个人头像" layout="none"
             width={640} widths={[320, 640, 960]} sizes="(max-width: 640px) calc(100vw - 76px), 640px"
             format="webp" quality={80} loading="lazy" decoding="async" /></div>
+        </section>
+        <section class="about-career glass-card" id="career" aria-labelledby="career-heading">
+          <div class="about-career-heading"><h2 id="career-heading">工作经历</h2><span>2022 — 至今</span></div>
+          <CareerTimeline/>
         </section>
         <section class="principles glass-card" aria-labelledby="project-choices-heading">
           <h2 id="project-choices-heading">我在项目里做过的三个决定</h2>
@@ -55,3 +60,10 @@ const posts = await getCollection('blog', ({ data }) => !data.draft);
       </div>
   </ContentShell>
 </BaseLayout>
+
+<style>
+  .about-career { padding: 27px 25px; scroll-margin-top: 90px; }
+  .about-career-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 27px; }
+  .about-career-heading h2 { margin: 0; color: var(--ink-strong); font-size: 23px; }
+  .about-career-heading > span { color: var(--muted); font-family: var(--font-system); font-size: 12px; }
+</style>

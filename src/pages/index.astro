@@ -6,6 +6,7 @@ import HomeNotebook from '../components/HomeNotebook.astro';
 import PostCard from '../components/PostCard.astro';
 import StudioExperience from '../components/StudioExperience.astro';
 import AvatarCompanion from '../components/AvatarCompanion.astro';
+import CareerShortcut from '../components/CareerShortcut.astro';
 import {SITE} from '../config';
 import {withBase} from '../lib/paths';
 import '../styles/home-browse.css';
@@ -20,7 +21,7 @@ const categories=['全部',...new Set(posts.map(p=>p.data.category))];
     <span class="landing-author">{SITE.author}</span><h1 id="hero-title">{SITE.title}</h1><p>把项目里的问题，写成能回看的记录。</p>
     <nav class="landing-links" aria-label="欢迎页导航"><a href="#articles">文章</a><a href="#studio">工作室</a><a href={withBase('/projects/')}>项目</a><a href={withBase('/lab/')}>实验室</a><a href={withBase('/about/')}>关于</a></nav><span class="landing-note" aria-hidden="true">欢迎来访</span>
    </div>
-   <div class="landing-socials"><a href={SITE.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={19}/></a><a href="#studio" aria-label="工作室"><Box size={19}/></a><a href={`mailto:${SITE.email}`} aria-label="邮件"><Mail size={19}/></a><a href={withBase('/rss.xml')} aria-label="RSS 订阅"><Rss size={19}/></a></div>
+   <div class="landing-socials"><a href={SITE.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={19}/></a><a href="#studio" aria-label="工作室"><Box size={19}/></a><a href={`mailto:${SITE.email}`} aria-label="邮件"><Mail size={19}/></a><a href={withBase('/rss.xml')} aria-label="RSS 订阅"><Rss size={19}/></a><CareerShortcut/></div>
   </div>
   <a class="landing-scroll" href="#studio" aria-label="向下进入书屋"><ArrowDown size={32}/></a><div class="landing-wave" aria-hidden="true"></div>
  </section>

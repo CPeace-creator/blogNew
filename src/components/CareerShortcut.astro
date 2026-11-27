@@ -1,0 +1,75 @@
+---
+import { ArrowUpRight, ContactRound, X } from 'lucide-astro';
+import CareerTimeline from './CareerTimeline.astro';
+import { withBase } from '../lib/paths';
+import { SITE } from '../config';
+---
+
+<a class="career-shortcut" href={withBase('/about/#career')} data-career-open aria-label="查看工作经历" title="工作经历">
+  <ContactRound size={21} aria-hidden="true"/><span>履历</span>
+</a>
+<dialog class="career-dialog" id="career-dialog" data-career-dialog aria-labelledby="career-dialog-title" aria-describedby="career-dialog-description">
+  <header class="career-dialog-header">
+    <span class="career-mark" aria-hidden="true"><ContactRound size={26}/></span>
+    <div><p id="career-dialog-description">{SITE.author} · 2022 — 至今</p><h2 id="career-dialog-title">工作经历</h2></div>
+    <button class="career-close" type="button" data-career-close aria-label="关闭工作经历" autofocus><X size={20} aria-hidden="true"/></button>
+  </header>
+  <div class="career-dialog-body" tabindex="0" role="region" aria-label="工作经历时间线"><CareerTimeline/></div>
+  <footer class="career-dialog-footer"><a href={withBase('/posts/about-me/#工作经历')}>完整介绍 <ArrowUpRight size={16} aria-hidden="true"/></a></footer>
+</dialog>
+
+<script>import '../scripts/career-dialog';</script>
+
+<style>
+  :global(html[data-home-page]) .career-shortcut.career-shortcut {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    width: auto; min-width: 94px; height: 36px; padding: 0 13px;
+    border: 1px solid #ffffffb0; border-radius: 7px;
+    background: #f4ebd5; color: #65533b; font-size: 14px;
+    box-shadow: 0 4px 10px #131d2d15; transform: rotate(-2deg);
+    transition: transform .2s, box-shadow .2s;
+  }
+  :global(html[data-home-page]) .career-shortcut.career-shortcut:hover { transform: translateY(-4px); box-shadow: 0 7px 16px #131d2d28; }
+  .career-shortcut:focus-visible, .career-close:focus-visible, .career-dialog-footer a:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 4px; }
+  :global(html[data-career-open]) { overflow: hidden; }
+  .career-dialog {
+    position: fixed; inset: 0; width: min(510px, calc(100% - 32px));
+    max-width: none; max-height: min(760px, calc(100dvh - 48px)); margin: auto; padding: 0;
+    overflow: hidden; border: 1px solid var(--line); border-radius: 23px;
+    background: var(--surface-solid); color: var(--ink); box-shadow: 0 24px 100px #10203340;
+  }
+  .career-dialog:not([open]) { display: none; }
+  .career-dialog[open] { display: flex; flex-direction: column; animation: career-enter .24s ease both; }
+  .career-dialog::backdrop { background: #14223566; backdrop-filter: blur(6px); animation: career-shade .2s ease both; }
+  .career-dialog[data-closing] { animation: career-leave .16s ease both; }
+  .career-dialog[data-closing]::backdrop { animation: career-shade .16s ease reverse both; }
+  .career-dialog-header { display: flex; flex: none; align-items: center; gap: 15px; padding: 25px 28px 22px; border-bottom: 1px solid var(--line); background: linear-gradient(120deg, var(--accent-soft), var(--surface-solid)); }
+  .career-mark { display: grid; flex: none; place-items: center; width: 50px; height: 56px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-solid); color: var(--accent-strong); transform: rotate(-5deg); }
+  .career-dialog-header p { margin: 0 0 4px; color: var(--accent-strong); font-size: 12px; }
+  .career-dialog-header h2 { margin: 0; color: var(--ink-strong); font-size: 27px; font-weight: 500; line-height: 1.4; }
+  .career-close { display: grid; flex: none; place-items: center; width: 40px; height: 40px; margin-left: auto; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--surface-solid); color: var(--ink); cursor: pointer; }
+  .career-close:hover { background: var(--accent-soft); color: var(--accent-strong); }
+  .career-dialog-body { min-height: 0; padding: 28px 32px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  .career-dialog-body:focus-visible { outline: 2px solid var(--accent); outline-offset: -5px; }
+  .career-dialog-footer { display: flex; flex: none; justify-content: flex-end; padding: 15px 28px; border-top: 1px solid var(--line); background: var(--page-soft); }
+  .career-dialog-footer a { display: inline-flex; align-items: center; gap: 7px; padding: 5px 0; color: var(--accent-strong); font-size: 13px; }
+  @keyframes career-enter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+  @keyframes career-leave { to { opacity: 0; transform: translateY(16px); } }
+  @keyframes career-shade { from { opacity: 0; } to { opacity: 1; } }
+  @media (max-width: 640px) {
+    :global(html[data-home-page]) .career-shortcut.career-shortcut { min-width: 86px; height: 36px; padding-inline: 11px; font-size: 13px; }
+    .career-dialog { inset: auto 0 10px; width: calc(100% - 20px); max-height: calc(100dvh - 30px); border-radius: 22px 22px 15px 15px; }
+    .career-dialog-header { gap: 12px; padding: 19px 20px; }
+    .career-mark { width: 43px; height: 49px; }
+    .career-dialog-header h2 { font-size: 24px; }
+    .career-dialog-header p { font-size: 11px; }
+    .career-dialog-body { padding: 25px 24px; }
+    .career-dialog-footer { padding: 12px 21px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .career-dialog[open], .career-dialog::backdrop { animation: none; }
+    :global(html[data-home-page]) .career-shortcut.career-shortcut { transition: none; }
+  }
+  :global(html[data-motion='off']) .career-dialog[open], :global(html[data-motion='off']) .career-dialog::backdrop { animation: none; }
+  :global(html[data-motion='off'][data-home-page]) .career-shortcut.career-shortcut { transition: none; }
+</style>

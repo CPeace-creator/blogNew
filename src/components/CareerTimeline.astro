@@ -1,0 +1,40 @@
+---
+import { career } from '../data/career';
+---
+
+<ol class="career-timeline" aria-label="工作经历，按时间从近到远排列">
+  {career.map(entry => (
+    <li class:list={['career-entry', { 'career-entry--current': !entry.end }]}>
+      <span class="career-node" aria-hidden="true"></span>
+      <div class="career-dates">
+        <time datetime={entry.start}>{entry.start.replace('-', '.')}</time>
+        <span aria-hidden="true">—</span>
+        {entry.end ? <><span class="career-sr-only">至</span><time datetime={entry.end}>{entry.end.replace('-', '.')}</time></> : <span>至今</span>}
+        {!entry.end && <span class="career-current">在职</span>}
+      </div>
+      <h3>{entry.company}</h3>
+      <p class="career-role">{entry.role}{entry.responsibility && <span class="career-responsibility">{entry.responsibility}</span>}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .career-timeline { margin: 0; padding: 0; list-style: none; }
+  .career-entry { position: relative; padding: 0 0 30px 29px; }
+  .career-entry:last-child { padding-bottom: 0; }
+  .career-entry:not(:last-child)::before { position: absolute; top: 13px; bottom: -1px; left: 5px; width: 1px; background: var(--line); content: ''; }
+  .career-node { position: absolute; top: 6px; left: 1px; width: 9px; height: 9px; border: 2px solid var(--muted); border-radius: 50%; background: var(--surface-solid); }
+  .career-entry--current .career-node { border-color: var(--accent-strong); background: var(--accent-strong); box-shadow: 0 0 0 5px var(--accent-soft); }
+  .career-dates { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; min-height: 22px; color: var(--muted); font-family: var(--font-system); font-size: 12px; font-variant-numeric: tabular-nums; line-height: 1.8; }
+  .career-entry--current .career-dates { color: var(--accent-strong); }
+  .career-current { margin-left: 3px; padding: 0 7px; border: 1px solid var(--line); border-radius: 5px; background: var(--accent-soft); color: var(--accent-strong); font-size: 10px; }
+  .career-entry h3 { margin: 8px 0 0; color: var(--ink-strong); font-size: 19px; font-weight: 500; line-height: 1.6; overflow-wrap: anywhere; }
+  .career-role { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 10px; margin: 7px 0 0; color: var(--ink); font-size: 14px; line-height: 1.7; }
+  .career-responsibility { padding: 1px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--page-soft); color: var(--ink); font-size: 12px; }
+  .career-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  @media (max-width: 640px) {
+    .career-entry { padding-left: 25px; padding-bottom: 26px; }
+    .career-entry h3 { font-size: 17px; }
+    .career-dates { gap: 6px; font-size: 11px; }
+  }
+</style>

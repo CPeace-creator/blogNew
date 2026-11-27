@@ -1,4 +1,8 @@
 import { clampView, fittedSize, gestureView, MAX_ZOOM, type GalleryView, type Point, type Size } from '../lib/gallery-geometry';
+import { onPageMount } from '../lib/page-lifecycle';
+
+onPageMount(scope => {
+
 
 const gallery = document.querySelector<HTMLDialogElement>('[data-article-gallery]');
 const stage = gallery?.querySelector<HTMLElement>('[data-gallery-stage]');
@@ -68,13 +72,13 @@ if (gallery && stage && caption && closeButton && previous && next && zoomIn && 
     nextImage.alt = source.alt || `文章配图 ${index + 1}`;
     nextImage.draggable = false;
     nextImage.decoding = 'async';
-    nextImage.addEventListener('load', () => { if (image === nextImage) fit(); });
+    nextImage.addEventListener('load', () => { if (image === nextImage) fit(); }, scope.options());
     nextImage.addEventListener('error', () => {
       if (image !== nextImage) return;
       stage!.textContent = '图片暂时无法加载，请关闭后重试。';
       image = undefined;
       render();
-    });
+    }, scope.options());
     stage!.replaceChildren(nextImage);
     nextImage.src = variants.sort((a, b) => b.width - a.width)[0]?.url || source.currentSrc || source.src;
     caption!.textContent = `${index + 1} / ${pictures.length} · ${nextImage.alt}`;
@@ -114,22 +118,22 @@ if (gallery && stage && caption && closeButton && previous && next && zoomIn && 
       document.body.classList.add('dialog-open');
       show(index);
       closeButton!.focus();
-    });
+    }, scope.options());
   });
-  previous.addEventListener('click', () => show(current - 1));
-  next.addEventListener('click', () => show(current + 1));
-  closeButton.addEventListener('click', () => gallery.close());
-  zoomIn.addEventListener('click', () => zoom(view.scale * 1.4));
-  zoomOut.addEventListener('click', () => zoom(view.scale / 1.4));
-  resetButton.addEventListener('click', reset);
+  previous.addEventListener('click', () => show(current - 1), scope.options());
+  next.addEventListener('click', () => show(current + 1), scope.options());
+  closeButton.addEventListener('click', () => gallery.close(), scope.options());
+  zoomIn.addEventListener('click', () => zoom(view.scale * 1.4), scope.options());
+  zoomOut.addEventListener('click', () => zoom(view.scale / 1.4), scope.options());
+  resetButton.addEventListener('click', reset, scope.options());
   stage.addEventListener('wheel', event => {
     event.preventDefault();
     const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? stage.clientHeight : 1);
     zoom(view.scale * Math.exp(-Math.max(-100, Math.min(100, delta)) * .003), local({ x: event.clientX, y: event.clientY }));
-  }, { passive: false });
+  }, scope.options({ passive: false }));
   stage.addEventListener('dblclick', event => {
     if (view.scale > 1) reset(); else zoom(2, local({ x: event.clientX, y: event.clientY }));
-  });
+  }, scope.options());
   stage.addEventListener('pointerdown', event => {
     if (!image?.naturalWidth || pointers.size >= 2 || event.button !== 0) return;
     if (pointers.size === 0) { swipeStart = { x: event.clientX, y: event.clientY }; swipeTime = performance.now(); didPinch = false; }
@@ -138,7 +142,7 @@ if (gallery && stage && caption && closeButton && previous && next && zoomIn && 
     if (pointers.size === 2) didPinch = true;
     rebase();
     render();
-  });
+  }, scope.options());
   stage.addEventListener('pointermove', event => {
     if (!pointers.has(event.pointerId)) return;
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -147,7 +151,7 @@ if (gallery && stage && caption && closeButton && previous && next && zoomIn && 
     const distance = points.length === 2 ? Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y) : startDistance;
     view = gestureView(startView, startView.scale * distance / startDistance, startPoint, local(midpoint), frameSize, imageSize);
     render();
-  });
+  }, scope.options());
   function endPointer(event: PointerEvent) {
     if (!pointers.has(event.pointerId)) return;
     pointers.delete(event.pointerId);
@@ -159,21 +163,22 @@ if (gallery && stage && caption && closeButton && previous && next && zoomIn && 
     rebase();
     render();
   }
-  stage.addEventListener('pointerup', endPointer);
-  stage.addEventListener('pointercancel', endPointer);
-  stage.addEventListener('lostpointercapture', endPointer);
+  stage.addEventListener('pointerup', endPointer, scope.options());
+  stage.addEventListener('pointercancel', endPointer, scope.options());
+  stage.addEventListener('lostpointercapture', endPointer, scope.options());
   gallery.addEventListener('keydown', event => {
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); show(current + (event.key === 'ArrowLeft' ? -1 : 1)); }
     if (event.key === '+' || event.key === '=') { event.preventDefault(); zoom(view.scale * 1.4); }
     if (event.key === '-') { event.preventDefault(); zoom(view.scale / 1.4); }
     if (event.key === '0') { event.preventDefault(); reset(); }
-  });
+  }, scope.options());
   gallery.addEventListener('close', () => {
     releasePointers();
     stage.replaceChildren();
     image = undefined;
     if (!document.querySelector('dialog[open]')) document.body.classList.remove('dialog-open');
     trigger?.focus({ preventScroll: true });
-  });
-  if ('ResizeObserver' in window) new ResizeObserver(() => { releasePointers(); fit(); }).observe(stage);
+  }, scope.options());
+  if ('ResizeObserver' in window) scope.observe(new ResizeObserver(() => { releasePointers(); fit(); })).observe(stage);
 }
+});

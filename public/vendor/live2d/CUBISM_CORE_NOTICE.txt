@@ -1,0 +1,8 @@
+/**
+ * Live2D Cubism Core
+ * (C) 2019 Live2D Inc. All rights reserved.
+ *
+ * This file is licensed pursuant to the license agreement below.
+ * This file corresponds to the "Redistributable Code" in the agreement.
+ * https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html
+ */

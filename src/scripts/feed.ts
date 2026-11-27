@@ -1,4 +1,8 @@
-export {};
+
+import { onPageMount } from '../lib/page-lifecycle';
+
+onPageMount(scope => {
+
 const entries = [...document.querySelectorAll<HTMLElement>('[data-feed-entry]')];
 const filters = [...document.querySelectorAll<HTMLButtonElement>('[data-feed-category]')];
 const pagination = document.querySelector('[data-feed-pagination]');
@@ -27,7 +31,7 @@ if (entries.length && pagination) {
       button.disabled = disabled;
       if (current) button.setAttribute('aria-current', 'page');
       button.setAttribute('aria-label', label === '‹' ? '上一页' : label === '›' ? '下一页' : `第 ${label} 页`);
-      button.addEventListener('click', () => { page = target; render(true); });
+      button.addEventListener('click', () => { page = target; render(true); }, scope.options());
       pagination!.append(button);
     }
     add('‹', page - 1, page === 1);
@@ -45,12 +49,13 @@ if (entries.length && pagination) {
     category = button.dataset.feedCategory || '全部';
     page = 1;
     render();
-  }));
+  }, scope.options()));
   mobile.addEventListener('change', () => {
     const first = (page - 1) * size;
     size = mobile.matches ? 3 : 6;
     page = Math.floor(first / size) + 1;
     render();
-  });
+  }, scope.options());
   render();
 }
+});

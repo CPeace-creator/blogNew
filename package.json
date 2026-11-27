@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
-    "verify": "astro check && astro build --outDir .astro/verify-dist && node --test scripts/lib/content-images.test.mjs scripts/lib/gallery-geometry.test.mjs scripts/lib/drawer-geometry.test.mjs scripts/lib/studio-model.test.mjs scripts/lib/g-class-model.test.mjs scripts/lib/article-video.test.mjs && node scripts/check-image-output.mjs .astro/verify-dist && node scripts/check-video-output.mjs .astro/verify-dist && node scripts/check-studio-output.mjs .astro/verify-dist",
+    "verify": "astro check && astro build --outDir .astro/verify-dist && node --test scripts/lib/content-images.test.mjs scripts/lib/gallery-geometry.test.mjs scripts/lib/drawer-geometry.test.mjs scripts/lib/studio-model.test.mjs scripts/lib/g-class-model.test.mjs scripts/lib/article-video.test.mjs scripts/lib/whale-reactions.test.mjs && node scripts/check-image-output.mjs .astro/verify-dist && node scripts/check-video-output.mjs .astro/verify-dist && node scripts/check-studio-output.mjs .astro/verify-dist && node scripts/check-live2d-output.mjs .astro/verify-dist",
     "preview": "astro preview",
     "check": "astro check",
     "test:interactions": "node --test scripts/lib/gallery-geometry.test.mjs scripts/lib/drawer-geometry.test.mjs",
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.3",
-    "astro": "7.2.2",
+    "astro": "7.2.5",
     "lucide-astro": "0.556.0",
     "three": "^0.185.1",
     "undici": "^8.10.0"

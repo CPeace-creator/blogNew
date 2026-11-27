@@ -4,6 +4,9 @@ import Footer from '../components/Footer.astro';
 import SearchDialog from '../components/SearchDialog.astro';
 import ThemeBackdrop from '../components/ThemeBackdrop.astro';
 import ThemeControls from '../components/ThemeControls.astro';
+import MoonCompanion from '../components/MoonCompanion.astro';
+import SiteMusic from '../components/SiteMusic.astro';
+import { ClientRouter } from 'astro:transitions';
 import { SITE } from '../config';
 import { withBase } from '../lib/paths';
 import '../styles/global.css';
@@ -22,6 +25,7 @@ const searchPosts=posts.map(({id,data})=>({id,...data}));
 <!doctype html>
 <html lang="zh-CN" data-blog-theme data-reading-page={reading||undefined} data-home-page={home||undefined}>
  <head>
+  <ClientRouter/>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width"/><meta name="generator" content={Astro.generator}/><meta name="description" content={description}/><meta name="theme-color" content="#f7f9fc"/>
   <link rel="icon" href={withBase('/xiangjiang-tab.ico')} sizes="16x16 32x32 48x48"/><link rel="icon" href={withBase('/xiangjiang-tab.png')} type="image/png" sizes="32x32"/>
   <link rel="canonical" href={canonical}/><meta property="og:type" content={reading?'article':'website'}/><meta property="og:title" content={pageTitle}/><meta property="og:description" content={description}/>{image&&<meta property="og:image" content={new URL(image,Astro.site)}/>}<title>{pageTitle}</title>
@@ -33,6 +37,7 @@ const searchPosts=posts.map(({id,data})=>({id,...data}));
  <body id="site-top">
   <a class="skip-link" href="#main">跳到正文</a><ThemeBackdrop home={home}/><Header activeSection={activeSection}/>
   <main id="main" tabindex="-1"><slot/></main><Footer/><SearchDialog posts={searchPosts}/><ThemeControls reading={reading}/>
+  <SiteMusic/><MoonCompanion posts={posts}/>
   <script>import '../scripts/theme';</script>
   <script>import '../scripts/site-effects';</script>
  </body>

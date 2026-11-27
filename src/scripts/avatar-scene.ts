@@ -1,13 +1,14 @@
 import {
   ACESFilmicToneMapping, Box3, CanvasTexture, DirectionalLight, HemisphereLight,
   MathUtils, Mesh, MeshBasicMaterial, OrthographicCamera, PCFShadowMap, PlaneGeometry,
-  PMREMGenerator, Scene, Vector3, WebGLRenderer,
+  PMREMGenerator, Raycaster, Scene, Vector2, Vector3, WebGLRenderer,
 } from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { prepareImportedCar } from '../lib/avatar/imported-car';
 import { createCarLighting } from '../lib/avatar/car-lighting';
 import { setAvatarPresentation } from '../lib/avatar/presentation';
+import { moonState, setMoonNight } from '../lib/moon-events';
 
 export async function mountAvatar(companion: HTMLElement, signal?: AbortSignal) {
   const host = companion.querySelector<HTMLElement>('[data-avatar-canvas]')!;
@@ -83,7 +84,7 @@ export async function mountAvatar(companion: HTMLElement, signal?: AbortSignal) 
 
   let disposed = false, ready = false, visible = true, frame = 0, previousFrame = 0, lastUpdate = performance.now();
   let time = 0, heading = 0, targetHeading = 0, hoverTurn = 0;
-  let lightsOn = true;
+  let lightsOn = moonState.night;
   let spin: { from: number; start: number } | undefined;
   let drag: { pointer: number; x: number; y: number; from: number; moved: boolean } | undefined;
   let suppressClick = false;
@@ -119,14 +120,14 @@ export async function mountAvatar(companion: HTMLElement, signal?: AbortSignal) 
   function updateLightControls() {
     lightsButton.setAttribute('aria-pressed', String(lightsOn));
     lightsButton.querySelector('span')!.textContent = lightsOn ? '关闭车灯' : '点亮车灯';
-    surface.setAttribute('aria-pressed', String(lightsOn));
+    if (showcase) surface.setAttribute('aria-pressed', String(lightsOn));
   }
   function sync() {
     if (!ready || disposed) return;
     cancelAnimationFrame(frame);
     frame = 0;
     lastUpdate = performance.now();
-    hint.textContent = canMove() ? '拖动旋转 · 轻点车身切换车灯' : '拖动查看车模 · 动画已随偏好关闭';
+    hint.textContent = showcase ? (canMove() ? '拖动旋转 · 轻点车身切换车灯' : '拖动查看车模 · 动画已随偏好关闭') : '点击车身前往书屋，拖动旋转车模';
     if (!canMove()) { spin = undefined; hoverTurn = 0; applyPose(0, true); }
     render();
     request();
@@ -157,6 +158,7 @@ export async function mountAvatar(companion: HTMLElement, signal?: AbortSignal) 
     if (action === 'lights') {
       lightsOn = !lightsOn;
       lighting.setEnabled(lightsOn);
+      setMoonNight(lightsOn, 'avatar');
       updateLightControls();
       say(lightsOn ? '车灯亮了，下一站去看看新的记录。' : '熄灯停靠，在月湾歇一会儿。');
     } else if (action === 'reset') {
@@ -179,37 +181,58 @@ export async function mountAvatar(companion: HTMLElement, signal?: AbortSignal) 
     if (event.button !== 0) return;
     spin = undefined;
     suppressClick = false;
+    surface.style.cursor = 'grabbing';
     drag = { pointer: event.pointerId, x: event.clientX, y: event.clientY, from: heading, moved: false };
     surface.setPointerCapture(event.pointerId);
   }, { signal: eventSignal });
   surface.addEventListener('pointermove', event => {
     if (drag && drag.pointer === event.pointerId) {
       const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
+      if (Math.hypot(dx,dy) > 6) suppressClick = true;
       if (!drag.moved && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) drag.moved = true;
       if (!drag.moved) return;
       targetHeading = drag.from + dx / Math.max(180, host.clientWidth) * Math.PI * 1.8;
       hoverTurn = 0;
       applyPose(0, true);
       render();
-    } else if (event.pointerType === 'mouse' && canMove() && !spin) {
-      const bounds = surface.getBoundingClientRect();
-      hoverTurn = MathUtils.clamp((event.clientX - bounds.left) / bounds.width - .5, -.5, .5) * .16;
-      request();
+    } else if (event.pointerType === 'mouse') {
+      if (!showcase) {
+        const hit = hitsCar(event.clientX,event.clientY);
+        surface.style.cursor = hit && !moonState.driving ? 'pointer' : 'grab';
+        companion.dataset.modelHover = String(hit && !moonState.driving);
+      }
+      if (canMove() && !spin) {
+        const bounds = surface.getBoundingClientRect();
+        hoverTurn = MathUtils.clamp((event.clientX - bounds.left) / bounds.width - .5, -.5, .5) * .16;
+        request();
+      }
     }
   }, { signal: eventSignal, passive: true });
   function finishDrag(event: PointerEvent) {
     if (!drag || drag.pointer !== event.pointerId) return;
-    suppressClick = drag.moved;
+    suppressClick ||= event.type === 'pointercancel' || drag.moved || Math.hypot(event.clientX-drag.x,event.clientY-drag.y) > 6;
     drag = undefined;
+    surface.style.cursor = showcase ? 'grab' : 'pointer';
     if (surface.hasPointerCapture(event.pointerId)) surface.releasePointerCapture(event.pointerId);
   }
   surface.addEventListener('pointerup', finishDrag, { signal: eventSignal });
   surface.addEventListener('pointercancel', finishDrag, { signal: eventSignal });
   surface.addEventListener('lostpointercapture', () => { drag = undefined; }, { signal: eventSignal });
-  surface.addEventListener('pointerleave', () => { hoverTurn = 0; request(); }, { signal: eventSignal });
+  surface.addEventListener('pointerleave', () => { hoverTurn = 0; companion.dataset.modelHover = 'false'; request(); }, { signal: eventSignal });
+  const raycaster = new Raycaster(), pointer = new Vector2();
+  function hitsCar(clientX: number,clientY: number) {
+    const bounds = host.getBoundingClientRect();
+    pointer.set((clientX-bounds.left)/bounds.width*2-1,-(clientY-bounds.top)/bounds.height*2+1);
+    raycaster.setFromCamera(pointer,camera);
+    return raycaster.intersectObject(car.body,true).length > 0;
+  }
+  surface.style.cursor = 'grab';
   surface.addEventListener('click', event => {
     if (suppressClick && event.detail !== 0) { suppressClick = false; return; }
-    act('lights');
+    if (showcase) { act('lights'); return; }
+    if (moonState.driving || !ready) return;
+    if (event.detail !== 0 && !hitsCar(event.clientX,event.clientY)) return;
+    window.dispatchEvent(new CustomEvent('moon:drive'));
   }, { signal: eventSignal });
   surface.addEventListener('keydown', event => {
     if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
@@ -223,6 +246,22 @@ export async function mountAvatar(companion: HTMLElement, signal?: AbortSignal) 
     button.addEventListener('click', () => act(button.dataset.avatarAction!), { signal: eventSignal });
   });
   document.addEventListener('visibilitychange', sync, { signal: eventSignal });
+  window.addEventListener('moon:lighting', event => {
+    lightsOn = event.detail.night;
+    lighting.setEnabled(lightsOn);
+    updateLightControls(); render();
+  }, { signal: eventSignal });
+  window.addEventListener('moon:journey', event => {
+    companion.dataset.journey = event.detail.phase;
+    if (event.detail.phase === 'departing') {
+      lighting.setEnabled(true);
+      say('出发，沿着月湾小路去樱花书屋。');
+      render();
+    } else if (event.detail.phase === 'parked') {
+      lighting.setEnabled(lightsOn);
+      say('已停靠樱花树旁，欢迎来书屋坐坐。'); render();
+    } else if (event.detail.phase === 'error') { lighting.setEnabled(lightsOn); render(); }
+  }, { signal: eventSignal });
   reduced.addEventListener('change', sync, { signal: eventSignal });
   const mutation = new MutationObserver(sync);
   mutation.observe(root, { attributes: true, attributeFilter: ['data-motion', 'data-theme'] });
@@ -270,6 +309,7 @@ export async function mountAvatar(companion: HTMLElement, signal?: AbortSignal) 
     await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
     if (signal?.aborted || disposed) { dispose(); return undefined; }
     ready = true;
+    lighting.setEnabled(lightsOn);
     updateLightControls();
     setAvatarPresentation(companion, 'ready');
     sync();

@@ -104,6 +104,7 @@ export function createStudioDrawer(root: HTMLElement, objects: StudioObject[], o
     delete dialog.dataset.opening;
     childEvents?.abort();
     expected = '';
+    frame.dispatchEvent(new CustomEvent('moon:video-pause', { bubbles: true }));
     frame.removeAttribute('src');
     frame.tabIndex = -1;
     pages = [];
@@ -225,7 +226,7 @@ export function createStudioDrawer(root: HTMLElement, objects: StudioObject[], o
       if (target.pathname === actual.pathname && target.hash && target.search === actual.search) return;
       event.preventDefault();
       navigate(target.href, anchor.textContent?.trim() || '接着阅读');
-    }, { signal });
+    }, { signal, capture: true });
     doc.addEventListener('keydown', event => escape(event, doc), { signal });
     if (page.scroll) win.scrollTo({ top: page.scroll, behavior: 'instant' });
     else if (targetSection) targetSection.scrollIntoView({ block: 'start', behavior: 'instant' });

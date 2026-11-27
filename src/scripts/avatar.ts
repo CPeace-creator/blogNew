@@ -1,4 +1,8 @@
 import { setAvatarPresentation } from '../lib/avatar/presentation';
+import { onPageMount } from '../lib/page-lifecycle';
+
+onPageMount(scope => {
+
 
 const companion = document.querySelector<HTMLElement>('[data-avatar-root]');
 if (companion) {
@@ -28,16 +32,17 @@ if (companion) {
     }
   };
   // Load the renderer when the welcome card is close to the viewport.
-  const observer = new IntersectionObserver(entries => {
+  const observer = scope.observe(new IntersectionObserver(entries => {
     if (entries.some(entry => entry.isIntersecting)) { observer.disconnect(); void start(); }
-  }, { rootMargin: '120px' });
+  }, { rootMargin: '120px' }));
   observer.observe(companion);
   companion.querySelector<HTMLButtonElement>('[data-avatar-retry]')!.addEventListener('click', () => {
     if (loading || closed) return;
     controller?.dispose();
     controller = undefined;
     void start();
-  });
-  window.addEventListener('pagehide', () => { closed = true; mountEvents?.abort(); observer.disconnect(); controller?.dispose(); controller = undefined; });
-  window.addEventListener('pageshow', event => { if (event.persisted) { closed = false; void start(); } });
+  }, scope.options());
+  scope.onPageHide(() => { closed = true; mountEvents?.abort(); observer.disconnect(); controller?.dispose(); controller = undefined; });
+  window.addEventListener('pageshow', event => { if (event.persisted) { closed = false; void start(); } }, scope.options());
 }
+});

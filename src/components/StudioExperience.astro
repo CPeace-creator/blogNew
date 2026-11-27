@@ -1,7 +1,7 @@
 ---
 import type {CollectionEntry} from 'astro:content';
 import {Image} from 'astro:assets';
-import {ArrowLeft,ArrowDown,BookOpen,Monitor,Mail,Flower2,Archive,RotateCcw,SunMoon,Download,Move,Box,PanelRightOpen} from 'lucide-astro';
+import {ArrowLeft,ArrowDown,BookOpen,Monitor,Mail,Flower2,Archive,RotateCcw,SunMoon,Download,Move,Box,PanelRightOpen,Wind} from 'lucide-astro';
 import {getStudioObjects} from '../lib/studio-content';
 import StudioDrawer from './StudioDrawer.astro';
 import StudioDetails from './StudioDetails.astro';
@@ -23,6 +23,7 @@ const Heading=home?'h2':'h1';
   <div>{!home&&<a class="studio-back" href={withBase('/')}><ArrowLeft size={14}/> 湘江中路</a>}<p class="studio-eyebrow">A LITTLE PLACE FOR IDEAS</p><Heading id="studio-heading">月湾樱花书屋<span><span class="studio-hover-copy">停在一件物品上，翻开它的故事。</span><span class="studio-touch-copy">轻点一件物品，翻开它的故事。</span></span></Heading></div>
   {home?<a class="studio-onward" href="#articles">继续阅读文章 <ArrowDown size={15}/></a>:<a class="studio-model-download" href={withBase('/models/moon-bay-studio.glb')} download><Download size={15}/> 带走这间小屋 <small>GLB</small></a>}
  </header>
+ <div class="studio-journey-bar"><div class="studio-journey-copy"><span aria-hidden="true">✿</span><p data-journey-status role="status">沿着月湾小路，来樱花树下坐坐。</p></div><div class="studio-journey-actions"><button type="button" data-studio-wind><Wind size={15}/><span>吹一阵风</span></button></div></div>
  <div class="studio-scene-card">
   <div class="studio-viewport" data-studio-viewport data-state="poster" data-lighting="day">
    <Image class="studio-poster" src={poster} alt="月湾樱花书屋，电脑、桥梁、书架和樱花树环绕开放式拱廊与月湾露台。" layout="none" width={1400} widths={[480,800,1100,1400]} sizes="(max-width:900px) calc(100vw - 24px), 1280px" format="webp" quality={86} loading={home?'lazy':'eager'} decoding="async"/>
@@ -34,6 +35,7 @@ const Heading=home?'h2':'h1';
    <span class="studio-scene-corner" aria-hidden="true">MAKE ROOM<br/>FOR WHAT MATTERS.</span>
   </div>
   <div class="studio-scene-caption"><p><span class="studio-status-dot"></span><span data-studio-caption>在物件间停留，让故事慢慢展开。</span></p><span><Move size={14}/> 拖动查看 · 双指缩放</span></div>
+  <small class="studio-car-credit">来访车模：<a href="https://sketchfab.com/3d-models/mercedes-benz-g-class-g63-amg-fa70ea228e5749c2b4951a895385b055" target="_blank" rel="noreferrer">pranav27</a> · <a href={withBase('/models/mercedes-g63-amg.LICENSE.txt')}>CC BY 4.0</a></small>
  </div>
  <nav class="studio-destinations" aria-label="书屋栏目">{objects.map((object,index)=>{const {icon:Icon,label}=presentation[index];return <a href={object.href} data-studio-destination={object.id} aria-haspopup="dialog" aria-controls="studio-object-details" aria-expanded="false"><Icon size={19}/><span><strong>{label}</strong><small>{object.label}</small></span><PanelRightOpen class="studio-destination-arrow" size={15}/></a>;})}</nav>
  <StudioDetails/>

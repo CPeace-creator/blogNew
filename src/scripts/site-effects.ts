@@ -1,4 +1,8 @@
-export {};
+
+import { onPageMount } from '../lib/page-lifecycle';
+
+onPageMount(scope => {
+
 
 const root = document.documentElement;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -27,7 +31,7 @@ document.querySelectorAll<HTMLElement>('[data-post-card], .landing-profile').for
     x = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
     y = Math.max(0, Math.min(1, (event.clientY - bounds.top) / bounds.height));
     if (frame) return;
-    frame = requestAnimationFrame(() => {
+    frame = scope.requestAnimationFrame(() => {
       frame = 0;
       card.dataset.tiltActive = '';
       card.style.setProperty('--card-rx', `${(.5 - y) * 4}deg`);
@@ -35,9 +39,9 @@ document.querySelectorAll<HTMLElement>('[data-post-card], .landing-profile').for
       card.style.setProperty('--shine-x', `${x * 100}%`);
       card.style.setProperty('--shine-y', `${y * 100}%`);
     });
-  });
-  card.addEventListener('pointerleave', reset);
-  card.addEventListener('pointercancel', reset);
+  }, scope.options());
+  card.addEventListener('pointerleave', reset, scope.options());
+  card.addEventListener('pointercancel', reset, scope.options());
 });
 
 const hero = document.querySelector<HTMLElement>('.landing-hero');
@@ -55,7 +59,7 @@ if (hero) {
   resets.push(reset);
   const request = () => {
     if (frame || !visible || !motionEnabled() || !finePointer.matches || document.hidden) return;
-    frame = requestAnimationFrame(() => {
+    frame = scope.requestAnimationFrame(() => {
       frame = 0;
       root.style.setProperty('--hero-x', String(x));
       root.style.setProperty('--hero-y', String(y));
@@ -68,13 +72,13 @@ if (hero) {
     x = Math.max(-1, Math.min(1, (event.clientX - bounds.left) / bounds.width * 2 - 1));
     y = Math.max(-1, Math.min(1, (event.clientY - bounds.top) / bounds.height * 2 - 1));
     request();
-  });
-  hero.addEventListener('pointerleave', reset);
-  addEventListener('scroll', request, { passive: true });
-  if ('IntersectionObserver' in window) new IntersectionObserver(entries => {
+  }, scope.options());
+  hero.addEventListener('pointerleave', reset, scope.options());
+  addEventListener('scroll', request, scope.options({ passive: true }));
+  if ('IntersectionObserver' in window) scope.observe(new IntersectionObserver(entries => {
     visible = entries[0].isIntersecting;
     if (visible) request(); else reset();
-  }).observe(hero);
+  })).observe(hero);
 }
 
 const entries = [...document.querySelectorAll<HTMLElement>('.feed-grid > div, .notes-list > article, .project-list > div')];
@@ -84,26 +88,27 @@ const showAll = () => {
   entries.forEach(entry => { entry.dataset.reveal = 'shown'; entry.style.removeProperty('--entry-delay'); });
 };
 if (motionEnabled() && 'IntersectionObserver' in window) {
-  revealObserver = new IntersectionObserver(records => {
+  revealObserver = scope.observe(new IntersectionObserver(records => {
     for (const record of records) {
       if (!record.isIntersecting) continue;
       (record.target as HTMLElement).dataset.reveal = 'shown';
       revealObserver!.unobserve(record.target);
     }
-  }, { threshold: .06 });
+  }, { threshold: .06 }));
   entries.forEach((entry, index) => {
     entry.dataset.reveal = 'pending';
     entry.style.setProperty('--entry-delay', `${index % 2 * 65}ms`);
     revealObserver!.observe(entry);
-    entry.addEventListener('focusin', () => { entry.dataset.reveal = 'shown'; revealObserver?.unobserve(entry); });
+    entry.addEventListener('focusin', () => { entry.dataset.reveal = 'shown'; revealObserver?.unobserve(entry); }, scope.options());
   });
 }
 const resetAll = () => { resets.forEach(reset => reset()); if (!motionEnabled()) showAll(); };
-new MutationObserver(resetAll).observe(root, { attributes: true, attributeFilter: ['data-motion', 'data-image', 'data-layout', 'data-wallpaper'] });
-reducedMotion.addEventListener('change', resetAll);
-finePointer.addEventListener('change', resetAll);
-addEventListener('resize', resetAll, { passive: true });
-addEventListener('scroll', () => cardResets.forEach(reset => reset()), { passive: true });
-document.addEventListener('visibilitychange', () => { if (document.hidden) resetAll(); });
-addEventListener('pagehide', () => { resetAll(); showAll(); });
-addEventListener('pageshow', event => { if (event.persisted) showAll(); });
+scope.observe(new MutationObserver(resetAll)).observe(root, { attributes: true, attributeFilter: ['data-motion', 'data-image', 'data-layout', 'data-wallpaper'] });
+reducedMotion.addEventListener('change', resetAll, scope.options());
+finePointer.addEventListener('change', resetAll, scope.options());
+addEventListener('resize', resetAll, scope.options({ passive: true }));
+addEventListener('scroll', () => cardResets.forEach(reset => reset()), scope.options({ passive: true }));
+document.addEventListener('visibilitychange', () => { if (document.hidden) resetAll(); }, scope.options());
+scope.onPageHide(() => { resetAll(); showAll(); });
+addEventListener('pageshow', event => { if (event.persisted) showAll(); }, scope.options());
+});

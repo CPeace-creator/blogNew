@@ -1,5 +1,5 @@
 ---
-import { Search, SlidersHorizontal, Sun, Moon, Menu, CloudRain, Sparkles } from 'lucide-astro';
+import { Search, SlidersHorizontal, Sun, Moon, Menu, Music2, Sparkles } from 'lucide-astro';
 import { Image } from 'astro:assets';
 import avatar from '../assets/images/profile-avatar.jpg';
 import { SITE } from '../config';
@@ -14,7 +14,7 @@ interface Props { activeSection?: string; }
     </a>
     <div class="header-actions">
       <button class="header-tool search-trigger" type="button" data-search-open aria-label="打开搜索"><Search size={19}/></button>
-      <button class="header-tool ambient-trigger" type="button" data-open-dialog="ambient-dialog" aria-label="环境雨声"><CloudRain size={19}/></button>
+      <button class="header-tool ambient-trigger" type="button" data-open-music aria-label="打开背景音乐面板"><Music2 size={19}/></button>
       <button class="header-tool motion-trigger" type="button" data-motion-toggle aria-label="暂停背景动态" aria-pressed="true"><Sparkles size={19}/></button>
       <button class="header-tool" type="button" data-open-dialog="appearance-dialog" aria-label="外观设置"><SlidersHorizontal size={19}/></button>
       <button class="header-tool" type="button" data-theme-toggle aria-label="切换深浅主题"><Sun class="theme-sun" size={20}/><Moon class="theme-moon" size={20}/></button>

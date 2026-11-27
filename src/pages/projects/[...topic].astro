@@ -54,6 +54,10 @@ const count = (slug: string) => slug === 'all' ? projects.length : projects.filt
 </BaseLayout>
 
 <script>
+import { onPageMount } from '../../lib/page-lifecycle';
+
+onPageMount(scope => {
+
   const root = document.querySelector<HTMLElement>('[data-projects]');
   if (root) {
     const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-topic-link]')];
@@ -99,7 +103,7 @@ const count = (slug: string) => slug === 'all' ? projects.length : projects.filt
       } else {
         apply(link, true);
       }
-    }));
+    }, scope.options()));
     addEventListener('popstate', () => {
       const link = links.find((item) => new URL(item.href).pathname === location.pathname);
       if (link) {
@@ -107,11 +111,12 @@ const count = (slug: string) => slug === 'all' ? projects.length : projects.filt
         transition?.skipTransition();
         apply(link, false);
       }
-    });
+    }, scope.options());
     const filterNav = indicator?.parentElement;
-    if (filterNav && 'ResizeObserver' in window) new ResizeObserver(updateIndicator).observe(filterNav);
+    if (filterNav && 'ResizeObserver' in window) scope.observe(new ResizeObserver(updateIndicator)).observe(filterNav);
     updateIndicator();
   }
+});
 </script>
 
 <style>

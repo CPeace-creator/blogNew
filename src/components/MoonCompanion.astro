@@ -1,0 +1,41 @@
+---
+import { MoreHorizontal, Music2, BookOpen, ArrowUp, Minus, Sparkles, Route } from 'lucide-astro';
+import { withBase } from '../lib/paths';
+import '../styles/moon-companion.css';
+interface Props { posts: Array<{ id: string; data: { title: string } }> }
+const { posts } = Astro.props;
+---
+<div class="moon-companion" data-moon-companion data-collapsed="false" data-mood="idle" data-model-state="loading" transition:persist="moon-companion-live2d-v2">
+ <div class="companion-bubble" data-companion-bubble hidden><span data-companion-speech role="status" aria-live="polite"></span><i aria-hidden="true"></i></div>
+ <div class="companion-menu" data-companion-menu id="companion-menu" hidden>
+  <span class="companion-menu-title">小汐 · 月湾向导</span>
+  <p class="companion-menu-hint">摸摸头、戳脸颊，双击一起自拍。</p>
+  <div class="companion-action-grid" role="group" aria-label="和小汐玩一会儿">
+   <button type="button" data-companion-action="wave"><span aria-hidden="true">✌</span>比个耶</button>
+   <button type="button" data-companion-action="shy"><span aria-hidden="true">♡</span>害羞一下</button>
+   <button type="button" data-companion-action="stars"><span aria-hidden="true">✦</span>星星眼</button>
+   <button type="button" data-companion-action="wink"><span aria-hidden="true">◡</span>眨眨眼</button>
+   <button type="button" data-companion-action="selfie"><span aria-hidden="true">▣</span>一起自拍</button>
+   <button type="button" data-companion-bubble-action data-companion-action="bubble"><Sparkles size={13}/>吹个泡泡</button>
+   <button type="button" data-companion-action="splash"><span aria-hidden="true">❋</span>小水花</button>
+   <button type="button" data-companion-action="reset"><span aria-hidden="true">↺</span>恢复乖巧</button>
+  </div>
+  <button type="button" data-companion-music aria-pressed="false"><Music2 size={15}/><span>听一会儿音乐</span></button>
+  <a href={withBase('/#studio')}><Route size={15}/>去樱花书屋</a>
+  <a href={withBase('/archive/')} data-companion-random><BookOpen size={15}/>随机读一篇</a>
+  <button type="button" data-companion-top><ArrowUp size={15}/>回到顶部</button>
+  <button type="button" data-companion-collapse><Minus size={15}/>收起小汐</button>
+   <a class="companion-credits" href={withBase('/credits/whale-girl/')}>模型与素材署名</a>
+ </div>
+ <div class="companion-full">
+  <button type="button" class="companion-menu-toggle" data-companion-menu-toggle aria-label="打开小汐的快捷菜单" aria-expanded="false" aria-controls="companion-menu"><MoreHorizontal size={18}/></button>
+  <button type="button" class="companion-character" data-companion-character aria-label="和小汐互动，双击自拍，右键或长按打开菜单；可拖动，方向键移动，Home 键复位">
+   <span class="companion-live2d" data-live2d-host aria-hidden="true"></span>
+  </button>
+  <div class="companion-model-status"><span class="companion-model-orbit" aria-hidden="true"></span><span data-live2d-status role="status">小汐正在准备中</span><button type="button" data-live2d-retry>重新加载</button></div>
+  <div class="companion-name"><i aria-hidden="true"></i><span>小汐</span><small>月湾向导</small></div>
+ </div>
+ <button type="button" class="companion-restore" data-companion-restore aria-label="展开小汐，月湾的蓝白小向导"><Sparkles size={21}/><span>小汐</span></button>
+</div>
+<script is:inline type="application/json" data-companion-posts set:html={JSON.stringify(posts.map(post => ({ title: post.data.title, href: withBase(`/posts/${post.id}/`) }))).replace(/</g, '\u003c')}></script>
+<script>import '../scripts/moon-companion';</script>

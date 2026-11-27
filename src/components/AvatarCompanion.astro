@@ -11,7 +11,7 @@ const hintId = `avatar-hint-${variant}`;
  <div class:list={['avatar-hello', { 'avatar-hello--quiet': variant === 'showcase' }]} data-avatar-message role="status" aria-live="polite">{variant === 'showcase' ? '拖动查看车模。' : '奔驰大 G，停在月湾等你。'}</div>
  <div class="avatar-stage">
   <span class="avatar-halo" aria-hidden="true"></span>
-  <button class="avatar-character" type="button" data-avatar-greet aria-label="切换奔驰大 G 车灯，拖动或使用左右方向键旋转车模" aria-pressed="false" aria-describedby={hintId} disabled>
+  <button class="avatar-character" type="button" data-avatar-greet aria-label={variant === 'home' ? '驾车前往月湾樱花书屋，拖动或使用左右方向键旋转车模' : '切换奔驰大 G 车灯，拖动或使用左右方向键旋转车模'} aria-pressed={variant === 'showcase' ? 'false' : undefined} aria-describedby={hintId} disabled>
    <span class="avatar-canvas" data-avatar-canvas aria-hidden="true"></span>
   </button>
   <div class="avatar-loading" role="status" aria-live="polite" aria-atomic="true">
@@ -23,7 +23,7 @@ const hintId = `avatar-hint-${variant}`;
   </div>
  </div>
  <div class="avatar-controls">
-  <p class="avatar-hint" id={hintId} data-avatar-hint>拖动旋转 · 轻点车身切换车灯</p>
+  <p class:list={['avatar-hint', { 'avatar-hint--quiet': variant === 'home' }]} id={hintId} data-avatar-hint>{variant === 'home' ? '点击车身前往书屋，拖动旋转车模' : '拖动旋转 · 轻点车身切换车灯'}</p>
   <div class="avatar-actions" data-avatar-actions hidden>
    <button type="button" data-avatar-action="lights" aria-pressed="false"><Lightbulb size={13}/><span>点亮车灯</span></button>
    <button type="button" data-avatar-action="reset"><RotateCcw size={13}/><span>复位视角</span></button>

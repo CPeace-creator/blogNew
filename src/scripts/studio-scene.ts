@@ -2,12 +2,14 @@ import { ACESFilmicToneMapping, Box3, DirectionalLight, Group, HemisphereLight, 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { createArrivalGarden } from '../lib/studio/arrival';
 interface StudioOptions {
     night: boolean;
     onSelect: (id: string) => void;
     onProgress: (progress: number) => void;
     onUnavailable: () => void;
     onHover?: (id?: string, point?: { x: number; y: number }) => void;
+    onCarSelect?: () => void;
     pageScroll?: boolean;
 }
 export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url: string, options: StudioOptions) {
@@ -52,6 +54,8 @@ export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url:
         renderer.dispose();
         throw error;
     }
+    const arrival = createArrivalGarden();
+    model.add(arrival.root);
     const ground = new Mesh(new PlaneGeometry(120, 120), new ShadowMaterial({ opacity: .07 }));
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -.64;
@@ -134,13 +138,15 @@ export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url:
         return { button, point: center };
     }).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
     const fallingMaterial = new MeshStandardMaterial({ color: '#e8b4cf', roughness: .8, side: 2 });
-    const fallingGeometry = new IcosahedronGeometry(.037, 1), petals = new InstancedMesh(fallingGeometry, fallingMaterial, 16);
+    const fallingGeometry = new IcosahedronGeometry(.037, 1), petals = new InstancedMesh(fallingGeometry, fallingMaterial, 64);
     petals.frustumCulled = false;
     scene.add(petals);
     const petalPose = new Object3D();
     let frame = 0, disposed = false, visible = true, lastPaint = 0, night = options.night;
     let hovering: string | undefined;
     let entryDone = false;
+    let gustUntil = 0;
+    function blowPetals() { gustUntil = performance.now() + 5200; request(); }
     const bases = new Map<string, number>();
     items.forEach((item, id) => bases.set(id, item.position.y));
     let flight: {
@@ -191,6 +197,7 @@ export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url:
             return;
         }
         lastPaint = time;
+        arrival.update(time, !canMove());
         if (flight) {
             const fraction = Math.min(1, (time - flight.start) / 650), eased = fraction * fraction * (3 - 2 * fraction);
             controls.target.lerpVectors(flight.from, flight.to, eased);
@@ -200,13 +207,15 @@ export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url:
             if (fraction === 1)
                 flight = undefined;
         }
-        items.forEach((item, id) => { const base = bases.get(id)!; const desired = base + (hovering === id ? .026 : 0); item.position.y = canMove() ? item.position.y + (desired - item.position.y) * .16 : base; });
+        const breeze = canMove() ? Math.max(0, Math.min(1, (gustUntil - time) / 1500)) : 0;
+        items.forEach((item, id) => { const base = bases.get(id)!; const desired = base + (hovering === id ? .026 : 0); item.position.y = canMove() ? item.position.y + (desired - item.position.y) * .16 : base; if (id === 'about') item.rotation.z = Math.sin(time / 320) * .012 * breeze; });
         petals.visible = canMove();
         if (petals.visible) {
             const seconds = time / 1000;
-            for (let i = 0; i < 16; i++) {
-                const phase = (seconds * .13 + i * .173) % 1;
-                petalPose.position.set(-2.65 + Math.sin(i * 2.4 + seconds * .25) * .55 + phase * .35, 2.65 - phase * 2.5, -.14 + Math.cos(i * 3.1) * .5 + phase * .45);
+            petals.count = breeze > 0 ? 64 : 16;
+            for (let i = 0; i < petals.count; i++) {
+                const phase = (seconds * (.13 + breeze * .08) + i * .173) % 1;
+                petalPose.position.set(-2.65 + Math.sin(i * 2.4 + seconds * .25) * (.55 + breeze * .35) - phase * breeze * .8, 2.65 - phase * 2.5, -.14 + Math.cos(i * 3.1) * .5 + phase * (.45 + breeze * 1.7));
                 petalPose.rotation.set(i + seconds * .25, seconds * .3 + i, i * .4);
                 petalPose.scale.set(1, .22, .7);
                 petalPose.updateMatrix();
@@ -269,6 +278,7 @@ export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url:
     }
     function setNight(value: boolean) {
         night = value;
+        arrival.setNight(value);
         hemi.intensity = night ? .38 : .8;
         key.intensity = night ? .85 : 2.6;
         key.color.set(night ? '#bccff4' : '#fff4e7');
@@ -314,9 +324,10 @@ export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url:
     const choose = (event: PointerEvent) => {
         const isClick = pressed && !multiplePointers && activePointers.size === 1 && Math.hypot(event.clientX - pressed.x, event.clientY - pressed.y) < 5;
         activePointers.delete(event.pointerId);
-        if (isClick && (event.pointerType === 'touch' || !matchMedia('(any-hover: hover) and (any-pointer: fine)').matches)) {
+        if (isClick) {
             const id = picked(event);
-            if (id)
+            if (arrival.hit(raycaster)) options.onCarSelect?.();
+            else if (id && (event.pointerType === 'touch' || !matchMedia('(any-hover: hover) and (any-pointer: fine)').matches))
                 options.onSelect(id);
         }
         if (!activePointers.size) {
@@ -331,7 +342,7 @@ export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url:
         if (id !== hovering)
             options.onHover?.(id, { x: event.clientX, y: event.clientY });
         hovering = id;
-        canvas.style.cursor = hovering ? 'pointer' : 'grab';
+        canvas.style.cursor = hovering || arrival.hit(raycaster) ? 'pointer' : 'grab';
         request();
     };
     const leave = () => { hovering = undefined; options.onHover?.(); pressed = undefined; activePointers.clear(); multiplePointers = false; canvas.style.cursor = 'grab'; request(); };
@@ -382,6 +393,7 @@ export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url:
         if (disposed)
             return;
         disposed = true;
+        arrival.dispose();
         cancelAnimationFrame(frame);
         resizeObserver.disconnect();
         observer.disconnect();
@@ -405,5 +417,18 @@ export async function mountStudio(host: HTMLElement, hotspots: HTMLElement, url:
         renderer.dispose();
         host.replaceChildren();
     }
-    return { select, reset, setEntryProgress, setNight, dispose };
+    async function driveIn() {
+        entryDone = true;
+        reset();
+        await arrival.load();
+        if (disposed) return;
+        blowPetals();
+        const parked = arrival.drive(!canMove());
+        request();
+        await parked;
+        blowPetals();
+        request();
+    }
+    async function parkCar() { await arrival.park(); request(); }
+    return { select, reset, setEntryProgress, setNight, blowPetals, driveIn, parkCar, dispose };
 }

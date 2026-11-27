@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import { ArrowLeft, ExternalLink } from 'lucide-astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { withBase } from '../../lib/paths';
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+---
+<BaseLayout title="鲸鱼娘模型与素材署名" description="小汐所使用的鲸鱼娘 Live2D 模型、角色原作与运行时来源。" posts={posts}>
+ <section class="whale-credits shell">
+  <a class="credits-back" href={withBase('/')}><ArrowLeft size={15}/>返回博客</a>
+  <p class="credits-eyebrow">MODEL &amp; ARTWORK CREDITS</p>
+  <h1>鲸鱼娘模型与素材署名</h1>
+  <p>“小汐”是角色在本站的展示昵称。本站使用下列作者共同创作的鲸鱼娘形象与 Live2D 模型，并将它的表情、视线和动作接入博客的阅读、音乐与书屋体验。</p>
+  <dl>
+   <div><dt>角色形象原作</dt><dd><a href="https://space.bilibili.com/4456176" target="_blank" rel="noreferrer">上善无形 <ExternalLink size={13}/></a><span>原创角色「溟月」</span></dd></div>
+   <div><dt>角色二次设计</dt><dd><a href="https://space.bilibili.com/4168597" target="_blank" rel="noreferrer">ZipZipPipe <ExternalLink size={13}/></a><span>加入 DeepSeek 元素的女仆鲸鱼娘设计</span></dd></div>
+   <div><dt>Live2D 模型与动作</dt><dd><a href="https://space.bilibili.com/11272072" target="_blank" rel="noreferrer">氵六青 <ExternalLink size={13}/></a><span>模型绑定、动作、表情与物理效果</span></dd></div>
+   <div><dt>参考项目与模型整合</dt><dd><a href="https://github.com/Andersen216/dsh-whale-girl-live2d" target="_blank" rel="noreferrer">Andersen216 / dsh-whale-girl-live2d <ExternalLink size={13}/></a></dd></div>
+  </dl>
+  <p>模型、美术、贴图和动作遵循上游注明的 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank" rel="noreferrer">CC BY-NC-SA 4.0</a>：署名、非商业性使用、相同方式共享。本站保留原始模型资源，网站交互适配独立实现。</p>
+  <p class="credits-documents"><a href={withBase('/companions/whale-girl/AUTHORS.md')}>完整作者署名</a><a href={withBase('/companions/whale-girl/PROVENANCE.md')}>素材来源与使用条件</a><a href={withBase('/companions/whale-girl/NOTICE.md')}>许可说明</a></p>
+  <p class="credits-runtime">运行时：Live2D Cubism Core © Live2D Inc.；PIXI.js 6.5.10（MIT）；pixi-live2d-display 0.4.0（MIT）。</p>
+ </section>
+</BaseLayout>
+<style>
+ .whale-credits{max-width:850px;margin-block:40px 100px;padding:28px 34px 35px;border:1px solid var(--line);border-radius:22px;background:var(--surface-solid)}
+ .credits-back{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.credits-eyebrow{margin-top:30px;color:var(--accent-strong);font-size:10px;letter-spacing:.15em}.whale-credits h1{margin:9px 0 20px;font-size:30px}.whale-credits>p:not(.credits-eyebrow){font-size:14px;line-height:1.95;color:var(--muted)}.whale-credits a{color:var(--accent-strong);text-underline-offset:4px}.whale-credits a:hover{text-decoration:underline}.whale-credits dl{margin:25px 0}.whale-credits dl>div{display:grid;grid-template-columns:160px 1fr;gap:18px;padding:16px 0;border-block-end:1px solid var(--line)}.whale-credits dt{font-size:12px;color:var(--muted)}.whale-credits dd{margin:0;display:grid;gap:5px;font-size:14px}.whale-credits dd>a{display:inline-flex;align-items:center;gap:5px;width:fit-content}.whale-credits dd>span{font-size:12px;color:var(--muted)}.credits-documents{display:flex;flex-wrap:wrap;gap:12px 20px}.whale-credits .credits-runtime{font-size:11px!important;margin-top:25px}
+ @media(max-width:640px){.whale-credits{margin-block:15px 100px;padding:22px 20px}.whale-credits h1{font-size:24px}.whale-credits dl>div{grid-template-columns:1fr;gap:7px}.whale-credits dd{font-size:13px}}
+</style>

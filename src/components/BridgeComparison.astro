@@ -19,10 +19,15 @@ import progress from '../assets/images/posts/bim-project-management/bridge-statu
 </details>
 
 <script>
+import { onPageMount } from '../lib/page-lifecycle';
+
+onPageMount(scope => {
+
   const comparison = document.querySelector('[data-comparison]');
   const slider = comparison?.querySelector<HTMLInputElement>('[data-compare-slider]');
   const viewport = comparison?.querySelector<HTMLElement>('[data-compare-viewport]');
-  slider?.addEventListener('input', () => viewport?.style.setProperty('--reveal', `${slider.value}%`));
+  slider?.addEventListener('input', () => viewport?.style.setProperty('--reveal', `${slider.value}%`), scope.options());
+});
 </script>
 
 <style>

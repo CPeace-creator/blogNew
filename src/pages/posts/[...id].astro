@@ -44,10 +44,15 @@ const section=post.id==='about-me'?'/about/':post.data.category==='项目'?'/pro
  </ContentShell>
  <ArticleGallery/>
  <script>
+import { onPageMount } from '../../lib/page-lifecycle';
+
+onPageMount(scope => {
+
   const links=[...document.querySelectorAll<HTMLAnchorElement>('[data-article-toc] a')];const sections=links.map(link=>({link,heading:document.getElementById(decodeURIComponent(link.hash.slice(1)))})).filter(p=>p.heading).reverse();let frame=0,active:HTMLAnchorElement|undefined;
   const update=()=>{frame=0;const current=sections.find(p=>p.heading!.getBoundingClientRect().top<=85)?.link;if(current!==active){active?.removeAttribute('aria-current');current?.setAttribute('aria-current','location');active=current;}};
-  const request=()=>{if(!frame)frame=requestAnimationFrame(update);};addEventListener('scroll',request,{passive:true});addEventListener('resize',request,{passive:true});request();
-  document.querySelectorAll<HTMLHeadingElement>('.prose h2[id],.prose h3[id]').forEach(heading=>{if(heading.closest('.article-related'))return;const link=document.createElement('a');link.className='heading-anchor';link.href=`#${heading.id}`;link.textContent='#';link.setAttribute('aria-label',`链接到 ${heading.textContent}`);heading.append(link);});
-  document.querySelectorAll('.article-mobile-toc a').forEach(link=>link.addEventListener('click',()=>{const menu=link.closest('details');if(menu)menu.open=false;}));
- </script>
+  const request=()=>{if(!frame)frame=scope.requestAnimationFrame(update);};addEventListener('scroll',request,scope.options({passive:true}));addEventListener('resize',request,scope.options({passive:true}));request();
+  document.querySelectorAll<HTMLHeadingElement>('.prose h2[id],.prose h3[id]').forEach(heading=>{if(heading.closest('.article-related')||heading.querySelector('.heading-anchor'))return;const link=document.createElement('a');link.className='heading-anchor';link.href=`#${heading.id}`;link.textContent='#';link.setAttribute('aria-label',`链接到 ${heading.textContent}`);heading.append(link);});
+  document.querySelectorAll('.article-mobile-toc a').forEach(link=>link.addEventListener('click',()=>{const menu=link.closest('details');if(menu)menu.open=false;}, scope.options()));
+});
+</script>
 </BaseLayout>

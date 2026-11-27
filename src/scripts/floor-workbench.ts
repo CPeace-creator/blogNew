@@ -3,12 +3,17 @@ import {
   getFloorMeasurement, getFloorSnapshot, getFloorTodoStatus,
   type FloorColorMode, type FloorPackage,
 } from '../lib/floor-demo';
+
 import type { FloorAxis, FloorScene } from './standard-floor';
+import { onPageMount } from '../lib/page-lifecycle';
+
+onPageMount(scope => {
+
 
 const TODO_LABELS = { open: '待处理', due: '当日到期', overdue: '已逾期', closed: '已完成' };
 const QUANTITY = new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 1 });
 
-export function bindFloorWorkbench(root: HTMLElement) {
+function bindFloorWorkbench(root: HTMLElement) {
   const get = <T extends HTMLElement = HTMLElement>(name: string) => root.querySelector<T>(`[data-floor-${name}]`)!;
   const all = <T extends HTMLElement = HTMLElement>(name: string) => [...root.querySelectorAll<T>(`[data-floor-${name}]`)];
   const load = get<HTMLButtonElement>('load');
@@ -40,7 +45,7 @@ export function bindFloorWorkbench(root: HTMLElement) {
   let isolated = false;
   let filter = 'all';
   let query = '';
-  let timer: ReturnType<typeof setInterval> | undefined;
+  let timer: number | undefined;
 
   function matches(item: FloorPackage) {
     if (filter === 'behind' && getFloorSnapshot(item, step).status !== 'behind') return false;
@@ -157,19 +162,19 @@ export function bindFloorWorkbench(root: HTMLElement) {
     if (timer !== undefined) return pause();
     if (step === FLOOR_DATES.length - 1) setStep(0);
     play.textContent = '暂停播放';
-    timer = setInterval(() => {
+    timer = scope.setInterval(() => {
       setStep(step + 1);
       if (step === FLOOR_DATES.length - 1) pause();
     }, 1350);
-  });
+  }, scope.options());
 
   function scrub(value: number) {
     pause();
     setStep(value);
   }
 
-  range.addEventListener('input', () => scrub(range.valueAsNumber));
-  dates.forEach((button) => button.addEventListener('click', () => scrub(Number(button.dataset.floorDay))));
+  range.addEventListener('input', () => scrub(range.valueAsNumber), scope.options());
+  dates.forEach((button) => button.addEventListener('click', () => scrub(Number(button.dataset.floorDay)), scope.options()));
 
   function choose(item: FloorPackage | undefined, id: string, locate: boolean) {
     activePackage = item;
@@ -180,10 +185,10 @@ export function bindFloorWorkbench(root: HTMLElement) {
 
   all<HTMLButtonElement>('package').forEach((button) => button.addEventListener('click', () => {
     choose(FLOOR_PACKAGES.find(({ key }) => key === button.dataset.floorPackage), '', true);
-  }));
+  }, scope.options()));
   mapButtons.forEach((button) => button.addEventListener('click', () => {
     choose(FLOOR_PACKAGES.find(({ key }) => key === button.dataset.floorMap), '', true);
-  }));
+  }, scope.options()));
   const exampleLink = document.querySelector<HTMLAnchorElement>('[data-floor-example]');
   exampleLink?.addEventListener('click', () => {
     pause();
@@ -195,18 +200,18 @@ export function bindFloorWorkbench(root: HTMLElement) {
     activePackage = FLOOR_PACKAGES.find(({ key }) => key === FLOOR_EXAMPLE_PACKAGE_KEY);
     elementId = '';
     setStep(FLOOR_DEFAULT_STEP);
-  });
+  }, scope.options());
   tabs.forEach((button) => button.addEventListener('click', () => {
     activeTab = button.dataset.floorTab!;
     renderDetails();
-  }));
+  }, scope.options()));
   filters.forEach((button) => button.addEventListener('click', () => {
     filter = button.dataset.floorFilter!;
     query = '';
     searchField.value = '';
     isolated = false;
     renderWorkbench();
-  }));
+  }, scope.options()));
   search.addEventListener('submit', (event) => {
     event.preventDefault();
     filter = 'all';
@@ -217,7 +222,7 @@ export function bindFloorWorkbench(root: HTMLElement) {
     if (exact) choose(exact, query, true);
     else if (results.length === 1) choose(results[0], '', true);
     else renderWorkbench();
-  });
+  }, scope.options());
 
   get('document').addEventListener('click', () => {
     const documentRecord = activePackage?.document;
@@ -236,24 +241,24 @@ export function bindFloorWorkbench(root: HTMLElement) {
     });
     get('document-fields').replaceChildren(...fields);
     dialog.showModal();
-  });
+  }, scope.options());
 
   color.addEventListener('change', () => {
     scene?.setColorMode(color.value as FloorColorMode);
     all('legend').forEach((legend) => { legend.hidden = legend.dataset.floorLegend !== color.value; });
-  });
+  }, scope.options());
   isolate.addEventListener('click', () => {
     isolated = !isolated;
     renderWorkbench(isolated);
-  });
+  }, scope.options());
   function applySection() {
     get('section-control').hidden = !axis.value;
     section.setAttribute('aria-valuetext', `${section.value}%`);
     scene?.setSection((axis.value || null) as FloorAxis | null, section.valueAsNumber / 100);
   }
-  axis.addEventListener('change', applySection);
-  section.addEventListener('input', applySection);
-  get('reset').addEventListener('click', () => scene?.reset());
+  axis.addEventListener('change', applySection, scope.options());
+  section.addEventListener('input', applySection, scope.options());
+  get('reset').addEventListener('click', () => scene?.reset(), scope.options());
 
   load.addEventListener('click', async () => {
     if (!modelUrl) return;
@@ -286,9 +291,9 @@ export function bindFloorWorkbench(root: HTMLElement) {
       setText('feedback', '模型加载失败。请检查浏览器的 WebGL 支持后重试，或从示意图查看记录。');
       load.disabled = false;
     }
-  });
+  }, scope.options());
 
-  addEventListener('pagehide', (event) => {
+  scope.onPageHide((event) => {
     pause();
     if (event.persisted) return;
     disposed = true;
@@ -296,3 +301,5 @@ export function bindFloorWorkbench(root: HTMLElement) {
   });
   setStep(FLOOR_DEFAULT_STEP);
 }
+document.querySelectorAll<HTMLElement>('[data-floor-viewer]').forEach(bindFloorWorkbench);
+});

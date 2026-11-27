@@ -1,0 +1,23 @@
+---
+import { Music2, Play, Pause, Volume2, ChevronUp, ExternalLink } from 'lucide-astro';
+import { MUSIC } from '../config/music';
+import { withBase } from '../lib/paths';
+import '../styles/site-music.css';
+const source = MUSIC.src.startsWith('/') ? withBase(MUSIC.src) : MUSIC.src;
+---
+<aside class="site-music" data-site-music data-state="idle" transition:persist="site-music" aria-label="背景音乐">
+ <audio data-bgm src={source || undefined} preload="none" loop></audio>
+ <div class="music-mini">
+  <button class="music-record" type="button" data-music-toggle aria-label="播放背景音乐" aria-pressed="false"><span class="record-grooves" aria-hidden="true"></span><Music2 size={15}/><span class="music-record-center"></span></button>
+  <button class="music-caption" type="button" data-music-expand aria-expanded="false" aria-controls="music-details"><span class="music-eyebrow">月湾随身听 <i aria-hidden="true"></i></span><strong>{MUSIC.title}</strong></button>
+  <button class="music-play" type="button" data-music-toggle aria-label="播放背景音乐" aria-pressed="false"><Play class="music-play-icon" size={15}/><Pause class="music-pause-icon" size={15}/></button>
+ </div>
+ <div class="music-details" id="music-details" hidden>
+  <div class="music-detail-top"><span>{MUSIC.artist}</span><button type="button" data-music-expand aria-label="收起音乐面板"><ChevronUp size={15}/></button></div>
+  <p data-music-status role="status">让音乐陪你慢慢逛。</p>
+  <label class="music-volume"><Volume2 size={15}/><span class="sr-only">背景音乐音量</span><input data-music-volume type="range" min="0" max="100" value="22" aria-label="背景音乐音量"/><output data-music-volume-label>22%</output></label>
+  <button type="button" class="music-rain" data-open-dialog="ambient-dialog">也可以听一会儿雨</button>
+  <a href={MUSIC.shareUrl} target="_blank" rel="noreferrer">音乐来源 · 网易云音乐 <ExternalLink size={12}/></a>
+ </div>
+</aside>
+<script>import '../scripts/site-music';</script>

@@ -1,4 +1,8 @@
-export {};
+
+import { onPageMount } from '../lib/page-lifecycle';
+
+onPageMount(scope => {
+
 
 const sceneRoot = document.documentElement;
 const sceneHost = document.querySelector<HTMLElement>('[data-hero-scene]');
@@ -28,23 +32,24 @@ if (sceneHost && studioWorld && sceneSurface) {
     const rect = sceneSurface.getBoundingClientRect();
     x = Math.max(-.5, Math.min(.5, (event.clientX - rect.left) / rect.width - .5));
     y = Math.max(-.5, Math.min(.5, (event.clientY - rect.top) / rect.height - .5));
-    if (!frame) frame = requestAnimationFrame(() => {
+    if (!frame) frame = scope.requestAnimationFrame(() => {
       frame = 0;
       studioWorld.style.setProperty('--studio-rx', `${-y * 5}deg`);
       studioWorld.style.setProperty('--studio-ry', `${x * 8}deg`);
     });
-  }, { passive: true });
-  sceneSurface.addEventListener('pointerleave', reset);
-  sceneSurface.addEventListener('pointercancel', reset);
+  }, scope.options({ passive: true }));
+  sceneSurface.addEventListener('pointerleave', reset, scope.options());
+  sceneSurface.addEventListener('pointercancel', reset, scope.options());
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([entry]) => {
+    scope.observe(new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting;
       sync();
-    }, { threshold: .01 }).observe(sceneSurface);
+    }, { threshold: .01 })).observe(sceneSurface);
   }
-  new MutationObserver(sync).observe(sceneRoot, { attributes: true, attributeFilter: ['data-petals'] });
-  motionPreference.addEventListener('change', sync);
-  pointerPreference.addEventListener('change', sync);
-  document.addEventListener('visibilitychange', sync);
+  scope.observe(new MutationObserver(sync)).observe(sceneRoot, { attributes: true, attributeFilter: ['data-petals'] });
+  motionPreference.addEventListener('change', sync, scope.options());
+  pointerPreference.addEventListener('change', sync, scope.options());
+  document.addEventListener('visibilitychange', sync, scope.options());
   sync();
 }
+});

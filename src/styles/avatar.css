@@ -26,6 +26,8 @@
 .avatar-companion[data-state='ready'] .avatar-halo{opacity:1}
 .avatar-companion[data-state='ready'] .avatar-loading{visibility:hidden;opacity:0;pointer-events:none;transition:opacity .2s,visibility 0s .2s}
 .avatar-hint{margin:0!important;color:var(--avatar-sub)!important;font-size:10px!important;line-height:1.6!important;letter-spacing:.025em}
+.avatar-hint--quiet{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;border:0;clip-path:inset(50%);white-space:nowrap}
+.avatar-companion[data-model-hover='true'] .avatar-halo{border-color:#e6e8ec70;background:radial-gradient(ellipse,#d5e0ef20,transparent 70%)}
 .avatar-companion:not([data-state='ready']) .avatar-hint{visibility:hidden}
 .avatar-companion[data-variant='home'] .avatar-loading{gap:5px}
 .avatar-companion[data-variant='home'] .avatar-loading-mark{width:32px;height:32px;margin-bottom:4px;font-size:20px}
@@ -47,3 +49,5 @@ html[data-wallpaper='solid'] .avatar-companion{--avatar-ui:var(--ink);--avatar-s
 html[data-motion='off'] :is(.avatar-canvas,.avatar-halo,.avatar-loading,.avatar-companion[data-state='ready'] .avatar-loading,.avatar-actions button){transition:none}
 html[data-motion='off'] .avatar-loading-mark::before{animation:none!important}
 @media(max-width:640px){.avatar-companion .avatar-halo{top:70px;width:min(230px,95%);height:70px}.avatar-actions button{min-height:40px}}
+
+.avatar-companion[data-journey='departing'] .avatar-stage{animation:avatar-depart .9s ease-in both}@keyframes avatar-depart{0%{transform:translateX(0);opacity:1}70%{transform:translateX(30px);opacity:.7}100%{transform:translateX(70px);opacity:0}}@media(prefers-reduced-motion:reduce){.avatar-companion[data-journey='departing'] .avatar-stage{animation:none}}html[data-motion='off'] .avatar-companion[data-journey='departing'] .avatar-stage{animation:none}

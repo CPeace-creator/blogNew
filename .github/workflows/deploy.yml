@@ -63,6 +63,9 @@ jobs:
       - name: Verify studio navigation and model
         run: npm run test:studio && node scripts/check-studio-output.mjs
 
+      - name: Verify Live2D resources and reactions
+        run: node --test scripts/lib/whale-reactions.test.mjs && node scripts/check-live2d-output.mjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v6
 

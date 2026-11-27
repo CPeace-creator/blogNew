@@ -1,3 +1,7 @@
+
+import { onPageMount } from '../lib/page-lifecycle';
+
+onPageMount(scope => {
 const browse = document.querySelector<HTMLElement>('[data-home-browse]');
 if (browse) {
   const tabs = [...browse.querySelectorAll<HTMLAnchorElement>('[data-home-tab]')];
@@ -36,7 +40,7 @@ if (browse) {
       event.preventDefault();
       tabs[next].focus({ preventScroll: true });
       activate(tabs[next].dataset.homeTab!);
-    });
+    }, scope.options());
   });
   panels.forEach(panel => {
     panel.setAttribute('role', 'tabpanel');
@@ -59,13 +63,14 @@ if (browse) {
     if (id !== 'studio' && id !== 'articles') return;
     event.preventDefault();
     activate(id);
-  });
+  }, scope.options());
   function restore() {
     if (location.hash === '#articles' || location.hash === '#studio') select(location.hash.slice(1), true);
     else select('studio');
   }
-  window.addEventListener('hashchange', restore);
-  window.addEventListener('popstate', restore);
+  window.addEventListener('hashchange', restore, scope.options());
+  window.addEventListener('popstate', restore, scope.options());
   browse.dataset.enhanced = 'true';
   restore();
 }
+});
